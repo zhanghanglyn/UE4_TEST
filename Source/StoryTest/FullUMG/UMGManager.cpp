@@ -104,10 +104,6 @@ void UUMGManager::CreateInstanceRootWidget(UGameInstance * GameInstance)
 		return;
 
 	//修改为不需要外部创建蓝图，直接床架哪一个UFullScreenRoot类型的UI，并且初始化根节点
-	FString rootPath = "WidgetBlueprint'/Game/StoryTest/UI/BP_RootWidget.BP_RootWidget_C'";
-	UClass* Temp_Widget = LoadClass<UFullScreenRoot>(NULL, rootPath.GetCharArray().GetData());
-	if (Temp_Widget)
-	{
 		m_RootWidget = CreateWidget<UFullScreenRoot>(GameInstance->GetWorld(), UFullScreenRoot::StaticClass());
 		if (m_RootWidget != nullptr)
 		{
@@ -123,7 +119,6 @@ void UUMGManager::CreateInstanceRootWidget(UGameInstance * GameInstance)
 			//FVector2D Result;
 			GameInstance->GetGameViewportClient()->GetViewportSize(m_ViewPortSize);
 		}
-	}
 	
 }
 
