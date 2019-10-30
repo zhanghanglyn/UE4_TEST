@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -28,16 +28,16 @@ public:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime);
 
-//½çÃæ°´Å¥µÈÏà¹Ø¿Ø¼ş±äÁ¿
+//ç•Œé¢æŒ‰é’®ç­‰ç›¸å…³æ§ä»¶å˜é‡
 private:
 	UCanvasPanelSlot *m_PanelSlot;
 
 public:
-	//ÉèÖÃUIÎ»ÖÃ
+	//è®¾ç½®UIä½ç½®
 	UFUNCTION(BlueprintCallable)
 	virtual void SetPosition(FVector2D pos);
 
-	//³¢ÊÔÊ¹ÓÃÄ£°åÅĞ¶ÏÊÇ·ñÓĞsetPositionº¯Êı
+	//å°è¯•ä½¿ç”¨æ¨¡æ¿åˆ¤æ–­æ˜¯å¦æœ‰setPositionå‡½æ•°
 	template<typename T , void(T::*)(FVector2D) = &T::SetPosition>
 	bool checkBePosition(T*) { return true; };
 	bool checkBePosition(...) { return false; };
@@ -51,7 +51,7 @@ public:
 			UE_LOG(LogTemp, Warning, TEXT("This UPanelSlot Type Has No Func SetPosition!"));
 	}
 	
-	//Ä¬ÈÏÊ¹ÓÃUCanvasPanelÀ´½øĞĞ
+	//é»˜è®¤ä½¿ç”¨UCanvasPanelæ¥è¿›è¡Œ
 	UFUNCTION(BlueprintCallable)
 	virtual void SetZorder(int32 zorder);
 
@@ -68,7 +68,7 @@ public:
 			UE_LOG(LogTemp, Warning, TEXT("This UPanelSlot Type Has No Func SetZorder!"));
 	}
 
-	//ÉèÖÃSetAnchors
+	//è®¾ç½®SetAnchors
 	UFUNCTION(BlueprintCallable)
 	virtual void SetAnchors(FAnchors InAnchors);
 

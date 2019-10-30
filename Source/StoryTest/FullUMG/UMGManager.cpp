@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "UMGManager.h"
@@ -9,7 +9,7 @@ UUMGManager::UUMGManager(const FObjectInitializer& ObjectInitializer) :Super(Obj
 	m_ScreenWidget.Empty();
 }
 
-UFullScreenWidgetBase* UUMGManager::CreateScreenWidget(FString _widgetBlueprintPath, UWorld * _world, TSubclassOf<UFullScreenWidgetBase> _widgetType, FString _widgetName , int32 _zorder)
+UFullScreenWidgetBase* UUMGManager::CreateScreenWidget(const UObject* WorldContextObject, FString _widgetBlueprintPath, TSubclassOf<UFullScreenWidgetBase> _widgetType, FString _widgetName , int32 _zorder)
 {
 	if (m_ScreenWidget.Num() > 0 && m_ScreenWidget.Find(_widgetName) != nullptr)
 	{
@@ -19,7 +19,8 @@ UFullScreenWidgetBase* UUMGManager::CreateScreenWidget(FString _widgetBlueprintP
 	UClass* Temp_Widget = LoadClass<UFullScreenWidgetBase>(NULL, _widgetBlueprintPath.GetCharArray().GetData());
 	if (Temp_Widget != nullptr)
 	{
-		UFullScreenWidgetBase *NewWidget = CreateWidget<UFullScreenWidgetBase>(_world, Temp_Widget);
+		UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+		UFullScreenWidgetBase *NewWidget = CreateWidget<UFullScreenWidgetBase>(World, Temp_Widget);
 		if (NewWidget != nullptr)
 			NewWidget->AddToViewport(_zorder);
 
@@ -61,7 +62,7 @@ void UUMGManager::ClearWidget(FString _widgetName)
 
 		tempWidget = nullptr;
 		m_ScreenWidget.Remove(_widgetName);
-		//Çå³ıÏÂ¶ÔÓ¦¹ØÏµ
+		//æ¸…é™¤ä¸‹å¯¹åº”å…³ç³»
 		//if (m_WidgetTypeRelate.Num() > 0 && m_WidgetTypeRelate.Find(_widgetName) != NULL )
 			//m_WidgetTypeRelate.Remove(_widgetName);
 	}
@@ -95,14 +96,14 @@ void UUMGManager::SetInputMode(UWorld* _world, FInputModeDataBase& InData)
 
 
 /************************************************************************/
-/*						´´½¨ÖÁGameInstanceÏà¹Ø                          */
+/*						åˆ›å»ºè‡³GameInstanceç›¸å…³                          */
 /************************************************************************/
 void UUMGManager::CreateInstanceRootWidget(UGameInstance * GameInstance)
 {
 	if (m_RootWidget != nullptr)
 		return;
 
-	//ĞŞ¸ÄÎª²»ĞèÒªÍâ²¿´´½¨À¶Í¼£¬Ö±½Ó´²¼ÜÄÄÒ»¸öUFullScreenRootÀàĞÍµÄUI£¬²¢ÇÒ³õÊ¼»¯¸ù½Úµã
+	//ä¿®æ”¹ä¸ºä¸éœ€è¦å¤–éƒ¨åˆ›å»ºè“å›¾ï¼Œç›´æ¥åºŠæ¶å“ªä¸€ä¸ªUFullScreenRootç±»å‹çš„UIï¼Œå¹¶ä¸”åˆå§‹åŒ–æ ¹èŠ‚ç‚¹
 	FString rootPath = "WidgetBlueprint'/Game/StoryTest/UI/BP_RootWidget.BP_RootWidget_C'";
 	UClass* Temp_Widget = LoadClass<UFullScreenRoot>(NULL, rootPath.GetCharArray().GetData());
 	if (Temp_Widget)
@@ -110,7 +111,7 @@ void UUMGManager::CreateInstanceRootWidget(UGameInstance * GameInstance)
 		m_RootWidget = CreateWidget<UFullScreenRoot>(GameInstance->GetWorld(), UFullScreenRoot::StaticClass());
 		if (m_RootWidget != nullptr)
 		{
-			//ÊÖ¶¯ÉèÖÃUSERWIDGETµÄRoot
+			//æ‰‹åŠ¨è®¾ç½®USERWIDGETçš„Root
 			m_RootWidget->WidgetTree->RootWidget = m_RootWidget->WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass(), TEXT("Root"));
 			m_RootWidget->Root = Cast<UCanvasPanel>(m_RootWidget->WidgetTree->RootWidget);
 			if (m_RootWidget->Root != nullptr)
@@ -119,15 +120,15 @@ void UUMGManager::CreateInstanceRootWidget(UGameInstance * GameInstance)
 			}
 
 			GameInstance->GetGameViewportClient()->AddViewportWidgetContent(m_RootWidget->TakeWidget(), 0);
-			FVector2D Result;
-			GameInstance->GetGameViewportClient()->GetViewportSize(Result);
+			//FVector2D Result;
+			GameInstance->GetGameViewportClient()->GetViewportSize(m_ViewPortSize);
 		}
 	}
 	
 }
 
-//ÏòInstanceWidgetÖĞÌí¼ÓUMG
-UFullScreenWidgetBase* UUMGManager::CreateInstanceWidget(FString _widgetBlueprintPath, UWorld * _world, FString _widgetName, int32 _zorder)
+//åˆ›å»ºINstanceUMG
+UFullScreenWidgetBase* UUMGManager::CreateInstanceWidget(const UObject* WorldContextObject, FString _widgetBlueprintPath, FString _widgetName, int32 _zorder)
 {
 	if (m_RootWidget == nullptr)
 	{
@@ -143,21 +144,23 @@ UFullScreenWidgetBase* UUMGManager::CreateInstanceWidget(FString _widgetBlueprin
 	UClass* Temp_Widget = LoadClass<UFullScreenWidgetBase>(NULL, _widgetBlueprintPath.GetCharArray().GetData());
 	if (Temp_Widget != nullptr)
 	{
-		UFullScreenWidgetBase *NewWidget = CreateWidget<UFullScreenWidgetBase>(_world, Temp_Widget);
+		UFullScreenWidgetBase *NewWidget = CreateWidget<UFullScreenWidgetBase>( Cast<UUserWidget>(m_RootWidget) , Temp_Widget);
 		if (NewWidget != nullptr)
 		{
 			m_RootWidget->Root->AddChildToCanvas(NewWidget);
 			UCanvasPanelSlot * Canvas = Cast <UCanvasPanelSlot>(NewWidget->Slot);
 			if (Canvas != nullptr)
 			{
-				FVector2D viewPortSize;
-				_world->GetGameViewport()->GetViewportSize(viewPortSize);
-				Canvas->SetSize(viewPortSize);
+				//å¦‚æœåŠ¨æ€ä¿®æ”¹äº†ViewPortï¼Œåº”è¯¥åœ¨æ­¤æ·»åŠ æ›´æ–°
+				UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+				FVector2D Result;
+				World->GetGameInstance()->GetGameViewportClient()->GetViewportSize(Result);
+				Canvas->SetSize(Result);
 			}
 		}
 
 		m_InsWidgetList.Push(NewWidget);
-		//¼ÇÂ¼Ò»¸öINDEXÓëÃû×ÖµÄ¹ØÏµ
+		//è®°å½•ä¸€ä¸ªINDEXä¸åå­—çš„å…³ç³»
 		m_InsWidgetIndexList.Add(_widgetName, (m_InsWidgetList.Num() - 1));
 
 		return NewWidget;
@@ -166,7 +169,47 @@ UFullScreenWidgetBase* UUMGManager::CreateInstanceWidget(FString _widgetBlueprin
 	return nullptr;
 }
 
-//É¾³ıÈ«ÆÁUMG
+UFullScreenWidgetBase* UUMGManager::CreateInstanceWidget(UWorld* _world, FString _widgetBlueprintPath, FString _widgetName, int32 _zorder)
+{
+	if (m_RootWidget == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("the m_RootWidget IS null!!!!!!!!!!!"));
+		return nullptr;
+	}
+	if (m_RootWidget->Root == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("the m_RootWidget->Root IS null!!!!!!!!!!!"));
+		return nullptr;
+	}
+
+	UClass* Temp_Widget = LoadClass<UFullScreenWidgetBase>(NULL, _widgetBlueprintPath.GetCharArray().GetData());
+	if (Temp_Widget != nullptr)
+	{
+		UFullScreenWidgetBase *NewWidget = CreateWidget<UFullScreenWidgetBase>(Cast<UUserWidget>(m_RootWidget), Temp_Widget);
+		if (NewWidget != nullptr)
+		{
+			m_RootWidget->Root->AddChildToCanvas(NewWidget);
+			UCanvasPanelSlot * Canvas = Cast <UCanvasPanelSlot>(NewWidget->Slot);
+			if (Canvas != nullptr)
+			{
+				//å¦‚æœåŠ¨æ€ä¿®æ”¹äº†ViewPortï¼Œåº”è¯¥åœ¨æ­¤æ·»åŠ æ›´æ–°
+				FVector2D Result;
+				_world->GetGameInstance()->GetGameViewportClient()->GetViewportSize(Result);
+				Canvas->SetSize(Result);
+			}
+		}
+
+		m_InsWidgetList.Push(NewWidget);
+		//è®°å½•ä¸€ä¸ªINDEXä¸åå­—çš„å…³ç³»
+		m_InsWidgetIndexList.Add(_widgetName, (m_InsWidgetList.Num() - 1));
+
+		return NewWidget;
+	}
+
+	return nullptr;
+}
+
+//åˆ é™¤å…¨å±UMG
 void UUMGManager::DeleteInsUMGByName(FString _widgetName)
 {
 	if (m_InsWidgetList.Num() > 0 && m_InsWidgetIndexList.Num() > 0 && m_InsWidgetIndexList.Find(_widgetName) != nullptr)

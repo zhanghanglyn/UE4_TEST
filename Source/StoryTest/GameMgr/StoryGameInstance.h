@@ -31,6 +31,7 @@ public:
 
 
 public:
+	UFUNCTION(BlueprintCallable)
 	UUMGManager* GetUMGManager();
 
 protected:

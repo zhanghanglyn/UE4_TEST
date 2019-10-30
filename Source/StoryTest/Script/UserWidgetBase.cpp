@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "UserWidgetBase.h"
@@ -31,7 +31,7 @@ void UUserWidgetBase::SetPosition(FVector2D pos)
 
 }
 
-//ÉèÖÃZorder
+//è®¾ç½®Zorder
 void UUserWidgetBase::SetZorder(int32 zorder)
 {
 	if (m_PanelSlot == nullptr)
@@ -42,7 +42,7 @@ void UUserWidgetBase::SetZorder(int32 zorder)
 	m_PanelSlot->SetZOrder(zorder);
 }
 
-//ÉèÖÃÃªµã
+//è®¾ç½®é”šç‚¹
 void UUserWidgetBase::SetAnchors(FAnchors InAnchors)
 {
 	if (m_PanelSlot == nullptr)

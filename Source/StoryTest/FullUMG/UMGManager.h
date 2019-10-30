@@ -1,21 +1,23 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-//@ ÕÅº½ ±¸×¢
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
+//@ å¼ èˆª å¤‡æ³¨
 /*
-	ÆäÊµÒ²¿ÉÒÔ²»ÒıÓÃFullScreenWidgetBaseÖ±½ÓÊ¹ÓÃUUserwidgetÕâÑùñîºÏĞÔµÍÒ»Ğ©£¬µ«ÕâÀïÎÒÏëÈÃËûÃÇÅäÌ×Ê¹ÓÃ,
-	ÒòÎª¸öÈË¾õµÃ£¬ÊÇÒ»¶¨Òª¼Ì³ĞµÄ
+	å…¶å®ä¹Ÿå¯ä»¥ä¸å¼•ç”¨FullScreenWidgetBaseç›´æ¥ä½¿ç”¨UUserwidgetè¿™æ ·è€¦åˆæ€§ä½ä¸€äº›ï¼Œä½†è¿™é‡Œæˆ‘æƒ³è®©ä»–ä»¬é…å¥—ä½¿ç”¨,
+	å› ä¸ºä¸ªäººè§‰å¾—ï¼Œæ˜¯ä¸€å®šè¦ç»§æ‰¿çš„
 */
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "Classes/Kismet/GameplayStatics.h"
+#include "Engine/Classes/Engine/Engine.h"
 #include "Script/FullScreenWidgetBase.h"
 #include "Script/FullScreenRoot.h"
 #include "UMG/Public/Components/CanvasPanelSlot.h"
 #include "UMGManager.generated.h"
 
 /**
- * UMG¹ÜÀíÀà µ¥Àı ´æ·ÅÓÚGameInstanceÖĞ
+ * UMGç®¡ç†ç±» å•ä¾‹ å­˜æ”¾äºGameInstanceä¸­
  */
 UCLASS(BlueprintType , Blueprintable)
 class STORYTEST_API UUMGManager : public UObject
@@ -25,7 +27,7 @@ class STORYTEST_API UUMGManager : public UObject
 private:
 	//static UUMGManager* Instace;
 
-//ÊµÏÖ¸¸Àà·½·¨Ïà¹ØµÈ
+//å®ç°çˆ¶ç±»æ–¹æ³•ç›¸å…³ç­‰
 public:
 	UUMGManager(const FObjectInitializer& ObjectInitializer);
 	
@@ -38,12 +40,14 @@ public:
 	}*/
 
 /************************************************************************/
-/*						Ö±½Ó´´½¨ÖÁÆÁÄ»Ïà¹Ø                             */
+/*						ç›´æ¥åˆ›å»ºè‡³å±å¹•ç›¸å…³                             */
 /************************************************************************/
 public:
-	//ÏòÆÁÄ»Ìí¼ÓÒ»¸öUMG
-	UFullScreenWidgetBase* CreateScreenWidget(FString _widgetBlueprintPath, UWorld* _world, TSubclassOf<UFullScreenWidgetBase> _widgetType, FString _widgetName, int32 _zorder = 0);
-	//ÏòÆÁÄ»Ìí¼ÓÒ»¸öUMG
+	//å‘å±å¹•æ·»åŠ ä¸€ä¸ªUMG
+	UFUNCTION(BlueprintCallable , BlueprintCosmetic, meta = (WorldContext = "WorldContextObject"))
+	UFullScreenWidgetBase* CreateScreenWidget(const UObject* WorldContextObject, FString _widgetBlueprintPath, TSubclassOf<UFullScreenWidgetBase> _widgetType, FString _widgetName, int32 _zorder = 0);
+	//å‘å±å¹•æ·»åŠ ä¸€ä¸ªUMG
+	
 	template<typename T>
 	T* CreateScreenWidget(FString _widgetBlueprintPath,UWorld* _world, TSubclassOf<UFullScreenWidgetBase> _widgetType, FString _widgetName, int32 _zorder = 0)
 	{
@@ -66,9 +70,9 @@ public:
 		return nullptr;
 	}
 
-	//»ñÈ¡UMG
+	//è·å–UMG
 	UFullScreenWidgetBase* GetScreenWidget(FString _widgetName);
-	//»ñÈ¡UMG
+	//è·å–UMG
 	template<typename T1>
 	T1* GetScreenWidget(FString _widgetName)
 	{
@@ -80,46 +84,52 @@ public:
 		return nullptr;
 	}
 
-	//»ñÈ¡¶ÔÓ¦Ãû×ÖµÄUMGType
+	//è·å–å¯¹åº”åå­—çš„UMGType
 	TSubclassOf<UFullScreenWidgetBase> GetWidgetTypeByName(FString _widgetName);
 
-	//Çå³ıWidget
+	//æ¸…é™¤Widget
 	void ClearWidget(FString _widgetName);
 	void ClearAll();
 
-	//ÉèÖÃµã»÷GameMode»òÊÇPlayerModeÊÂ¼ş
+	//è®¾ç½®ç‚¹å‡»GameModeæˆ–æ˜¯PlayerModeäº‹ä»¶
 	void SetInputMode(UWorld* _world, FInputModeDataBase& InData);
 
 protected:
-	//¸ù¾İÃû×Ö¼ÇÂ¼Widget
+	//æ ¹æ®åå­—è®°å½•Widget
 	UPROPERTY()
 	TMap<FString, UFullScreenWidgetBase*> m_ScreenWidget;
-	//¼ÇÂ¼Ã¿¸öÃû×Ö¶ÔÓ¦µÄÀàĞÍ£¬ÓÃÀ´×ª»»  //ÔİÊ±¸Ğ¾õÃ»Ê²Ã´ÂÑÓÃ 10.22
+	//è®°å½•æ¯ä¸ªåå­—å¯¹åº”çš„ç±»å‹ï¼Œç”¨æ¥è½¬æ¢  //æš‚æ—¶æ„Ÿè§‰æ²¡ä»€ä¹ˆåµç”¨ 10.22
 	TMap<FString, TSubclassOf<UFullScreenWidgetBase>> m_WidgetTypeRelate;
 
 /************************************************************************/
-/*						´´½¨ÖÁGameInstanceÏà¹Ø                          */
+/*						åˆ›å»ºè‡³GameInstanceç›¸å…³                          */
 /************************************************************************/
 public:
-	//ÔÚ´ËÏòGameInstance GameViewportClientÖĞ¼ÓÈë¸ù½ÚµãUI ¸ÃUI²»»á±»Çå³ı
+	//åœ¨æ­¤å‘GameInstance GameViewportClientä¸­åŠ å…¥æ ¹èŠ‚ç‚¹UI è¯¥UIä¸ä¼šè¢«æ¸…é™¤
 	void CreateInstanceRootWidget(UGameInstance* GameInstance);
 
-	//ÏòInstanceWidgetÖĞÌí¼ÓUMG
-	UFullScreenWidgetBase* CreateInstanceWidget(FString _widgetBlueprintPath, UWorld* _world, FString _widgetName, int32 _zorder = 0);
+	//åˆ›å»ºINstanceUMG
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, meta = (WorldContext = "WorldContextObject"))
+	UFullScreenWidgetBase* CreateInstanceWidget(const UObject* WorldContextObject ,FString _widgetBlueprintPath, FString _widgetName, int32 _zorder = 0);
+	UFullScreenWidgetBase* CreateInstanceWidget(UWorld* _world, FString _widgetBlueprintPath, FString _widgetName, int32 _zorder = 0);
 
-	//É¾³ıÈ«ÆÁUMG
+
+	//åˆ é™¤å…¨å±UMG
 	void DeleteInsUMGByName(FString _widgetName);
-	//Çå¿ÕÈ«ÆÁUMG
+	//æ¸…ç©ºå…¨å±UMG
 	void ClearInsUMG();
 
 protected:
-	//¸ù½ÚµãµÄwidget
+	//æ ¹èŠ‚ç‚¹çš„widget
 	UPROPERTY()
 	UFullScreenRoot* m_RootWidget;
-	//´æ´¢ÔÚ¸ù½ÚµãÉÏµÄUIµÄArray
+	//å­˜å‚¨åœ¨æ ¹èŠ‚ç‚¹ä¸Šçš„UIçš„Array
 	UPROPERTY()
 	TArray<UFullScreenWidgetBase*> m_InsWidgetList;
-	//ÓÃÀ´¼ÇÂ¼WidgetÃû×Ö¶ÔÓ¦µÄListÖĞµÄIndex
+	//ç”¨æ¥è®°å½•Widgetåå­—å¯¹åº”çš„Listä¸­çš„Index
 	TMap<FString, int32> m_InsWidgetIndexList;
+
+	UPROPERTY()
+	FVector2D m_ViewPortSize;
 
 };

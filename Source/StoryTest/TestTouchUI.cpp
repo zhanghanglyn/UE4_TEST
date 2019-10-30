@@ -55,8 +55,8 @@ void UTestTouchUI::SetPlay()
 		GetWorld()->ForceGarbageCollection(true);*/
 
 		//ChangeTexture = AssetLoader.LoadSynchronous<UTexture2D>(FSoftObjectPath("/Game/StoryTest/Source/UI/3.3"));
-
-		BF_Image->SetBrushFromTexture(ChangeTexture,false);
+		if (ChangeTexture != nullptr)
+			BF_Image->SetBrushFromTexture(ChangeTexture,false);
 		//BF_Image->SetBrushFromMaterial();
 
 	}

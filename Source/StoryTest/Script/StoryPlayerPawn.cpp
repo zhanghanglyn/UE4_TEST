@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "StoryPlayerPawn.h"
@@ -9,7 +9,7 @@ AStoryPlayerPawn::AStoryPlayerPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	//³õÊ¼»¯Ò»¸öUI
+	//åˆå§‹åŒ–ä¸€ä¸ªUI
 	/*if (m_SelectUI == NULL)
 	{
 		if (UClass* SelevtWidgetNew = LoadClass<UUserWidget>(NULL, TEXT("/Game/StoryTest/BP_SelectWidgetNew")))
@@ -23,7 +23,7 @@ AStoryPlayerPawn::AStoryPlayerPawn()
 					m_SelectUI->AddToViewport();
 					//m_SelectUI->SetVisibility(ESlateVisibility::Hidden);
 
-					//°ó¶¨Ñ¡ÏîÎ¯ÍĞ»Øµ÷
+					//ç»‘å®šé€‰é¡¹å§”æ‰˜å›è°ƒ
 					m_SelectUI->m_clickOneDelegate.BindUObject(this, &AStoryPlayerPawn::SelectOneCall);
 				}
 			}
@@ -37,7 +37,7 @@ void AStoryPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//³õÊ¼»¯Ò»¸öUI
+	//åˆå§‹åŒ–ä¸€ä¸ªUI
 	if (m_SelectUI == NULL)
 	{
 		UClass* TempSelectUI = LoadClass<UUserWidget>(NULL, TEXT("WidgetBlueprint'/Game/StoryTest/UI/BP_SelectWidgetNew.BP_SelectWidgetNew_C'"));
@@ -49,13 +49,13 @@ void AStoryPlayerPawn::BeginPlay()
 			m_SelectUI->SetVisibility(ESlateVisibility::Hidden);
 			SetInputModeGameOnly();
 
-			//°ó¶¨Ñ¡ÏîÎ¯ÍĞ»Øµ÷
+			//ç»‘å®šé€‰é¡¹å§”æ‰˜å›è°ƒ
 			m_SelectUI->m_clickOneDelegate.BindUObject(this, &AStoryPlayerPawn::SelectOneCall);
 		}
 	}
 
 
-	//²âÊÔ²âÊÔ£¡£¡£¡£¡£¡£¡10.10.11
+	//æµ‹è¯•æµ‹è¯•ï¼ï¼ï¼ï¼ï¼ï¼10.10.11
 	/*WidgetComponent = NewObject<UWidgetComponent>(RootComponent, UWidgetComponent::StaticClass());
 	if (WidgetComponent != nullptr)
 	{
@@ -93,7 +93,7 @@ void AStoryPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	check(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AStoryPlayerPawn::Click);
-	//°ó¶¨ÊÓ½ÇÒÆ¶¯
+	//ç»‘å®šè§†è§’ç§»åŠ¨
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	//PlayerInputComponent->BindAxis("TurnRate", this, &AStoryPlayerPawn::TurnRate)
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
@@ -113,18 +113,18 @@ void AStoryPlayerPawn::SetInputModeUIOnly()
 }
 
 /************************************************************************/
-/*                    ²Ù×÷Ïà¹Ø				                            */
+/*                    æ“ä½œç›¸å…³				                            */
 /************************************************************************/
 void AStoryPlayerPawn::Click()
 {
-	//»áÅĞ¶ÏÊÇÔÚÆÕÍ¨µÄµã»÷ÆÁÄ»£¬»òÊÇÔÚ½øĞĞÊÂ¼ş
+	//ä¼šåˆ¤æ–­æ˜¯åœ¨æ™®é€šçš„ç‚¹å‡»å±å¹•ï¼Œæˆ–æ˜¯åœ¨è¿›è¡Œäº‹ä»¶
 	UE_LOG(LogTemp, Warning, TEXT("i'm click!!!!"));
 	m_clickDelegate.ExecuteIfBound();
 }
 
 void AStoryPlayerPawn::TurnRate(float Rate)
 {
-	//»áÅĞ¶ÏÊÇÔÚÆÕÍ¨µÄµã»÷ÆÁÄ»£¬»òÊÇÔÚ½øĞĞÊÂ¼ş
+	//ä¼šåˆ¤æ–­æ˜¯åœ¨æ™®é€šçš„ç‚¹å‡»å±å¹•ï¼Œæˆ–æ˜¯åœ¨è¿›è¡Œäº‹ä»¶
 	//UE_LOG(LogTemp, Warning, TEXT("Trun rate!!!! %d"), Rate);
 	//AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
@@ -135,12 +135,12 @@ void AStoryPlayerPawn::SetScenarioByPathName(FString PathName)
 {
 	FString path = FPaths::ProjectContentDir();
 
-	//ÏÈÇå¿Õµ±Ç°¾ç±¾
+	//å…ˆæ¸…ç©ºå½“å‰å‰§æœ¬
 	int32 Count = m_curData.Num();
 	if (Count > int32(0))
 		m_curData.Empty();
 
-	//Á½ÖÖ·½·¨¶ÁÈ¡ÅäÖÃ
+	//ä¸¤ç§æ–¹æ³•è¯»å–é…ç½®
 	FString csvFilePath = ScenarioPath + PathName;
 	//if (FPaths::FileExists((path + csvFilePath)))
 	/*UDataTable *pDataTable = LoadObject<UDataTable>(NULL, *csvFilePath);
@@ -150,7 +150,7 @@ void AStoryPlayerPawn::SetScenarioByPathName(FString PathName)
 
 	}*/
 
-	//È¡Ò»ÏÂscenarioConfig
+	//å–ä¸€ä¸‹scenarioConfig
 	FString scenarioConfigPath = ScenarioPath + ScenarioConfigName;
 	FStreamableManager& AssetLoader = UAssetManager::GetStreamableManager();
 	UDataTable *scenarioConfig = AssetLoader.LoadSynchronous<UDataTable>(FSoftObjectPath(scenarioConfigPath));
@@ -160,7 +160,7 @@ void AStoryPlayerPawn::SetScenarioByPathName(FString PathName)
 		for (auto it : scenarioConfig->GetRowMap())
 		{
 			tmpPtr = (FScenarioScenarioConfig*)(it.Value);
-			//Èç¹ûÊÇĞèÒª²¥·ÅµÄ¾ç±¾
+			//å¦‚æœæ˜¯éœ€è¦æ’­æ”¾çš„å‰§æœ¬
 			if (tmpPtr->scenarioId.Equals(PathName))
 			{
 				m_sequencePath = tmpPtr->se_path;
@@ -170,7 +170,7 @@ void AStoryPlayerPawn::SetScenarioByPathName(FString PathName)
 	}
 
 
-	//Á½ÖÖ·½·¨¶ÁÈ¡ÅäÖÃ
+	//ä¸¤ç§æ–¹æ³•è¯»å–é…ç½®
 	//FStreamableManager& AssetLoader = UAssetManager::GetStreamableManager();
 	UDataTable *TestData2 = AssetLoader.LoadSynchronous<UDataTable>(FSoftObjectPath(csvFilePath));
 	if (TestData2 != nullptr)
@@ -198,7 +198,7 @@ void AStoryPlayerPawn::InitializePage()
 	SetInputModeGameOnly();
 }
 
-//ÕıÊ½¿ªÊ¼ÅÜ¾çÇé
+//æ­£å¼å¼€å§‹è·‘å‰§æƒ…
 void AStoryPlayerPawn::StartRun()
 {
 	int32 Count = m_curData.Num();
@@ -208,7 +208,7 @@ void AStoryPlayerPawn::StartRun()
 		return;
 	}
 
-	//×öÒ»Ğ©³õÊ¼»¯µÄ¹¤×÷
+	//åšä¸€äº›åˆå§‹åŒ–çš„å·¥ä½œ
 	m_curPage = 1;
 
 	GetScenarioSequencer(m_sequencePath);
@@ -218,38 +218,38 @@ void AStoryPlayerPawn::StartRun()
 
 void AStoryPlayerPawn::PlayNext()
 {
-	//Èç¹û´óÓÚ×î´óÒ³Êı»òÕßÎª-1£¬²¥·ÅÆ÷½áÊø
+	//å¦‚æœå¤§äºæœ€å¤§é¡µæ•°æˆ–è€…ä¸º-1ï¼Œæ’­æ”¾å™¨ç»“æŸ
 	if (m_curPage > m_curData.Num() || m_curPage == -1)
 		return ;
 
 	FScenarioDataBase *cur_page = m_curData.Find(m_curPage);
 	InitializePage();
 
-	//²¥·Å¾çÇé
+	//æ’­æ”¾å‰§æƒ…
 	PlaySequence(*cur_page);
 
-	//²¥·ÅÊÂ¼ş
+	//æ’­æ”¾äº‹ä»¶
 	PlayEvent(cur_page->eventId);
 
-	//²¥·ÅÑ¡Ïî
+	//æ’­æ”¾é€‰é¡¹
 	PlaySelection(*cur_page);
 
 	//return *cur_page;
 }
 
-//Ã¿Ò»Ò³µÄÃ¿Ò»¸ö¶¯×÷Íê³ÉÖ®ºó¶¼»áÍ³Ò»µ÷ÓÃÒ»´Î¸Ã»Øµ÷º¯Êı£¬Èç¹û¸ÃÒ³¶¯×÷¶¼Ö´ĞĞÍê£¬Ö±½Ó½øĞĞÏÂÒ»Ò³
+//æ¯ä¸€é¡µçš„æ¯ä¸€ä¸ªåŠ¨ä½œå®Œæˆä¹‹åéƒ½ä¼šç»Ÿä¸€è°ƒç”¨ä¸€æ¬¡è¯¥å›è°ƒå‡½æ•°ï¼Œå¦‚æœè¯¥é¡µåŠ¨ä½œéƒ½æ‰§è¡Œå®Œï¼Œç›´æ¥è¿›è¡Œä¸‹ä¸€é¡µ
 void AStoryPlayerPawn::CallBackByEveryPageAction( int32 _page)
 {
 	UE_LOG(LogTemp, Warning, TEXT("page click call : CallBackByEveryPageAction"));
 
 	if (bSequencerOver == true && bEventOver == true)
 	{
-		//19.09.24 ÕâÀïÓ¦¸ÃÓÃÒ»¸ö´¦Àíµ±Ç°Ò³µã»÷ÒÔ¼°µ±Ç°Ò³Êı¾İµÈµÄº¯ÊıÀ´´¦Àípage Ö®ºóÔÙplayNext
+		//19.09.24 è¿™é‡Œåº”è¯¥ç”¨ä¸€ä¸ªå¤„ç†å½“å‰é¡µç‚¹å‡»ä»¥åŠå½“å‰é¡µæ•°æ®ç­‰çš„å‡½æ•°æ¥å¤„ç†page ä¹‹åå†playNext
 		if (_page != -1)
 			m_curPage = _page;
 		else
 		{
-			//Èç¹û´óÓÚ×î´óÒ³Êı»òÕßÎª-1£¬²¥·ÅÆ÷½áÊø ÔİÊ±µÄÀ¬»ø´úÂë
+			//å¦‚æœå¤§äºæœ€å¤§é¡µæ•°æˆ–è€…ä¸º-1ï¼Œæ’­æ”¾å™¨ç»“æŸ æš‚æ—¶çš„åƒåœ¾ä»£ç 
 			if (m_curPage > m_curData.Num() || m_curPage == -1)
 					return;
 			else
@@ -264,7 +264,7 @@ void AStoryPlayerPawn::CallBackByEveryPageAction( int32 _page)
 
 
 /************************************************************************/
-/*                        ²¥·ÅsequenceÏà¹Ø                              */
+/*                        æ’­æ”¾sequenceç›¸å…³                              */
 /************************************************************************/
 
 void AStoryPlayerPawn::GetScenarioSequencer(FString FullPath)
@@ -280,10 +280,10 @@ void AStoryPlayerPawn::GetScenarioSequencer(FString FullPath)
 	//MovieActor->GetSequence();
 }
 
-//²¥·Å¶¯»­
+//æ’­æ”¾åŠ¨ç”»
 void AStoryPlayerPawn::PlaySequence(FScenarioDataBase cur_page)
 {
-	//ÏÈÅĞ¶ÏÈç¹û²»ĞèÒª²¥·ÅSE,ÉèÖÃ²¥·ÅÍê³É±êÊ¶²¢ÇÒÍ£Ö¹²¥·Å
+	//å…ˆåˆ¤æ–­å¦‚æœä¸éœ€è¦æ’­æ”¾SE,è®¾ç½®æ’­æ”¾å®Œæˆæ ‡è¯†å¹¶ä¸”åœæ­¢æ’­æ”¾
 	if (cur_page.second_temp == -1)
 	{
 		if (m_sequencePlayer != NULL)
@@ -304,7 +304,7 @@ void AStoryPlayerPawn::PlaySequence(FScenarioDataBase cur_page)
 			bSequencerOver = false;
 		}
 	}
-	//ÉèÖÃµã»÷º¯ÊıÎªÆÕÍ¨µã»÷
+	//è®¾ç½®ç‚¹å‡»å‡½æ•°ä¸ºæ™®é€šç‚¹å‡»
 	m_clickDelegate.Unbind();
 	m_clickDelegate.BindUObject(this, &AStoryPlayerPawn::SequencerClick);
 
@@ -314,7 +314,7 @@ void AStoryPlayerPawn::PlaySequence(FScenarioDataBase cur_page)
 		m_sequencePlayer->OnFinished.AddUnique(finishDelegate);
 	}
 	
-	//ÉèÖÃ²»Ê¹ÓÃÉãÏñ»ú¼ô¼­£¡
+	//è®¾ç½®ä¸ä½¿ç”¨æ‘„åƒæœºå‰ªè¾‘ï¼
 	SetBeControlCamera(cur_page.bOutCameraControl);
 }
 
@@ -323,7 +323,7 @@ void AStoryPlayerPawn::SequencerClick()
 	CallBackByEveryPageAction();
 }
 
-//Sequencer²¥·ÅÍê±Ï»Øµ÷
+//Sequenceræ’­æ”¾å®Œæ¯•å›è°ƒ
 void AStoryPlayerPawn::SequencePlayOverCallBack()
 {
 	bSequencerOver = true;
@@ -339,18 +339,18 @@ void AStoryPlayerPawn::SetBeControlCamera(bool _bControl)
 
 
 /************************************************************************/
-/*                       ´¦ÀíÊÂ¼ş										*/
+/*                       å¤„ç†äº‹ä»¶										*/
 /************************************************************************/                
 
-//¸ù¾İIDÈ¥´¦ÀíÊÂ¼ş //ÔİÊ±¾ÍĞ´ËÀÒ»¸öÊÂ¼ş´¦Àí·½Ê½
+//æ ¹æ®IDå»å¤„ç†äº‹ä»¶ //æš‚æ—¶å°±å†™æ­»ä¸€ä¸ªäº‹ä»¶å¤„ç†æ–¹å¼
 void AStoryPlayerPawn::PlayEvent(FString _eventId)
 {
 	//
 	if (_eventId.IsEmpty())
 		bEventOver = true;
-	else   //Îª²»Í¬µÄº¯Êı×ö²»Í¬µÄ°ó¶¨ÒÔ¼°Éè¶¨²ÎÊı
+	else   //ä¸ºä¸åŒçš„å‡½æ•°åšä¸åŒçš„ç»‘å®šä»¥åŠè®¾å®šå‚æ•°
 	{
-		//Èç¹ûÓĞÊÂ¼ş£¬°ó¶¨Î¯ÍĞ£¬Èç¹ûÃ»ÓĞ
+		//å¦‚æœæœ‰äº‹ä»¶ï¼Œç»‘å®šå§”æ‰˜ï¼Œå¦‚æœæ²¡æœ‰
 		if (_eventId == "EVENT_PICK")
 		{
 			m_clickDelegate.Unbind();
@@ -359,11 +359,11 @@ void AStoryPlayerPawn::PlayEvent(FString _eventId)
 	}
 }
 
-//¼ñÆğÊÂ¼ş,Ö®ºóµÄÎïÌå»áÖ»ÅäÖÃÎªµ¥¶ÀµÄ¿Éµã»÷ÎïÌå
+//æ¡èµ·äº‹ä»¶,ä¹‹åçš„ç‰©ä½“ä¼šåªé…ç½®ä¸ºå•ç‹¬çš„å¯ç‚¹å‡»ç‰©ä½“
 void AStoryPlayerPawn::PickEventClick()
 {
-	//Í¨¹ıÉäÏß²éÕÒÊÇ·ñÊÇĞèÒªÑ¡ÖĞµÄÎïÌå
-	//ÕÒµ½ÉãÏñ»ú¿ªÊ¼·¢ÉäÉäÏßÎ»ÖÃ
+	//é€šè¿‡å°„çº¿æŸ¥æ‰¾æ˜¯å¦æ˜¯éœ€è¦é€‰ä¸­çš„ç‰©ä½“
+	//æ‰¾åˆ°æ‘„åƒæœºå¼€å§‹å‘å°„å°„çº¿ä½ç½®
 	//this->GetActorForwardVector();
 	APlayerCameraManager* tempCameraManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
 	FVector startPos = tempCameraManager->GetCameraLocation();
@@ -371,7 +371,7 @@ void AStoryPlayerPawn::PickEventClick()
 	FVector endPos = startPos + forward * 100000;
 
 	TArray<FHitResult> temp_HitResult;
-	//Ìí¼ÓÉäÏß²ÎÊı
+	//æ·»åŠ å°„çº¿å‚æ•°
 	FCollisionQueryParams cqq(FName(TEXT("Combattrace")), true, NULL);
 	cqq.bTraceComplex = true;
 	cqq.bReturnPhysicalMaterial = false;
@@ -380,7 +380,7 @@ void AStoryPlayerPawn::PickEventClick()
 	GetWorld()->LineTraceMultiByObjectType(temp_HitResult, startPos, endPos, ECC_PhysicsBody , cqq);
 	DrawDebugLine(this->GetWorld(), startPos, endPos, FColor::Red, true, 15000.0f);
 
-	//Èç¹ûÓĞ×²µ½¶«Î÷
+	//å¦‚æœæœ‰æ’åˆ°ä¸œè¥¿
 	if (temp_HitResult.Num() > 0)
 	{
 		for (int i = 0; i< temp_HitResult.Num() ; i++)
@@ -419,7 +419,7 @@ int32 AStoryPlayerPawn::DealDataByClickName(FString _hitName)
 }
 
 /************************************************************************/
-/*                       ´¦ÀíÑ¡Ïî										*/
+/*                       å¤„ç†é€‰é¡¹										*/
 /************************************************************************/
 void AStoryPlayerPawn::PlaySelection(FScenarioDataBase cur_page)
 {
@@ -429,7 +429,7 @@ void AStoryPlayerPawn::PlaySelection(FScenarioDataBase cur_page)
 		return;
 	}
 
-	//°ÑÑ¡ÏîÒÔ¼°Ò³Êı²ğ·Ö³öÀ´
+	//æŠŠé€‰é¡¹ä»¥åŠé¡µæ•°æ‹†åˆ†å‡ºæ¥
 	FString select = cur_page.select;
 	TArray<FString> temp_select;
 	select.ParseIntoArray(temp_select, TEXT("#"), true);
@@ -443,10 +443,10 @@ void AStoryPlayerPawn::PlaySelection(FScenarioDataBase cur_page)
 		int_to_page.Add(FCString::Atoi(*temp_to_page[i]));
 	}
 
-	//½â°óÖ®Ç°µÄµã»÷º¯Êı
+	//è§£ç»‘ä¹‹å‰çš„ç‚¹å‡»å‡½æ•°
 	m_clickDelegate.Unbind();
 
-	//´ÓÀ¶Í¼ÖĞ¼ÓÔØÑ¡ÏîUI Ö®ºó¿ÉÒÔÌá³ö ÏÔÊ¾UI
+	//ä»è“å›¾ä¸­åŠ è½½é€‰é¡¹UI ä¹‹åå¯ä»¥æå‡º æ˜¾ç¤ºUI
 	if (m_SelectUI != NULL)
 	{
 		SetInputModeUIOnly();
@@ -455,7 +455,7 @@ void AStoryPlayerPawn::PlaySelection(FScenarioDataBase cur_page)
 	}
 }
 
-//Ñ¡ÏîµÄÈı¸öµã»÷»Øµ÷
+//é€‰é¡¹çš„ä¸‰ä¸ªç‚¹å‡»å›è°ƒ
 void AStoryPlayerPawn::SelectOneCall(SelectParam param)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Now i select next page : %d !"), param.pageId);
@@ -466,7 +466,7 @@ void AStoryPlayerPawn::SelectOneCall(SelectParam param)
 
 
 /************************************************************************/
-/*                        ´¦ÀíÑ¡Ïîover		                            */
+/*                        å¤„ç†é€‰é¡¹over		                            */
 /************************************************************************/
 
 void AStoryPlayerPawn::TestFunc()
@@ -497,7 +497,7 @@ void AStoryPlayerPawn::TestFunc()
 	if (tempbb != NULL)
 		FString aa = tempbb->fs;
 
-	//¸Ã·½·¨ÓĞĞ§£¡
+	//è¯¥æ–¹æ³•æœ‰æ•ˆï¼
 	//UTestTouchUI* touchUI = WidgetComponent->SetUI<UTestTouchUI>("WidgetBlueprint'/Game/StoryTest/UI/TouchUITest.TouchUITest_C'");
 	WidgetComponent->SetUI<UUserWidget>("WidgetBlueprint'/Game/StoryTest/UI/StoryControl.StoryControl_C'");
 	//if (touchUI != NULL)
@@ -505,31 +505,38 @@ void AStoryPlayerPawn::TestFunc()
 	WidgetComponent->SetUIPosition( FVector(0,50,230) );
 	WidgetComponent->SetUIRotation(FRotator(0,0,190));
 
-	//ÔÚ¾²Ì¬ÎïÆ·ÉÏÌí¼Ó,³É¹¦
+	//åœ¨é™æ€ç‰©å“ä¸Šæ·»åŠ ,æˆåŠŸ
 	TArray<AActor*> _tArray;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStaticMeshActor::StaticClass(), _tArray);
+	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), _tArray);
 	AStaticMeshActor* tempMesh = NULL;
+	//ACharacter *tempMesh = nullptr;
 	if (_tArray.Num() > 0)
 	{
 		for (int i=0;i < _tArray.Num() ; i++)
 		{
 			if (UKismetSystemLibrary::GetDisplayName(_tArray[i]) == "TestThing")
+			//if (UKismetSystemLibrary::GetDisplayName(_tArray[i]) == "TestCharactor")
 			{
 				tempMesh = Cast<AStaticMeshActor>(_tArray[i]);
+				//tempMesh = Cast<ACharacter>(_tArray[i]);
 				break;
 			}
 		}
 	}
+
 	if (tempMesh != NULL)
 	{
-		UUIWidgetComponentBase *temp_base = UUIWidgetComponentBase::CreateUIWidgetBase(tempMesh->GetStaticMeshComponent(), true,true);
+		tempMesh->SetActorTickEnabled(true);
+		UUIWidgetComponentBase *temp_base = UUIWidgetComponentBase::CreateUIWidgetBase(tempMesh->GetRootComponent(), true,true);
+		//UUIWidgetComponentBase *temp_base = UUIWidgetComponentBase::CreateUIWidgetBase(tempMesh->GetRootComponent(), true, true);
 		temp_touchUI = temp_base->SetUI<UTestTouchUI>("WidgetBlueprint'/Game/StoryTest/UI/TouchUITest.TouchUITest_C'");
 	}
 
 
-	//È«ÆÁUMG²âÊÔ
+	//å…¨å±UMGæµ‹è¯•
 	FString screenPath = "WidgetBlueprint'/Game/StoryTest/UI/BF_FullScreenTest.BF_FullScreenTest_C'";
-	//sUFullScreenTest *test1 = Cast<UFullScreenTest>(UUMGManager::GetInstance()->CreateScreenWidget(screenPath,GetWorld(), UFullScreenTest::StaticClass(), "Test1"));
+	//UFullScreenTest *test1 = Cast<UFullScreenTest>(UStoryGameInstance::GetInstance(GetWorld())->GetUMGManager()->CreateScreenWidget(screenPath,GetWorld(), UFullScreenTest::StaticClass(), "Test1"));
 	//UFullScreenTest *test1 = UStoryGameInstance::GetInstance(GetWorld())->GetUMGManager()->CreateScreenWidget<UFullScreenTest>(screenPath, GetWorld(), UFullScreenTest::StaticClass(), "Test1" ,10);
 	//if (test1 != nullptr)
 		//test1->TestFunc();
@@ -545,7 +552,7 @@ void AStoryPlayerPawn::TestFunc()
 	if (test2 != nullptr)
 		test2->TestFunc();
 	*/
-	//²âÊÔÔÚ´Ë°ÑUIÌí¼Óµ½²»»á±»Çå³ıµÄ²¿·Ö£¡
+	//æµ‹è¯•åœ¨æ­¤æŠŠUIæ·»åŠ åˆ°ä¸ä¼šè¢«æ¸…é™¤çš„éƒ¨åˆ†ï¼
 	/*UE_LOG(LogTemp, Warning, TEXT("i'm create!!!!!!!!!"));
 	UClass* Temp_Widget = LoadClass<UFullScreenWidgetBase>(NULL, screenPath2.GetCharArray().GetData());
 	if (Temp_Widget != nullptr)
@@ -570,33 +577,37 @@ void AStoryPlayerPawn::TestFunc()
 void AStoryPlayerPawn::TestFuncTwo()
 {
 
-	//this->SetInputModeUIOnly();
-	//if (WidgetComponent != NULL)
-	//{
-		//UTestTouchUI* touchUI = WidgetComponent->SetUI<UTestTouchUI>("WidgetBlueprint'/Game/StoryTest/UI/TouchUITest.TouchUITest_C'");
+	this->SetInputModeUIOnly();
+	if (WidgetComponent != NULL)
+	{
+		UTestTouchUI* touchUI = WidgetComponent->SetUI<UTestTouchUI>("WidgetBlueprint'/Game/StoryTest/UI/TouchUITest.TouchUITest_C'");
 		//if (touchUI!=NULL)
 		//{
 		///	touchUI
 		//}
-	//}
+	}
 
 	//if (temp_touchUI != nullptr)
 	//{
-		//temp_touchUI->SetPlay();
+	//	temp_touchUI->SetPlay();
 	//}
+
+	//return;
 
 
 	UStoryGameInstance* instance = UStoryGameInstance::GetInstance(GetWorld());
 	//instance->GetUMGManager()->ClearAll();
 
-	//UStoryGameInstance::GetInstance(GetWorld())->ChangeLevel( GetWorld(), FName("/Game/StoryTest/Level/StoryTestLevel"));
+	UStoryGameInstance::GetInstance(GetWorld())->ChangeLevel( GetWorld(), FName("/Game/StoryTest/Level/StoryTestLevel"));
+
+	return;
 	
 	//UStoryGameInstance::GetInstance(GetWorld())->GetUMGManager()->DeleteInsUMGByName("Test1");
 	//UStoryGameInstance::GetInstance(GetWorld())->GetUMGManager()->ClearInsUMG();
 	
 
 	FString screenPath = "WidgetBlueprint'/Game/StoryTest/UI/BF_FullScreenTest.BF_FullScreenTest_C'";
-	UFullScreenWidgetBase *NewWidget = instance->GetUMGManager()->CreateInstanceWidget(screenPath, GetWorld(), "Test2");
+	UFullScreenWidgetBase *NewWidget = instance->GetUMGManager()->CreateInstanceWidget(GetWorld(), screenPath, "Test2");
 	if (NewWidget != nullptr)
 		NewWidget->SetZorder<UCanvasPanelSlot>(1);
 }
@@ -610,10 +621,10 @@ void AStoryPlayerPawn::TestFuncThree()
 
 
 	UE_LOG(LogTemp, Warning, TEXT("i'm create!!!!!!!!!"));
-	UFullScreenWidgetBase *NewWidget = instance->GetUMGManager()->CreateInstanceWidget(screenPath2,GetWorld(),"Test1");
+	UFullScreenWidgetBase *NewWidget = instance->GetUMGManager()->CreateInstanceWidget(GetWorld(), screenPath2,"Test1");
 
 
-	//²âÊÔÅĞ¶ÏÀà¶ÔÏóÖĞÊÇ·ñÓĞÄ³¸öº¯Êı
+	//æµ‹è¯•åˆ¤æ–­ç±»å¯¹è±¡ä¸­æ˜¯å¦æœ‰æŸä¸ªå‡½æ•°
 	NewWidget->SetPosition<	UCanvasPanelSlot>(FVector2D(100, 200));
 	if (NewWidget != nullptr)
 	{

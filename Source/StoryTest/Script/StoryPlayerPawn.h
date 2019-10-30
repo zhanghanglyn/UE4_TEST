@@ -28,6 +28,7 @@
 #include "WidgetUI/FullScreenTest.h"
 #include "Classes/Kismet/GameplayStatics.h"
 #include "StoryTest/GameMgr/StoryGameInstance.h"
+#include "Classes/GameFramework/Character.h"
 #include "StoryTest/TestTouchUI.h"
 #include "StoryPlayerPawn.generated.h"
 
