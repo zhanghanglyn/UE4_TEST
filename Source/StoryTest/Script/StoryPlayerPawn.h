@@ -18,6 +18,7 @@
 #include "StoryTest/Script/SelectWidget.h"
 #include "GameFramework/PlayerController.h"
 #include "UMG/Public/Components/WidgetComponent.h"
+#include "UMG/Public/Components/GridSlot.h"
 #include "StoryTest/Script/UIWidgetComponentBase.h"
 #include "StoryTest/DataUtil/EventEnum.h"
 #include "Classes/Engine/StaticMesh.h"

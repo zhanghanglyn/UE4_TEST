@@ -530,7 +530,7 @@ void AStoryPlayerPawn::TestFunc()
 	//全屏UMG测试
 	FString screenPath = "WidgetBlueprint'/Game/StoryTest/UI/BF_FullScreenTest.BF_FullScreenTest_C'";
 	//sUFullScreenTest *test1 = Cast<UFullScreenTest>(UUMGManager::GetInstance()->CreateScreenWidget(screenPath,GetWorld(), UFullScreenTest::StaticClass(), "Test1"));
-	UFullScreenTest *test1 = UStoryGameInstance::GetInstance(GetWorld())->GetUMGManager()->CreateScreenWidget<UFullScreenTest>(screenPath, GetWorld(), UFullScreenTest::StaticClass(), "Test1" ,10);
+	//UFullScreenTest *test1 = UStoryGameInstance::GetInstance(GetWorld())->GetUMGManager()->CreateScreenWidget<UFullScreenTest>(screenPath, GetWorld(), UFullScreenTest::StaticClass(), "Test1" ,10);
 	//if (test1 != nullptr)
 		//test1->TestFunc();
 
@@ -591,9 +591,14 @@ void AStoryPlayerPawn::TestFuncTwo()
 
 	//UStoryGameInstance::GetInstance(GetWorld())->ChangeLevel( GetWorld(), FName("/Game/StoryTest/Level/StoryTestLevel"));
 	
-	UStoryGameInstance::GetInstance(GetWorld())->GetUMGManager()->DeleteInsUMGByName("Test1");
-	UStoryGameInstance::GetInstance(GetWorld())->GetUMGManager()->ClearInsUMG();
-		
+	//UStoryGameInstance::GetInstance(GetWorld())->GetUMGManager()->DeleteInsUMGByName("Test1");
+	//UStoryGameInstance::GetInstance(GetWorld())->GetUMGManager()->ClearInsUMG();
+	
+
+	FString screenPath = "WidgetBlueprint'/Game/StoryTest/UI/BF_FullScreenTest.BF_FullScreenTest_C'";
+	UFullScreenWidgetBase *NewWidget = instance->GetUMGManager()->CreateInstanceWidget(screenPath, GetWorld(), "Test2");
+	if (NewWidget != nullptr)
+		NewWidget->SetZorder<UCanvasPanelSlot>(1);
 }
 
 void AStoryPlayerPawn::TestFuncThree()
@@ -605,17 +610,17 @@ void AStoryPlayerPawn::TestFuncThree()
 
 
 	UE_LOG(LogTemp, Warning, TEXT("i'm create!!!!!!!!!"));
-	/*UClass* Temp_Widget = LoadClass<UFullScreenWidgetBase>(NULL, screenPath2.GetCharArray().GetData());
-	if (Temp_Widget != nullptr)
-	{
-		UFullScreenWidgetBase *NewWidget = CreateWidget<UFullScreenWidgetBase>(GetWorld(), Temp_Widget);
-		if (NewWidget != nullptr)
-		{
-			//NewWidget->AddToViewport();
-			instance->GetGameViewportClient()->AddViewportWidgetContent(NewWidget->TakeWidget(),0);
-			
-		}
-	}*/
 	UFullScreenWidgetBase *NewWidget = instance->GetUMGManager()->CreateInstanceWidget(screenPath2,GetWorld(),"Test1");
+
+
+	//测试判断类对象中是否有某个函数
+	NewWidget->SetPosition<	UCanvasPanelSlot>(FVector2D(100, 200));
+	if (NewWidget != nullptr)
+	{
+		NewWidget->SetZorder<UCanvasPanelSlot>(2);
+		//NewWidget->SetAnchors<UCanvasPanelSlot>(FAnchors(1, 1, 1, 1));
+	}
+		
+	
 }
 
