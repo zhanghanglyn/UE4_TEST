@@ -7,7 +7,10 @@
 #include "Modules/ModuleManager.h"
 #include "SEventTest.h"
 #include "SWidgetTestA.h"
+#include "SLayoutDetail.h"
+#include "SDetail.h"
 #include "SMyButton.h"
+#include "TestSlate/Private/SVerticalBoxEx/SVerticalBoxEx.h"
 
 class FToolBarBuilder;
 class FMenuBuilder;

@@ -84,6 +84,11 @@ TSharedRef< FSlateStyleSet > FTestSlateStyle::Create()
 		new FSlateImageBrush(Style->RootToContentDir(TEXT("peoxiao"), TEXT(".png")), imageBg)
 	);
 
+	//设置一个背景图片样式
+	const FVector2D VerticalBoxExBg(200, 400);
+	Style->Set("UI.VerticalBoxExBg",
+		new FSlateImageBrush(Style->RootToContentDir(TEXT("SverticalBoxBg"), TEXT(".png")), VerticalBoxExBg)
+	);
 			
 	return Style;
 }

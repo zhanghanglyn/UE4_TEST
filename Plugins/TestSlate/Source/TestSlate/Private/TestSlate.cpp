@@ -73,16 +73,24 @@ TSharedRef<SDockTab> FTestSlateModule::OnSpawnPluginTab(const FSpawnTabArgs& Spa
 		.TabRole(ETabRole::NomadTab)
 		[
 			// Put your tab content here!
-			/*SNew(SBox)
-			.HAlign(HAlign_Center)
-			.VAlign(VAlign_Center)
+			SNew(SHorizontalBox)
+			//添加左侧Detail
+			+ SHorizontalBox::Slot()
+			.MaxWidth(300)
+			.HAlign(HAlign_Left)
 			[
-				SNew(STextBlock)
-				.Text(WidgetText)
-			]*/
+				SNew(SLayoutDetail)
+			]
+			//添加右侧部分
+			+ SHorizontalBox::Slot()
+			.MaxWidth(700)
+			.HAlign(HAlign_Left)
+			[
+				SNew(SWidgetTestA)
+			]
 
-			SNew(SWidgetTestA)
-			.TestAttribute1(FString("My Button 1"))
+			//SNew(SWidgetTestA)
+			//.TestAttribute1(FString("My Button 1"))
 		];
 }
 
