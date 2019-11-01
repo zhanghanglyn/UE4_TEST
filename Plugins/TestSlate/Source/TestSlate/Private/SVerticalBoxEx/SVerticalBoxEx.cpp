@@ -15,7 +15,7 @@ void SVerticalBoxEx::Construct(const FArguments& InArgs)
 	SVerticalBoxEx::FSlot& NewSlot = *new SVerticalBoxEx::FSlot();
 	NewSlot
 	[
-		SNew(SImage).Image(FTestSlateStyle::Get().GetBrush("UI.VerticalBoxExBg"))
+		SNew(SImage).Image(InArgs._BGImage.Get())
 	];
 	Children.Add(&NewSlot);
 	

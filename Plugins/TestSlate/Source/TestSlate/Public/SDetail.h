@@ -23,4 +23,9 @@ public:
 private:
 
 	TSharedPtr<SVerticalBoxEx> LayoutPtr;
+	TSharedPtr<SEditableTextBox> InputPtr;
+
+
+public:
+	FReply ClickSave();
 };

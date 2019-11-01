@@ -109,11 +109,13 @@ public:
 	SLATE_BEGIN_ARGS(SVerticalBoxEx)
 		: _ContentMargin(FMargin(0,0,0,0))
 		, _BGSize( FVector2D::ZeroVector )
+		, _BGImage(FCoreStyle::Get().GetDefaultBrush())
 	{
 		_Visibility = EVisibility::SelfHitTestInvisible;
 	}
 	SLATE_ATTRIBUTE(FMargin , ContentMargin);
 	SLATE_ATTRIBUTE(FVector2D, BGSize);
+	SLATE_ATTRIBUTE(const FSlateBrush*, BGImage)
 	SLATE_SUPPORTS_SLOT(SVerticalBoxEx::FSlot)
 	SLATE_END_ARGS()
 

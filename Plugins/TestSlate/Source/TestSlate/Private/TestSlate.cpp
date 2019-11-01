@@ -40,7 +40,7 @@ void FTestSlateModule::StartupModule()
 	
 	{
 		TSharedPtr<FExtender> ToolbarExtender = MakeShareable(new FExtender());
-		ToolbarExtender->AddToolBarExtension("Settings", EExtensionHook::After, PluginCommands, FToolBarExtensionDelegate::CreateRaw(this, &FTestSlateModule::AddToolbarExtension));
+		ToolbarExtender->AddToolBarExtension("Content", EExtensionHook::After, PluginCommands, FToolBarExtensionDelegate::CreateRaw(this, &FTestSlateModule::AddToolbarExtension));
 		
 		LevelEditorModule.GetToolBarExtensibilityManager()->AddExtender(ToolbarExtender);
 	}
@@ -73,10 +73,10 @@ TSharedRef<SDockTab> FTestSlateModule::OnSpawnPluginTab(const FSpawnTabArgs& Spa
 		.TabRole(ETabRole::NomadTab)
 		[
 			// Put your tab content here!
-			SNew(SHorizontalBox)
+			/*SNew(SHorizontalBox)
 			//Ìí¼Ó×ó²àDetail
 			+ SHorizontalBox::Slot()
-			.MaxWidth(300)
+			.MaxWidth(200)
 			.HAlign(HAlign_Left)
 			[
 				SNew(SLayoutDetail)
@@ -87,10 +87,18 @@ TSharedRef<SDockTab> FTestSlateModule::OnSpawnPluginTab(const FSpawnTabArgs& Spa
 			.HAlign(HAlign_Left)
 			[
 				SNew(SWidgetTestA)
+			]*/
+
+			SNew(SCanvas)
+			+SCanvas::Slot().Position(FVector2D( 50,50 )).Size(FVector2D(200,400))
+			[
+				SNew(SLayoutDetail)
+			]
+			+SCanvas::Slot().Position( FVector2D( 300,100)).Size(FVector2D( 100,200 ))
+			[
+				SNew(SWidgetTestA)
 			]
 
-			//SNew(SWidgetTestA)
-			//.TestAttribute1(FString("My Button 1"))
 		];
 }
 

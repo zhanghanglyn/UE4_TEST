@@ -63,7 +63,7 @@ TSharedRef< FSlateStyleSet > FTestSlateStyle::Create()
 		)
 	);
 
-	const FVector2D EditBoxBg(642, 152);
+	const FVector2D EditBoxBg(200, 152);
 
 	//设置一个输入框样式
 	Style->Set("UI.EditBoxStyle",
@@ -88,6 +88,11 @@ TSharedRef< FSlateStyleSet > FTestSlateStyle::Create()
 	const FVector2D VerticalBoxExBg(200, 400);
 	Style->Set("UI.VerticalBoxExBg",
 		new FSlateImageBrush(Style->RootToContentDir(TEXT("SverticalBoxBg"), TEXT(".png")), VerticalBoxExBg)
+	);
+
+	//创建一个箭头图片样式
+	Style->Set("UI.ArrowBg",
+		new FSlateImageBrush(Style->RootToContentDir(TEXT("SverticalBoxBg"), TEXT(".png")), FVector2D(100, 92))
 	);
 			
 	return Style;
