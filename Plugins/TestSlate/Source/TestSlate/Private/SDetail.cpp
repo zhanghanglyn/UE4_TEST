@@ -5,6 +5,9 @@
 
 void SDetail::Construct(const FArguments& InArgs)
 {
+	//绑定一下委托
+	ClickDelegate = InArgs._Clicked;
+
 	this->ChildSlot
 	[
 		SNew(SVerticalBoxEx).ContentMargin(FMargin(20,50))
@@ -24,7 +27,7 @@ void SDetail::Construct(const FArguments& InArgs)
 		+SVerticalBoxEx::Slot()
 		.MaxHeight(40)
 		[
-			SNew(SButton).Text(FText::FromString(TEXT("点击保存"))).OnClicked(this, &SDetail::ClickSave)
+			SNew(SButton).Text(FText::FromString(TEXT("点击保存"))).OnClicked(this, &SDetail::ArrowCreateTest )
 		]
 		//SAssignNew(LayoutPtr, SVerticalBoxEx)
 
@@ -35,6 +38,14 @@ FReply SDetail::ClickSave()
 {
 	if (InputPtr != nullptr)
 		InputPtr->GetText().ToString();
+
+	return FReply::Handled();
+}
+
+FReply SDetail::ArrowCreateTest()
+{
+	ClickDelegate.ExecuteIfBound();
+
 
 	return FReply::Handled();
 }

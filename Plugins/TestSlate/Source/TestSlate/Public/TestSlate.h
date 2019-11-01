@@ -40,4 +40,13 @@ private:
 
 	TSharedPtr<SWidgetTestA> m_testWidgetA;
 	TSharedPtr<SButton> m_testButton;
+
+private:
+	TSharedPtr<SCanvas> m_SCanvas;
+
+public:
+	void CreateArrowTest();
+
+	void OnClickLogin(FString name, FString psw) {};
+
 };

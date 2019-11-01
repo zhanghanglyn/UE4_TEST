@@ -89,7 +89,7 @@ TSharedRef<SDockTab> FTestSlateModule::OnSpawnPluginTab(const FSpawnTabArgs& Spa
 				SNew(SWidgetTestA)
 			]*/
 
-			SNew(SCanvas)
+			SAssignNew(m_SCanvas, SCanvas)
 			+SCanvas::Slot().Position(FVector2D( 50,50 )).Size(FVector2D(200,400))
 			[
 				SNew(SLayoutDetail)

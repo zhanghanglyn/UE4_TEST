@@ -7,8 +7,15 @@ void SLayoutDetail::Construct(const FArguments& InArgs)
 {
 	this->ChildSlot
 	[
-        SNew(SDetail)
+        SNew(SDetail).Clicked(this , &SLayoutDetail::CreateArrowTest)
 	];
+}
+
+//测试在canvas中创建箭头
+void SLayoutDetail::CreateArrowTest()
+{
+	UE_LOG(LogTemp, Warning, TEXT("ddddddddd"));
+
 }
 
 #undef   LOCTEXT_NAMESPACE
