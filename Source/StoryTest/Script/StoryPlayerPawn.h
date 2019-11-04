@@ -190,4 +190,7 @@ public:
 
 	UPROPERTY()
 	UTestTouchUI *temp_touchUI;
+
+	UPROPERTY()
+		FString testUID;
 };

@@ -96,7 +96,19 @@ TSharedRef<SDockTab> FTestSlateModule::OnSpawnPluginTab(const FSpawnTabArgs& Spa
 			]
 			+SCanvas::Slot().Position( FVector2D( 300,100)).Size(FVector2D( 100,200 ))
 			[
-				SNew(SWidgetTestA)
+				SNew(SCanvasTree, FVector2D(300, 100))
+				+SCanvasTree::Slot().Position(FVector2D(10, 10))
+				[
+					SNew(STreeNode)
+				]
+				/*+ SCanvasTree::Slot().Position(FVector2D(100, 100))
+				[
+					SNew(STreeNode)
+				]
+				+ SCanvasTree::Slot().Position(FVector2D(50, 50))
+				[
+					SNew(STreeNode)
+				]*/
 			]
 
 		];

@@ -11,6 +11,7 @@
 #include "Engine/Classes/Engine/Texture2D.h"
 #include "UMG/Public/Blueprint/WidgetTree.h"
 #include "UMG/Public/Components/CanvasPanelSlot.h"
+#include "Public/Misc/DateTime.h"
 #include "UserWidgetBase.generated.h"
 
 /**
@@ -84,4 +85,13 @@ public:
 		else
 			UE_LOG(LogTemp, Warning, TEXT("This UPanelSlot Type Has No Func SetAnchors!"));
 	}
+
+//私有属性等
+private:
+	FString UID;
+	void CreateUID();
+
+public:
+	FString GetUID();
+
 };

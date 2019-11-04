@@ -110,12 +110,15 @@ public:
 
 	//创建INstanceUMG
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, meta = (WorldContext = "WorldContextObject"))
-	UFullScreenWidgetBase* CreateInstanceWidget(const UObject* WorldContextObject ,FString _widgetBlueprintPath, FString _widgetName, int32 _zorder = 0);
-	UFullScreenWidgetBase* CreateInstanceWidget(UWorld* _world, FString _widgetBlueprintPath, FString _widgetName, int32 _zorder = 0);
+	UFullScreenWidgetBase* CreateInstanceWidget(const UObject* WorldContextObject ,FString _widgetBlueprintPath,int32 _zorder = 0);
+	UFullScreenWidgetBase* CreateInstanceWidget(UWorld* _world, FString _widgetBlueprintPath, int32 _zorder = 0);
 
-
+	//根据UID查找某个UMD
+	UFullScreenWidgetBase* GetInsUMGByUID(FString UID);
 	//删除全屏UMG
-	void DeleteInsUMGByName(FString _widgetName);
+	void DeleteInsUMGWidget(FString UID);
+	//删除全屏UMG
+	void DeleteInsUMGWidget( UFullScreenWidgetBase* widget);
 	//清空全屏UMG
 	void ClearInsUMG();
 
@@ -126,8 +129,8 @@ protected:
 	//存储在根节点上的UI的Array
 	UPROPERTY()
 	TArray<UFullScreenWidgetBase*> m_InsWidgetList;
-	//用来记录Widget名字对应的List中的Index
-	TMap<FString, int32> m_InsWidgetIndexList;
+	//用来记录Widget名字对应的List中的Index  //19.11.4 由于引擎莫名其妙的清空行为，重构一次
+	//TMap<FString, int32> m_InsWidgetIndexList;
 
 	UPROPERTY()
 	FVector2D m_ViewPortSize;

@@ -21,6 +21,7 @@ FSlot中会记录每一个子树的位置
 #include "Layout/Children.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SPanel.h"
+#include "SlayoutTree/TreeNode.h"
 
 class FArrangedChildren;
 class FPaintArgs;
@@ -108,7 +109,7 @@ public:
 
 	SCanvasTree();
 
-	void Construct(const FArguments& InArgs);
+	void Construct(const FArguments& InArgs, FVector2D Position);
 
 	static FSlot& Slot()
 	{
@@ -140,7 +141,8 @@ public:
 	virtual void OnArrangeChildren(const FGeometry& AllottedGeometry, FArrangedChildren& ArrangedChildren) const override;
 	virtual int32 OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const override;
 	virtual FChildren* GetChildren() override;
-
+	virtual bool SupportsKeyboardFocus() const override;
+	virtual FReply OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 
 protected:
 	// Begin SWidget overrides.
@@ -157,4 +159,10 @@ protected:
 	*/
 	TPanelChildren<FSlot> Children;
 
+	//需要在外部传入保存一个自身的POSITION
+	FVector2D M_Position;
+
+//事件函数相关
+public:
+	void ClickNodeCall(FVector2D Pos);
 };

@@ -12,6 +12,8 @@
 #include "SMyButton.h"
 #include "Slate/Public/Widgets/SCanvas.h"
 #include "SlateCore/Public/Layout/Clipping.h"
+#include "TestSlate/Private/SlayoutTree/SLayoutTree.h"
+#include "TestSlate/Private/SlayoutTree/TreeNode.h"
 #include "TestSlate/Private/SVerticalBoxEx/SVerticalBoxEx.h"
 
 class FToolBarBuilder;

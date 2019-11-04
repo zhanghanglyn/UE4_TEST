@@ -597,8 +597,14 @@ void AStoryPlayerPawn::TestFuncTwo()
 
 	UStoryGameInstance* instance = UStoryGameInstance::GetInstance(GetWorld());
 	//instance->GetUMGManager()->ClearAll();
+	//instance->GetUMGManager()->ClearInsUMG();
 
-	UStoryGameInstance::GetInstance(GetWorld())->ChangeLevel( GetWorld(), FName("/Game/StoryTest/Level/StoryTestLevel"));
+	//UStoryGameInstance::GetInstance(GetWorld())->ChangeLevel( GetWorld(), FName("/Game/StoryTest/Level/StoryTestLevel"));
+
+	UFullScreenWidgetBase* test111 = instance->GetUMGManager()->GetInsUMGByUID(testUID);
+	//UStoryGameInstance::GetInstance(GetWorld())->GetUMGManager()->DeleteInsUMGWidget(test111);
+	UStoryGameInstance::GetInstance(GetWorld())->GetUMGManager()->DeleteInsUMGWidget(testUID);
+
 
 	return;
 	
@@ -607,7 +613,7 @@ void AStoryPlayerPawn::TestFuncTwo()
 	
 
 	FString screenPath = "WidgetBlueprint'/Game/StoryTest/UI/BF_FullScreenTest.BF_FullScreenTest_C'";
-	UFullScreenWidgetBase *NewWidget = instance->GetUMGManager()->CreateInstanceWidget(GetWorld(), screenPath, "Test2");
+	UFullScreenWidgetBase *NewWidget = instance->GetUMGManager()->CreateInstanceWidget(GetWorld(), screenPath);
 	if (NewWidget != nullptr)
 		NewWidget->SetZorder<UCanvasPanelSlot>(1);
 }
@@ -621,8 +627,11 @@ void AStoryPlayerPawn::TestFuncThree()
 
 
 	UE_LOG(LogTemp, Warning, TEXT("i'm create!!!!!!!!!"));
-	UFullScreenWidgetBase *NewWidget = instance->GetUMGManager()->CreateInstanceWidget(GetWorld(), screenPath2,"Test1");
+	UFullScreenWidgetBase *NewWidget = instance->GetUMGManager()->CreateInstanceWidget(GetWorld(), screenPath2);
+	testUID = NewWidget->GetUID();
 
+	//UStoryGameInstance::GetInstance(GetWorld())->GetUMGManager()->DeleteInsUMGWidget(NewWidget);
+	//UStoryGameInstance::GetInstance(GetWorld())->GetUMGManager()->DeleteInsUMGWidget(NewWidget->GetUID());
 
 	//测试判断类对象中是否有某个函数
 	NewWidget->SetPosition<	UCanvasPanelSlot>(FVector2D(100, 200));

@@ -5,6 +5,7 @@
 
 UUserWidgetBase::UUserWidgetBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	CreateUID();
 }
 
 void UUserWidgetBase::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -51,4 +52,19 @@ void UUserWidgetBase::SetAnchors(FAnchors InAnchors)
 	if (m_PanelSlot == nullptr)
 		return;
 	m_PanelSlot->SetAnchors(InAnchors);
+}
+
+//获取UID
+FString UUserWidgetBase::GetUID()
+{
+	return UID;
+}
+
+//设置UID
+void UUserWidgetBase::CreateUID()
+{
+	FDateTime Time = FDateTime::Now();
+	int64 Timestamp = Time.ToUnixTimestamp();
+	
+	UID = (this->GetFName()).ToString() + FString::FromInt(Timestamp);
 }

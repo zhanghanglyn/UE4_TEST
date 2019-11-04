@@ -123,7 +123,7 @@ void UUMGManager::CreateInstanceRootWidget(UGameInstance * GameInstance)
 }
 
 //创建INstanceUMG
-UFullScreenWidgetBase* UUMGManager::CreateInstanceWidget(const UObject* WorldContextObject, FString _widgetBlueprintPath, FString _widgetName, int32 _zorder)
+UFullScreenWidgetBase* UUMGManager::CreateInstanceWidget(const UObject* WorldContextObject, FString _widgetBlueprintPath, int32 _zorder)
 {
 	if (m_RootWidget == nullptr)
 	{
@@ -156,7 +156,7 @@ UFullScreenWidgetBase* UUMGManager::CreateInstanceWidget(const UObject* WorldCon
 
 		m_InsWidgetList.Push(NewWidget);
 		//记录一个INDEX与名字的关系
-		m_InsWidgetIndexList.Add(_widgetName, (m_InsWidgetList.Num() - 1));
+		//m_InsWidgetIndexList.Add(_widgetName, (m_InsWidgetList.Num() - 1));
 
 		return NewWidget;
 	}
@@ -164,9 +164,9 @@ UFullScreenWidgetBase* UUMGManager::CreateInstanceWidget(const UObject* WorldCon
 	return nullptr;
 }
 
-UFullScreenWidgetBase* UUMGManager::CreateInstanceWidget(UWorld* _world, FString _widgetBlueprintPath, FString _widgetName, int32 _zorder)
+UFullScreenWidgetBase* UUMGManager::CreateInstanceWidget(UWorld* _world, FString _widgetBlueprintPath, int32 _zorder)
 {
-	if (m_RootWidget == nullptr)
+   	if (m_RootWidget == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("the m_RootWidget IS null!!!!!!!!!!!"));
 		return nullptr;
@@ -180,7 +180,7 @@ UFullScreenWidgetBase* UUMGManager::CreateInstanceWidget(UWorld* _world, FString
 	UClass* Temp_Widget = LoadClass<UFullScreenWidgetBase>(NULL, _widgetBlueprintPath.GetCharArray().GetData());
 	if (Temp_Widget != nullptr)
 	{
-		UFullScreenWidgetBase *NewWidget = CreateWidget<UFullScreenWidgetBase>(Cast<UUserWidget>(m_RootWidget), Temp_Widget);
+		UFullScreenWidgetBase *NewWidget = CreateWidget<UFullScreenWidgetBase>(m_RootWidget, Temp_Widget);
 		if (NewWidget != nullptr)
 		{
 			m_RootWidget->Root->AddChildToCanvas(NewWidget);
@@ -196,7 +196,7 @@ UFullScreenWidgetBase* UUMGManager::CreateInstanceWidget(UWorld* _world, FString
 
 		m_InsWidgetList.Push(NewWidget);
 		//记录一个INDEX与名字的关系
-		m_InsWidgetIndexList.Add(_widgetName, (m_InsWidgetList.Num() - 1));
+		//m_InsWidgetIndexList.Add(_widgetName, (m_InsWidgetList.Num() - 1));
 
 		return NewWidget;
 	}
@@ -204,10 +204,25 @@ UFullScreenWidgetBase* UUMGManager::CreateInstanceWidget(UWorld* _world, FString
 	return nullptr;
 }
 
-//删除全屏UMG
-void UUMGManager::DeleteInsUMGByName(FString _widgetName)
+UFullScreenWidgetBase* UUMGManager::GetInsUMGByUID(FString UID)
 {
-	if (m_InsWidgetList.Num() > 0 && m_InsWidgetIndexList.Num() > 0 && m_InsWidgetIndexList.Find(_widgetName) != nullptr)
+	if (m_InsWidgetList.Num() > 0)
+	{
+		for (int count = 0; count < m_InsWidgetList.Num(); count++)
+		{
+			if (UID.Equals(m_InsWidgetList[count]->GetUID()))
+			{
+				return m_InsWidgetList[count];
+			}
+		}
+	}
+	return nullptr;
+}
+
+//删除全屏UMG
+void UUMGManager::DeleteInsUMGWidget(FString UID)
+{
+	/*if (m_InsWidgetList.Num() > 0 && m_InsWidgetIndexList.Num() > 0 && m_InsWidgetIndexList.Find(_widgetName) != nullptr)
 	{
 		int32 index = *m_InsWidgetIndexList.Find(_widgetName);
 		if (m_InsWidgetList[index] != nullptr)
@@ -217,6 +232,39 @@ void UUMGManager::DeleteInsUMGByName(FString _widgetName)
 			deleteWidget = nullptr;
 			m_InsWidgetList.RemoveAt(index);
 			m_InsWidgetIndexList.Remove(_widgetName);
+		}
+	}*/
+	if (m_InsWidgetList.Num() > 0)
+	{
+		for (int count = 0; count < m_InsWidgetList.Num(); count++)
+		{
+			if (UID.Equals(m_InsWidgetList[count]->GetUID()))
+			{
+				m_InsWidgetList[count]->RemoveFromParent();
+				m_InsWidgetList[count] = nullptr;
+				m_InsWidgetList.RemoveAt(count);
+
+				return;
+			}
+		}
+	}
+}
+
+//删除全屏UMG
+void UUMGManager::DeleteInsUMGWidget(UFullScreenWidgetBase* widget)
+{
+	if (m_InsWidgetList.Num() > 0)
+	{
+		for (int count = 0; count < m_InsWidgetList.Num(); count++)
+		{
+			if (m_InsWidgetList[count] == widget)
+			{
+				m_InsWidgetList[count]->RemoveFromParent();
+				m_InsWidgetList[count] = nullptr;
+				m_InsWidgetList.RemoveAt(count);
+
+				return;
+			}
 		}
 	}
 }
@@ -235,5 +283,5 @@ void UUMGManager::ClearInsUMG()
 		}
 	}
 	m_InsWidgetList.Empty();
-	m_InsWidgetIndexList.Empty();
+	//m_InsWidgetIndexList.Empty();
 }
