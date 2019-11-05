@@ -14,6 +14,7 @@
 #include "SlateCore/Public/Layout/Clipping.h"
 #include "TestSlate/Private/SlayoutTree/SLayoutTree.h"
 #include "TestSlate/Private/SlayoutTree/TreeNode.h"
+#include "TestSlate/Private/SlayoutTree/STreeArrow.h"
 #include "TestSlate/Private/SVerticalBoxEx/SVerticalBoxEx.h"
 
 class FToolBarBuilder;

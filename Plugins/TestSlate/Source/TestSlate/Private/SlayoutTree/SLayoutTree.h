@@ -27,6 +27,7 @@ FSlot中会记录每一个子树的位置
 class FArrangedChildren;
 class FPaintArgs;
 class FSlateWindowElementList;
+class STreeArrow;
 
 class  SCanvasTree : public SPanel
 {
@@ -161,6 +162,8 @@ public:
 	virtual bool SupportsKeyboardFocus() const override;
 	virtual void OnFocusLost(const FFocusEvent& InFocusEvent) override;
 	virtual FReply OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
+	virtual FReply OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
+	virtual FReply OnMouseButtonUp(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 
 protected:
 	// Begin SWidget overrides.
@@ -186,10 +189,12 @@ protected:
 	//绘制边框的笔刷
 	TAttribute<const FSlateBrush*> BorderImg;
 
+	TSharedPtr< STreeArrow> mTreeArrowPanel;
+
+	bool BStartDraw = false;
+
 //事件函数相关
 public:
 	void ClickNodeCall(FVector2D Pos);
 
-private:
-	TSharedPtr<STreeArrow> arrr;
 };

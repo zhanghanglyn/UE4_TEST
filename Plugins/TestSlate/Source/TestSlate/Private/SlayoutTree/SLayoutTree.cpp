@@ -2,7 +2,7 @@
 
 #define  LOCTEXT_NAMESPACE "SCanvasTree"
 
-SCanvasTree::SCanvasTree() : Children(this), ArrowChildren(this)
+SCanvasTree::SCanvasTree() : Children(this), ArrowChildren(this), BorderImg(FCoreStyle::Get().GetBrush("Border"))
 {
 	SetCanTick(false);
 	bCanSupportFocus = false;
@@ -24,12 +24,13 @@ void SCanvasTree::Construct(const FArguments& InArgs, FVector2D Position ,FVecto
 	];
 	ArrowChildren.Add(&NewSlot);
 
+	//TSharedPtr< STreeArrow> mTreeArrowPanel;
 	//添加一个箭头处理层，在背景层之上
 	SCanvasTree::FSlot& ArrowSlot = *new SCanvasTree::FSlot();
 	ArrowSlot
 	[
-		//SAssignNew(mTreeArrowPanel , STreeArrow)
-		SNew(STreeArrow)
+		SAssignNew(mTreeArrowPanel , STreeArrow)
+		//SNew(STreeArrow)
 	];
 	ArrowChildren.Add(&ArrowSlot);
 
@@ -287,6 +288,7 @@ FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointe
 {
 	FReply Reply = FReply::Unhandled();
 
+	//暂时写的右键为添加Tree
 	if (IsEnabled() && MouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
 	{
 		//计算一下生成位置，因为有一个相对位置的问题
@@ -300,16 +302,60 @@ FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointe
 
 		Reply = FReply::Handled();
 	}
+	//左键为开始画线，此事件因为TreeNode的冒泡事件
+	if (IsEnabled() && MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton && BStartDraw == true)
+	{
+		//计算一下生成位置，因为有一个相对位置的问题
+		FVector2D CreatePos = MouseEvent.GetScreenSpacePosition();
+		FVector2D absolutePos = MyGeometry.GetAbsolutePosition();
+		FVector2D ClickSizeInTree = CreatePos - absolutePos;
+
+		mTreeArrowPanel->StartDrawArrow(ClickSizeInTree);
+
+		Reply = FReply::Handled();
+	}
 
 	return Reply;
 }
 #pragma  optimize("", on)
 
-//#pragma  optimize("", off)
+//收到Tree的点击事件
 void SCanvasTree::ClickNodeCall(FVector2D Pos)
 {
-	//mTreeArrowPanel->TTTT();
+	//mTreeArrowPanel->StartDrawArrow(Pos);
+	BStartDraw = true;
 }
-//#pragma  optimize("", on)
+
+//当点击后鼠标移动！
+FReply SCanvasTree::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	if (BStartDraw == false)
+		return FReply::Unhandled();
+
+	FReply Reply = FReply::Unhandled();
+	FVector2D CreatePos = MouseEvent.GetScreenSpacePosition();
+	FVector2D absolutePos = MyGeometry.GetAbsolutePosition();
+	FVector2D ClickSizeInTree = CreatePos - absolutePos;
+
+	mTreeArrowPanel->MoveDrawArrow(ClickSizeInTree);
+
+	return FReply::Handled();
+}
+
+FReply SCanvasTree::OnMouseButtonUp(const FGeometry& InMyGeometry, const FPointerEvent& InMouseEvent)
+{
+	//左键抬起时结束本次绘制
+	if (IsEnabled() && InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton && BStartDraw == true)
+	{
+		BStartDraw = false;
+		FVector2D CreatePos = InMouseEvent.GetScreenSpacePosition();
+		FVector2D absolutePos = InMyGeometry.GetAbsolutePosition();
+		FVector2D ClickSizeInTree = CreatePos - absolutePos;
+
+		mTreeArrowPanel->EndDrawArrow(ClickSizeInTree);
+	}
+
+	return FReply::Handled();
+}
 
 #undef   LOCTEXT_NAMESPACE

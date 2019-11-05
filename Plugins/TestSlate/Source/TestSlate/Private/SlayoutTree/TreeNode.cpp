@@ -154,7 +154,8 @@ FReply STreeNode::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerE
 
 		PressFunction(ClickSizeInTree);
 
-		Reply = FReply::Handled();
+		//向上冒泡！才能获取正确的点击位置
+		Reply = FReply::Unhandled();
 	}
 	Invalidate(EInvalidateWidget::Layout);
 
@@ -166,4 +167,11 @@ void STreeNode::PressFunction(FVector2D AbsolutePos)
 {
 	//传出回调
 	ClickNodeCallDelegate.ExecuteIfBound(AbsolutePos);
+}
+
+FReply STreeNode::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	FReply Reply = FReply::Unhandled();
+
+	return Reply;
 }
