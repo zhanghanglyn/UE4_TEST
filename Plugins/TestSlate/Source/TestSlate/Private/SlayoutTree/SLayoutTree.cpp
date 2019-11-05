@@ -1,8 +1,8 @@
-#include "SLayoutTree.h"
+ï»¿#include "SLayoutTree.h"
 
 #define  LOCTEXT_NAMESPACE "SCanvasTree"
 
-SCanvasTree::SCanvasTree() : Children(this)
+SCanvasTree::SCanvasTree() : Children(this), ArrowChildren(this)
 {
 	SetCanTick(false);
 	bCanSupportFocus = false;
@@ -16,13 +16,22 @@ void SCanvasTree::Construct(const FArguments& InArgs, FVector2D Position ,FVecto
 	M_SIZE = Size;
 	BorderImg = InArgs._BorderBrush;
 
-	//Ò²¿ÉÒÔ¼Ó¸ö±³¾°£¨±ß¿òÔÚµ×ÏÂÓÃÀ´±êÊ¾£©
+	//åŠ ä¸ªèƒŒæ™¯ï¼ˆè¾¹æ¡†åœ¨åº•ä¸‹ç”¨æ¥æ ‡ç¤ºï¼‰
 	SCanvasTree::FSlot& NewSlot = *new SCanvasTree::FSlot();
 	NewSlot
-		[
-			SNew(SImage).Image(FTestSlateStyle::Get().GetBrush("UI.TreeBg"))
-		];
-	Children.Add(&NewSlot);
+	[
+		SNew(SImage).Image(FTestSlateStyle::Get().GetBrush("UI.TreeBg"))
+	];
+	ArrowChildren.Add(&NewSlot);
+
+	//æ·»åŠ ä¸€ä¸ªç®­å¤´å¤„ç†å±‚ï¼Œåœ¨èƒŒæ™¯å±‚ä¹‹ä¸Š
+	SCanvasTree::FSlot& ArrowSlot = *new SCanvasTree::FSlot();
+	ArrowSlot
+	[
+		//SAssignNew(mTreeArrowPanel , STreeArrow)
+		SNew(STreeArrow)
+	];
+	ArrowChildren.Add(&ArrowSlot);
 
 	const int32 NumSlots = InArgs.Slots.Num();
 	for (int32 SlotIndex = 0; SlotIndex < NumSlots; ++SlotIndex)
@@ -54,25 +63,11 @@ void SCanvasTree::OnArrangeChildren(const FGeometry& AllottedGeometry, FArranged
 {
 	if (Children.Num() > 0)
 	{
-		//ÌØÊâ´¦ÀíÏÂ±³¾°Í¼
-		{
-			const SCanvasTree::FSlot& BgChild = Children[0];
-			const FVector2D BgSize = M_SIZE;
-			ArrangedChildren.AddWidget(AllottedGeometry.MakeChild(
-				// The child widget being arranged
-				BgChild.GetWidget(),
-				// Child's local position (i.e. position within parent)
-				BgChild.PositionAttr.Get(),
-				// Child's size
-				BgSize
-			));
-		}
-
-		for (int32 ChildIndex = 1; ChildIndex < Children.Num(); ++ChildIndex)
+		for (int32 ChildIndex = 0; ChildIndex < Children.Num(); ++ChildIndex)
 		{
 			const SCanvasTree::FSlot& CurChild = Children[ChildIndex];
 			//const FVector2D Size = CurChild.SizeAttr.Get();
-			//19.11.04 Ê¹ÓÃTreeNode×ÔÉíµÄsize
+			//19.11.04 ä½¿ç”¨TreeNodeè‡ªèº«çš„size
 			const FVector2D Size = CurChild.GetWidget()->GetDesiredSize();
 
 			//Handle HAlignment
@@ -118,50 +113,114 @@ void SCanvasTree::OnArrangeChildren(const FGeometry& AllottedGeometry, FArranged
 	}
 }
 
+void SCanvasTree::ArrangeArrow(const FGeometry& AllottedGeometry, FArrangedChildren& ArrangedChildren) const
+{
+	if (ArrowChildren.Num() > 1)
+	{
+		//å…ˆç»˜åˆ¶ä¸€ä¸ªèƒŒæ™¯
+
+		const SCanvasTree::FSlot& BgChild = ArrowChildren[0];
+		const FVector2D BgSize = M_SIZE;
+		ArrangedChildren.AddWidget(AllottedGeometry.MakeChild(
+			// The child widget being arranged
+			BgChild.GetWidget(),
+			// Child's local position (i.e. position within parent)
+			BgChild.PositionAttr.Get(),
+			// Child's size
+			BgSize
+		));
+		//å†ç»˜åˆ¶ä¸€ä¸ªç®­å¤´å±‚
+		const SCanvasTree::FSlot& ArrowChild = ArrowChildren[1];
+		ArrangedChildren.AddWidget(AllottedGeometry.MakeChild(
+			// The child widget being arranged
+			ArrowChild.GetWidget(),
+			// Child's local position (i.e. position within parent)
+			ArrowChild.PositionAttr.Get(),
+			// Child's size
+			BgSize
+		));
+	}
+}
+
+
 #pragma  optimize("", off)
 int32 SCanvasTree::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const
 {
 	/************************************************************************/
-	/*							»æÖÆ¼ıÍ·µÈÏà¹Ø£¡		 				 */
+	/*							ç»˜åˆ¶ç®­å¤´ç­‰ç›¸å…³ï¼		 				 */
 	/************************************************************************/
-	//»ñÈ¡Ò»´Î±ÊË¢ÉèÖÃÒ»¸ö±ß¿ò £¬ÈôÃ»ÓĞ±³¾°Í¼µÄ»æÖÆ£¬¾ÍÎŞ·¨ÏìÓ¦µã»÷
-	const FSlateBrush* BorderBrush = BorderImg.Get();
-
-	if (BorderBrush && BorderBrush->DrawAs != ESlateBrushDrawType::NoDrawType)
+	//è·å–ä¸€æ¬¡ç¬”åˆ·è®¾ç½®ä¸€ä¸ªè¾¹æ¡† ï¼Œè‹¥æ²¡æœ‰èƒŒæ™¯å›¾çš„ç»˜åˆ¶ï¼Œå°±æ— æ³•å“åº”ç‚¹å‡»
 	{
-		const ESlateDrawEffect DrawEffects = ESlateDrawEffect::DisabledEffect;
-		//ÅĞ¶ÏÏÂÊÇ·ñ·´Ïò£¬µ«ÊÇÏÖ½×¶Î²»¿¼ÂÇ
-		if (GSlateFlowDirection == EFlowDirection::RightToLeft)
+		/*const FSlateBrush* BorderBrush = BorderImg.Get();
+
+		if (BorderBrush && BorderBrush->DrawAs != ESlateBrushDrawType::NoDrawType)
 		{
-			const FGeometry FlippedGeometry = AllottedGeometry.MakeChild(FSlateRenderTransform(FScale2D(-1, 1)));
-			FSlateDrawElement::MakeBox(
-				OutDrawElements,
-				LayerId,
-				FlippedGeometry.ToPaintGeometry(),
-				BorderBrush,
-				DrawEffects,
-				BorderBrush->GetTint(InWidgetStyle) * InWidgetStyle.GetColorAndOpacityTint() * FLinearColor::White
-			);
-		}
-		else
-		{
-			FSlateDrawElement::MakeBox(
+			const ESlateDrawEffect DrawEffects = ESlateDrawEffect::DisabledEffect;
+			//åˆ¤æ–­ä¸‹æ˜¯å¦åå‘ï¼Œä½†æ˜¯ç°é˜¶æ®µä¸è€ƒè™‘
+			if (GSlateFlowDirection == EFlowDirection::RightToLeft)
+			{
+				const FGeometry FlippedGeometry = AllottedGeometry.MakeChild(FSlateRenderTransform(FScale2D(-1, 1)));
+				FSlateDrawElement::MakeBox(
+					OutDrawElements,
+					LayerId,
+					FlippedGeometry.ToPaintGeometry(),
+					BorderBrush,
+					DrawEffects,
+					BorderBrush->GetTint(InWidgetStyle) * InWidgetStyle.GetColorAndOpacityTint() * FLinearColor::White
+				);
+			}
+			else
+			{
+				FSlateDrawElement::MakeBox(
+					OutDrawElements,
+					LayerId,
+					AllottedGeometry.ToPaintGeometry(),
+					BorderBrush,
+					DrawEffects,
+					BorderBrush->GetTint(InWidgetStyle) * InWidgetStyle.GetColorAndOpacityTint() * FLinearColor::White//BorderBackgroundColor.Get().GetColor(InWidgetStyle)
+				);
+			}
+			//å°è¯•ç”»ä¸€æ¡çº¿
+			TArray<FVector2D> LinePoints = { FVector2D( 0, 0 ), FVector2D( 10,50),FVector2D( 50,90) };
+			const FGeometry FlippedLineGeometry = AllottedGeometry.MakeChild(FSlateRenderTransform(FScale2D(1, 1)));
+			FSlateDrawElement::MakeLines(
 				OutDrawElements,
 				LayerId,
 				AllottedGeometry.ToPaintGeometry(),
-				BorderBrush,
-				DrawEffects,
-				BorderBrush->GetTint(InWidgetStyle) * InWidgetStyle.GetColorAndOpacityTint() * FLinearColor::White//BorderBackgroundColor.Get().GetColor(InWidgetStyle)
+				LinePoints,
+				ESlateDrawEffect::None,
+				FLinearColor::White,
+				true,
+				5
 			);
+		}*/
+
+		int32 ArrowLayerId = LayerId;
+
+		FArrangedChildren ArrangedArrowChildren(EVisibility::Visible);
+		this->ArrangeArrow(AllottedGeometry, ArrangedArrowChildren);
+
+		const bool bForwardedEnabled = ShouldBeEnabled(bParentEnabled);
+
+		const FPaintArgs NewArgs = Args.WithNewParent(this);
+
+		for (int32 ChildIndex = 0; ChildIndex < ArrangedArrowChildren.Num(); ++ChildIndex)
+		{
+			FArrangedWidget& CurWidget = ArrangedArrowChildren[ChildIndex];
+
+			if (!IsChildWidgetCulled(MyCullingRect, CurWidget))
+			{
+				const int32 CurWidgetsMaxLayerId = CurWidget.Widget->Paint(NewArgs, CurWidget.Geometry, MyCullingRect, OutDrawElements, ArrowLayerId + 1, InWidgetStyle, bForwardedEnabled);
+
+				ArrowLayerId = FMath::Max(ArrowLayerId, CurWidgetsMaxLayerId);
+			}
 		}
+
+		LayerId = ArrowLayerId;
 	}
 
-	//FArrangedChildren ArrangedChildren(EVisibility::Visible);
-	//this->ArrangeChildren(AllottedGeometry, ArrangedChildren);
-	//LayerId = 
-
 	/************************************************************************/
-	/*							»æÖÆ¼ıÍ·µÈÏà¹Ø£¡		 				 */
+	/*							ç»˜åˆ¶ç®­å¤´ç­‰ç›¸å…³ï¼		 				 */
 	/************************************************************************/
 
 	FArrangedChildren ArrangedChildren(EVisibility::Visible);
@@ -201,8 +260,8 @@ void SCanvasTree::OnFocusLost(const FFocusEvent& InFocusEvent)
 FVector2D SCanvasTree::ComputeDesiredSize(float) const
 {
 	// Canvas widgets have no desired size -- their size is always determined by their container
-	//return FVector2D::ZeroVector;
-	return FVector2D(500, 500);
+	return FVector2D::ZeroVector;
+	//return FVector2D(500, 500);
 }
 
 FChildren* SCanvasTree::GetChildren()
@@ -210,7 +269,7 @@ FChildren* SCanvasTree::GetChildren()
 	return &Children;
 }
 
-/////////////////////Êó±êµã»÷ÊÂ¼şÏà¹Ø
+/////////////////////é¼ æ ‡ç‚¹å‡»äº‹ä»¶ç›¸å…³
 
 bool SCanvasTree::SupportsKeyboardFocus() const
 {
@@ -222,7 +281,7 @@ bool SCanvasTree::IsInteractable() const
 	return true;
 }
 
-//ÅĞ¶ÏÈç¹ûÊÇÓÒ¼ü£¬ÔòÔÙµã»÷Î»ÖÃÉú³ÉÒ»¸öTreeNode
+//åˆ¤æ–­å¦‚æœæ˜¯å³é”®ï¼Œåˆ™å†ç‚¹å‡»ä½ç½®ç”Ÿæˆä¸€ä¸ªTreeNode
 #pragma  optimize("", off)
 FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
@@ -230,7 +289,7 @@ FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointe
 
 	if (IsEnabled() && MouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
 	{
-		//¼ÆËãÒ»ÏÂÉú³ÉÎ»ÖÃ£¬ÒòÎªÓĞÒ»¸öÏà¶ÔÎ»ÖÃµÄÎÊÌâ
+		//è®¡ç®—ä¸€ä¸‹ç”Ÿæˆä½ç½®ï¼Œå› ä¸ºæœ‰ä¸€ä¸ªç›¸å¯¹ä½ç½®çš„é—®é¢˜
 		FVector2D CreatePos = MouseEvent.GetScreenSpacePosition();
 		FVector2D absolutePos = MyGeometry.GetAbsolutePosition();
 		FVector2D ClickSizeInTree = CreatePos - absolutePos;
@@ -238,6 +297,7 @@ FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointe
 		this->AddSlot().Position(ClickSizeInTree)[
 			SNew(STreeNode).ClickNodeCallBack(this, &SCanvasTree::ClickNodeCall)
 		];
+
 		Reply = FReply::Handled();
 	}
 
@@ -248,7 +308,7 @@ FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointe
 //#pragma  optimize("", off)
 void SCanvasTree::ClickNodeCall(FVector2D Pos)
 {
-
+	//mTreeArrowPanel->TTTT();
 }
 //#pragma  optimize("", on)
 

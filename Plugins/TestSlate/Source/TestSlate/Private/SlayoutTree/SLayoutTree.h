@@ -21,6 +21,7 @@ FSlot中会记录每一个子树的位置
 #include "Layout/Children.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SPanel.h"
+#include "SlayoutTree/STreeArrow.h"
 #include "SlayoutTree/TreeNode.h"
 
 class FArrangedChildren;
@@ -127,6 +128,15 @@ public:
 		return NewSlot;
 	}
 
+	//在ArrowChildren中添加Slot
+	FSlot& AddArrowSlot()
+	{
+		SCanvasTree::FSlot& NewSlot = *(new FSlot());
+		this->ArrowChildren.Add(&NewSlot);
+		return NewSlot;
+	}
+
+
 	/**
 	 * Removes a particular content slot.
 	 *
@@ -140,6 +150,8 @@ public:
 	void ClearChildren();
 
 public:
+
+	void ArrangeArrow(const FGeometry& AllottedGeometry, FArrangedChildren& ArrangedChildren) const;
 
 	// SWidget overrides
 	virtual void OnArrangeChildren(const FGeometry& AllottedGeometry, FArrangedChildren& ArrangedChildren) const override;
@@ -164,12 +176,12 @@ protected:
 	}  可见，初始化Children需要一个owner
 	*/
 	TPanelChildren<FSlot> Children;
+	TPanelChildren<FSlot> ArrowChildren;
 
 	//需要在外部传入保存一个自身的POSITION
 	FVector2D M_Position;
 	//自身SIZE
 	FVector2D M_SIZE;
-
 
 	//绘制边框的笔刷
 	TAttribute<const FSlateBrush*> BorderImg;
@@ -177,6 +189,7 @@ protected:
 //事件函数相关
 public:
 	void ClickNodeCall(FVector2D Pos);
-	//绘制箭头
-	void CreateArrow();
+
+private:
+	TSharedPtr<STreeArrow> arrr;
 };

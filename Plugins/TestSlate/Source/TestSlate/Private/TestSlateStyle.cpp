@@ -1,4 +1,4 @@
-// Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
+ï»¿// Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
 #include "TestSlateStyle.h"
 #include "Styling/SlateStyleRegistry.h"
@@ -48,11 +48,11 @@ TSharedRef< FSlateStyleSet > FTestSlateStyle::Create()
 
 	Style->Set("TestSlate.OpenPluginWindow", new IMAGE_BRUSH(TEXT("qipao"), Icon40x40));
 
-	//¶¨ÒåÒ»¸öÉÏÏÂ×óÓÒµÄmargin,Ïàµ±ÓÚ¾Å¹¬¸ñËõ·ÅµÄ±ß½çÖµ
+	//å®šä¹‰ä¸€ä¸ªä¸Šä¸‹å·¦å³çš„margin,ç›¸å½“äºŽä¹å®«æ ¼ç¼©æ”¾çš„è¾¹ç•Œå€¼
 	//FMargin Button1Margin(34.0f/158.0f, 19.0f/59.0f, 34.0f / 158.0f, 19.0f / 59.0f);
 	FMargin Button1Margin(0, 0, 0, 0);
 
-	//ÉèÖÃÒ»¸ö°´Å¥ÑùÊ½
+	//è®¾ç½®ä¸€ä¸ªæŒ‰é’®æ ·å¼
 	Style->Set("UI.Button1Style",
 		FButtonStyle().SetNormal(
 			FSlateBoxBrush(Style->RootToContentDir(TEXT("btn_normal"), TEXT(".png")), Button1Margin)
@@ -65,7 +65,7 @@ TSharedRef< FSlateStyleSet > FTestSlateStyle::Create()
 
 	const FVector2D EditBoxBg(200, 152);
 
-	//ÉèÖÃÒ»¸öÊäÈë¿òÑùÊ½
+	//è®¾ç½®ä¸€ä¸ªè¾“å…¥æ¡†æ ·å¼
 	Style->Set("UI.EditBoxStyle",
 		FEditableTextBoxStyle().SetBackgroundImageNormal(
 			FSlateImageBrush(Style->RootToContentDir(TEXT("bg1"),TEXT(".png")) , EditBoxBg)
@@ -78,26 +78,26 @@ TSharedRef< FSlateStyleSet > FTestSlateStyle::Create()
 		)
 	);
 
-	//ÉèÖÃÒ»¸öÍ¼Æ¬ÑùÊ½
+	//è®¾ç½®ä¸€ä¸ªå›¾ç‰‡æ ·å¼
 	const FVector2D imageBg(299, 446);
 	Style->Set("UI.IMAGEtest1",
 		new FSlateImageBrush(Style->RootToContentDir(TEXT("peoxiao"), TEXT(".png")), imageBg)
 	);
 
-	//ÉèÖÃÒ»¸ö±³¾°Í¼Æ¬ÑùÊ½
+	//è®¾ç½®ä¸€ä¸ªèƒŒæ™¯å›¾ç‰‡æ ·å¼
 	const FVector2D VerticalBoxExBg(200, 400);
 	Style->Set("UI.VerticalBoxExBg",
 		new FSlateImageBrush(Style->RootToContentDir(TEXT("SverticalBoxBg"), TEXT(".png")), VerticalBoxExBg)
 	);
 
-	//´´½¨Ò»¸ö¼ýÍ·Í¼Æ¬ÑùÊ½
+	//åˆ›å»ºä¸€ä¸ªç®­å¤´å›¾ç‰‡æ ·å¼
 	Style->Set("UI.ArrowBg",
 		new FSlateImageBrush(Style->RootToContentDir(TEXT("SverticalBoxBg"), TEXT(".png")), FVector2D(100, 92))
 	);
 
-	//´´½¨Ò»¸öÊ÷µÄ±³¾°ÑùÊ½TreeBg
+	//åˆ›å»ºä¸€ä¸ªæ ‘çš„èƒŒæ™¯æ ·å¼TreeBg
 	Style->Set("UI.TreeBg",
-		new FSlateImageBrush(Style->RootToContentDir(TEXT("TreeBg"), TEXT(".png")), FVector2D(100, 92))
+		new FSlateImageBrush(Style->RootToContentDir(TEXT("TreeBg"), TEXT(".png")), FVector2D(100, 100))
 	);
 			
 	return Style;
