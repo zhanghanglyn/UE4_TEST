@@ -94,6 +94,11 @@ TSharedRef< FSlateStyleSet > FTestSlateStyle::Create()
 	Style->Set("UI.ArrowBg",
 		new FSlateImageBrush(Style->RootToContentDir(TEXT("SverticalBoxBg"), TEXT(".png")), FVector2D(100, 92))
 	);
+
+	//创建一个树的背景样式TreeBg
+	Style->Set("UI.TreeBg",
+		new FSlateImageBrush(Style->RootToContentDir(TEXT("TreeBg"), TEXT(".png")), FVector2D(100, 92))
+	);
 			
 	return Style;
 }

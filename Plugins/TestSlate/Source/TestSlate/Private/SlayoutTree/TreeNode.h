@@ -97,6 +97,6 @@ protected:
 
 //点击处理函数
 protected:
-	void PressFunction();
+	void PressFunction( FVector2D AbsolutePos);
 
 };

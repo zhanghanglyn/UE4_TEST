@@ -140,6 +140,7 @@ bool STreeNode::IsInteractable() const
 }
 
 //鼠标点击时，记录一个生成状态，并且向上层发送，开始创建箭头
+#pragma  optimize("", off)
 FReply STreeNode::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	FReply Reply = FReply::Unhandled();
@@ -148,8 +149,10 @@ FReply STreeNode::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerE
 	if (IsEnabled() && MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton || MouseEvent.IsTouchEvent())
 	{
 		PressedScreenSpacePosition = MouseEvent.GetScreenSpacePosition();
+		FVector2D absolutePos = MyGeometry.GetAbsolutePosition();
+		FVector2D ClickSizeInTree = PressedScreenSpacePosition - absolutePos;
 
-		PressFunction();
+		PressFunction(ClickSizeInTree);
 
 		Reply = FReply::Handled();
 	}
@@ -157,9 +160,10 @@ FReply STreeNode::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerE
 
 	return Reply;
 }
+#pragma  optimize("", on)
 
-void STreeNode::PressFunction()
+void STreeNode::PressFunction(FVector2D AbsolutePos)
 {
 	//传出回调
-	ClickNodeCallDelegate.ExecuteIfBound(PressedScreenSpacePosition);
+	ClickNodeCallDelegate.ExecuteIfBound(AbsolutePos);
 }

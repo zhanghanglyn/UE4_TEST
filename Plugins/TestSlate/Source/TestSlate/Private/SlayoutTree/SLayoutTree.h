@@ -101,15 +101,19 @@ public:
 		{ }
 	};
 
-	SLATE_BEGIN_ARGS(SCanvasTree){
+	SLATE_BEGIN_ARGS(SCanvasTree)
+		:_BorderBrush(FCoreStyle::Get().GetBrush("Border"))
+	{
 		_Visibility = EVisibility::SelfHitTestInvisible;
 	}
 	SLATE_SUPPORTS_SLOT(SCanvasTree::FSlot)  //会在自身注册一个Slots，所以在Construct中，可以获取Slots
+
+	SLATE_ATTRIBUTE(const FSlateBrush* , BorderBrush)
 	SLATE_END_ARGS()
 
 	SCanvasTree();
 
-	void Construct(const FArguments& InArgs, FVector2D Position);
+	void Construct(const FArguments& InArgs, FVector2D Position , FVector2D Size);
 
 	static FSlot& Slot()
 	{
@@ -141,7 +145,9 @@ public:
 	virtual void OnArrangeChildren(const FGeometry& AllottedGeometry, FArrangedChildren& ArrangedChildren) const override;
 	virtual int32 OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const override;
 	virtual FChildren* GetChildren() override;
+	virtual bool IsInteractable() const override;
 	virtual bool SupportsKeyboardFocus() const override;
+	virtual void OnFocusLost(const FFocusEvent& InFocusEvent) override;
 	virtual FReply OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 
 protected:
@@ -161,8 +167,16 @@ protected:
 
 	//需要在外部传入保存一个自身的POSITION
 	FVector2D M_Position;
+	//自身SIZE
+	FVector2D M_SIZE;
+
+
+	//绘制边框的笔刷
+	TAttribute<const FSlateBrush*> BorderImg;
 
 //事件函数相关
 public:
 	void ClickNodeCall(FVector2D Pos);
+	//绘制箭头
+	void CreateArrow();
 };

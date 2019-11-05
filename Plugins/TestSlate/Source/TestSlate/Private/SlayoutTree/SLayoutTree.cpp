@@ -9,16 +9,20 @@ SCanvasTree::SCanvasTree() : Children(this)
 	
 }
 
-void SCanvasTree::Construct(const FArguments& InArgs, FVector2D Position)
+void SCanvasTree::Construct(const FArguments& InArgs, FVector2D Position ,FVector2D Size)
 {
-	//也可以加个背景（边框在底下用来标示）
-	/*SCanvasTree::FSlot& NewSlot = *new SCanvasTree::FSlot();
-	NewSlot
-	[
-		SNew(SImage).Image(FCoreStyle::Get().GetDefaultBrush())
-	];
-	Children.Add(&NewSlot);*/
+
 	M_Position = Position;
+	M_SIZE = Size;
+	BorderImg = InArgs._BorderBrush;
+
+	//也可以加个背景（边框在底下用来标示）
+	SCanvasTree::FSlot& NewSlot = *new SCanvasTree::FSlot();
+	NewSlot
+		[
+			SNew(SImage).Image(FTestSlateStyle::Get().GetBrush("UI.TreeBg"))
+		];
+	Children.Add(&NewSlot);
 
 	const int32 NumSlots = InArgs.Slots.Num();
 	for (int32 SlotIndex = 0; SlotIndex < NumSlots; ++SlotIndex)
@@ -50,7 +54,21 @@ void SCanvasTree::OnArrangeChildren(const FGeometry& AllottedGeometry, FArranged
 {
 	if (Children.Num() > 0)
 	{
-		for (int32 ChildIndex = 0; ChildIndex < Children.Num(); ++ChildIndex)
+		//特殊处理下背景图
+		{
+			const SCanvasTree::FSlot& BgChild = Children[0];
+			const FVector2D BgSize = M_SIZE;
+			ArrangedChildren.AddWidget(AllottedGeometry.MakeChild(
+				// The child widget being arranged
+				BgChild.GetWidget(),
+				// Child's local position (i.e. position within parent)
+				BgChild.PositionAttr.Get(),
+				// Child's size
+				BgSize
+			));
+		}
+
+		for (int32 ChildIndex = 1; ChildIndex < Children.Num(); ++ChildIndex)
 		{
 			const SCanvasTree::FSlot& CurChild = Children[ChildIndex];
 			//const FVector2D Size = CurChild.SizeAttr.Get();
@@ -100,8 +118,52 @@ void SCanvasTree::OnArrangeChildren(const FGeometry& AllottedGeometry, FArranged
 	}
 }
 
+#pragma  optimize("", off)
 int32 SCanvasTree::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const
 {
+	/************************************************************************/
+	/*							绘制箭头等相关！		 				 */
+	/************************************************************************/
+	//获取一次笔刷设置一个边框 ，若没有背景图的绘制，就无法响应点击
+	const FSlateBrush* BorderBrush = BorderImg.Get();
+
+	if (BorderBrush && BorderBrush->DrawAs != ESlateBrushDrawType::NoDrawType)
+	{
+		const ESlateDrawEffect DrawEffects = ESlateDrawEffect::DisabledEffect;
+		//判断下是否反向，但是现阶段不考虑
+		if (GSlateFlowDirection == EFlowDirection::RightToLeft)
+		{
+			const FGeometry FlippedGeometry = AllottedGeometry.MakeChild(FSlateRenderTransform(FScale2D(-1, 1)));
+			FSlateDrawElement::MakeBox(
+				OutDrawElements,
+				LayerId,
+				FlippedGeometry.ToPaintGeometry(),
+				BorderBrush,
+				DrawEffects,
+				BorderBrush->GetTint(InWidgetStyle) * InWidgetStyle.GetColorAndOpacityTint() * FLinearColor::White
+			);
+		}
+		else
+		{
+			FSlateDrawElement::MakeBox(
+				OutDrawElements,
+				LayerId,
+				AllottedGeometry.ToPaintGeometry(),
+				BorderBrush,
+				DrawEffects,
+				BorderBrush->GetTint(InWidgetStyle) * InWidgetStyle.GetColorAndOpacityTint() * FLinearColor::White//BorderBackgroundColor.Get().GetColor(InWidgetStyle)
+			);
+		}
+	}
+
+	//FArrangedChildren ArrangedChildren(EVisibility::Visible);
+	//this->ArrangeChildren(AllottedGeometry, ArrangedChildren);
+	//LayerId = 
+
+	/************************************************************************/
+	/*							绘制箭头等相关！		 				 */
+	/************************************************************************/
+
 	FArrangedChildren ArrangedChildren(EVisibility::Visible);
 	this->ArrangeChildren(AllottedGeometry, ArrangedChildren);
 
@@ -127,6 +189,14 @@ int32 SCanvasTree::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeom
 
 	return MaxLayerId;
 }
+#pragma  optimize("", on)
+
+void SCanvasTree::OnFocusLost(const FFocusEvent& InFocusEvent)
+{
+	SPanel::OnFocusLost(InFocusEvent);
+
+	//Release();
+}
 
 FVector2D SCanvasTree::ComputeDesiredSize(float) const
 {
@@ -147,7 +217,13 @@ bool SCanvasTree::SupportsKeyboardFocus() const
 	return true;
 }
 
+bool SCanvasTree::IsInteractable() const
+{
+	return true;
+}
+
 //判断如果是右键，则再点击位置生成一个TreeNode
+#pragma  optimize("", off)
 FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	FReply Reply = FReply::Unhandled();
@@ -155,9 +231,11 @@ FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointe
 	if (IsEnabled() && MouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
 	{
 		//计算一下生成位置，因为有一个相对位置的问题
-		FVector2D CreatePos = MouseEvent.GetScreenSpacePosition() - M_Position;
+		FVector2D CreatePos = MouseEvent.GetScreenSpacePosition();
+		FVector2D absolutePos = MyGeometry.GetAbsolutePosition();
+		FVector2D ClickSizeInTree = CreatePos - absolutePos;
 
-		this->AddSlot().Position(CreatePos)[
+		this->AddSlot().Position(ClickSizeInTree)[
 			SNew(STreeNode).ClickNodeCallBack(this, &SCanvasTree::ClickNodeCall)
 		];
 		Reply = FReply::Handled();
@@ -165,14 +243,11 @@ FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointe
 
 	return Reply;
 }
+#pragma  optimize("", on)
 
 //#pragma  optimize("", off)
 void SCanvasTree::ClickNodeCall(FVector2D Pos)
 {
-
-	FVector2D vvvv = Pos;
-
-	int32 a = 1;
 
 }
 //#pragma  optimize("", on)

@@ -94,13 +94,13 @@ TSharedRef<SDockTab> FTestSlateModule::OnSpawnPluginTab(const FSpawnTabArgs& Spa
 			[
 				SNew(SLayoutDetail)
 			]
-			+SCanvas::Slot().Position( FVector2D( 300,100)).Size(FVector2D( 100,200 ))
+			+SCanvas::Slot().Position( FVector2D( 300,100)).Size(FVector2D( 400,400 ))
 			[
-				SNew(SCanvasTree, FVector2D(300, 100))
-				+SCanvasTree::Slot().Position(FVector2D(10, 10))
-				[
-					SNew(STreeNode)
-				]
+				SNew(SCanvasTree, FVector2D(300, 100) , FVector2D(400,400))
+				//+SCanvasTree::Slot().Position(FVector2D(10, 10))
+				//[
+					//SNew(STreeNode)
+				//]
 				/*+ SCanvasTree::Slot().Position(FVector2D(100, 100))
 				[
 					SNew(STreeNode)

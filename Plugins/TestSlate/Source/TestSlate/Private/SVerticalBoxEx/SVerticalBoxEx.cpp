@@ -78,6 +78,13 @@ void SVerticalBoxEx::OnArrangeChildren(const FGeometry & AllottedGeometry, FArra
 
 }
 
+FReply SVerticalBoxEx::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	FReply Reply = FReply::Unhandled();
+
+	return Reply;
+}
+
 
 
 #undef   LOCTEXT_NAMESPACE
