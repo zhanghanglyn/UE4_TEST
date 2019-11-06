@@ -92,13 +92,19 @@ TSharedRef< FSlateStyleSet > FTestSlateStyle::Create()
 
 	//创建一个箭头图片样式
 	Style->Set("UI.ArrowBg",
-		new FSlateImageBrush(Style->RootToContentDir(TEXT("SverticalBoxBg"), TEXT(".png")), FVector2D(100, 92))
+		new FSlateImageBrush(Style->RootToContentDir(TEXT("Arrow"), TEXT(".png")), FVector2D(40, 40))
 	);
 
 	//创建一个树的背景样式TreeBg
 	Style->Set("UI.TreeBg",
 		new FSlateImageBrush(Style->RootToContentDir(TEXT("TreeBg"), TEXT(".png")), FVector2D(100, 100))
 	);
+
+	//创建一个树节点的背景
+	Style->Set("UI.TreeNode",
+		new FSlateImageBrush(Style->RootToContentDir(TEXT("NodeBg"), TEXT(".png")), FVector2D(100, 100))
+	);
+
 			
 	return Style;
 }

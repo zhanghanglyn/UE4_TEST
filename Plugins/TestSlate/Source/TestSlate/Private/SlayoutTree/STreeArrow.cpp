@@ -25,7 +25,6 @@ int32 STreeArrow::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeome
 	{
 		for (int ArrowCount = 0; ArrowCount < ArrowList.Num(); ArrowCount++)
 		{
-			const FGeometry FlippedLineGeometry = AllottedGeometry.MakeChild(FSlateRenderTransform(FScale2D(1, 1)));
 			FSlateDrawElement::MakeLines(
 				OutDrawElements,
 				LayerId,
@@ -36,12 +35,35 @@ int32 STreeArrow::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeome
 				true,
 				5
 			);
+			//画小箭头相关
+			FVector2D endPos = ArrowList[ArrowCount][1];
+			FVector2D startPos = ArrowList[ArrowCount][0];
+			FVector2D DrawPos = FVector2D(startPos.X + (endPos.X - startPos.X)/2, startPos.Y + (endPos.Y - startPos.Y)/2);
+			FVector2D DrawPosTest = FVector2D(DrawPos.X - 10, DrawPos.Y - 10);
+
+			const FSlateBrush* BrushResource = FTestSlateStyle::Get().GetBrush("UI.ArrowBg");
+			const FGeometry FlippedGeometry = AllottedGeometry.MakeChild(
+				FSlateRenderTransform(FScale2D(0.05f, 0.05f) , DrawPosTest),FVector2D(0,0)
+			);
+			FSlateDrawElement::MakeRotatedBox(
+				OutDrawElements,
+				LayerId,
+				FlippedGeometry.ToPaintGeometry(),
+				BrushResource,
+				ESlateDrawEffect::DisabledEffect,
+				//ArrowDegrees,
+				CalculateArrowRadians(ArrowList[ArrowCount][0] , ArrowList[ArrowCount][1]),
+				TOptional<FVector2D>(),
+				FSlateDrawElement::RelativeToElement,
+				BrushResource->GetTint(InWidgetStyle) * InWidgetStyle.GetColorAndOpacityTint() * FLinearColor::White
+				//FLinearColor::White
+			);
+
 		}
 	}
 	//再绘制当前正在进行的绘制
 	if(CurArrow.Num() > 0)
 	{
-		const FGeometry FlippedLineGeometry = AllottedGeometry.MakeChild(FSlateRenderTransform(FScale2D(1, 1)));
 		FSlateDrawElement::MakeLines(
 			OutDrawElements,
 			LayerId,
@@ -119,6 +141,27 @@ void STreeArrow::EndDrawArrow(FVector2D startPos, FVector2D endPos)
 void STreeArrow::ClearCurDrawArrow()
 {
 	CurArrow.Empty();
+}
+
+float STreeArrow::CalculateArrowRadians( FVector2D startPos , FVector2D endPos) const
+{
+	//在线上面画一个小箭头！  计算一下ATAN 就是a/b 
+	float atanVal = 0;
+	float ArrowDegrees = 0;
+	float LineA = (endPos.X - startPos.X);
+	float LineB = (endPos.Y - startPos.Y);
+	float LineC = UKismetMathLibrary::Distance2D(startPos, endPos);
+	//如果是需要箭头向下是ATAN(A/B)！如果是需要箭头向上！则是ATAN(B/A)
+	if (endPos.Y < startPos.Y) //此时为向上指
+		ArrowDegrees = -UKismetMathLibrary::Atan(LineA / LineB) + FMath::DegreesToRadians(180);
+	else if (endPos.Y > startPos.Y)
+		ArrowDegrees = -UKismetMathLibrary::Atan(LineA / LineB);
+	else if (endPos.X > startPos.X)
+		ArrowDegrees = FMath::DegreesToRadians(90);
+	else
+		ArrowDegrees = FMath::DegreesToRadians(-90);
+
+	return ArrowDegrees;
 }
 
 

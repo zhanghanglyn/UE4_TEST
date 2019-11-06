@@ -12,6 +12,8 @@
 
 #pragma once
 #include "TestSlate/Public/TestSlate.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Public/Math/UnrealMath.h"
 
 class  STreeArrow : public SBorder
 {
@@ -52,6 +54,8 @@ private:
 public:
 	//打开该界面的时候，初始化线段数据
 	void InitArrowData();
+	//j计算箭头朝向
+	float CalculateArrowRadians(FVector2D startPos, FVector2D endPos) const;
 
 	//开始画线，确定起点位置
 	void StartDrawArrow( FVector2D startPos );

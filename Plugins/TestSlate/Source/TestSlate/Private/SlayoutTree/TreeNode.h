@@ -32,7 +32,7 @@ class  STreeNode : public SCompoundWidget
 
 public:
 	SLATE_BEGIN_ARGS(STreeNode)
-		:_ABgImageBrush(FCoreStyle::Get().GetBrush("Border"))
+		:_ABgImageBrush( FTestSlateStyle::Get().GetBrush("UI.TreeNode"))
 		, _ABorderBackgroundColor(FLinearColor::White)
 		, _AbFlipForRightToLeftFlowDirection(false)
 		, _bIsFocusable(true)
