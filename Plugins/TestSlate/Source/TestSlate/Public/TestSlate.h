@@ -16,6 +16,7 @@
 #include "TestSlate/Private/SlayoutTree/TreeNode.h"
 #include "TestSlate/Private/SlayoutTree/STreeArrow.h"
 #include "TestSlate/Private/SVerticalBoxEx/SVerticalBoxEx.h"
+#include "TestSlate/Private/FileUtil/NodeDataUtil.h"
 
 class FToolBarBuilder;
 class FMenuBuilder;

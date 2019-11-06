@@ -23,6 +23,8 @@ void STreeNode::Construct(const FArguments& InArgs, SCanvasTree* Tree)
 
 	//设置Tree的指针
 	CanvasTree = Tree;
+	ChildNode = nullptr;
+	ParentNode = nullptr;
 
 	//19.11.04 先暂时定死设计尺寸
 	DesiredSizeScale = FVector2D(100, 60);
@@ -167,6 +169,10 @@ FReply STreeNode::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerE
 		//向上冒泡！才能获取正确的点击位置
 		Reply = FReply::Unhandled();
 	}
+	else if (IsEnabled() && MouseEvent.GetEffectingButton() == EKeys::RightMouseButton || MouseEvent.IsTouchEvent())
+	{
+
+	}
 	Invalidate(EInvalidateWidget::Layout);
 
 	return Reply;
@@ -251,3 +257,7 @@ STreeNode* STreeNode::GetParentNode()
 {
 	return ParentNode;
 }
+
+/*********************
+	数据相关	
+*/

@@ -16,6 +16,8 @@ void SCanvasTree::Construct(const FArguments& InArgs, FVector2D Position ,FVecto
 	M_SIZE = Size;
 	BorderImg = InArgs._BorderBrush;
 
+	NodeArray.Empty();
+
 	//加个背景（边框在底下用来标示）
 	SCanvasTree::FSlot& NewSlot = *new SCanvasTree::FSlot();
 	NewSlot
@@ -39,6 +41,8 @@ void SCanvasTree::Construct(const FArguments& InArgs, FVector2D Position ,FVecto
 	{
 		Children.Add(InArgs.Slots[SlotIndex]);
 	}
+
+	InitNode();
 }
 
 int32 SCanvasTree::RemoveSlot(const TSharedRef<SWidget>& SlotWidget)
@@ -296,6 +300,9 @@ FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointe
 		FVector2D absolutePos = MyGeometry.GetAbsolutePosition();
 		FVector2D ClickSizeInTree = CreatePos - absolutePos;
 
+		//保存一份生成的Slot指针
+
+
 		this->AddSlot().Position(ClickSizeInTree)[
 			SNew(STreeNode,this).ClickNodeCallBack(this, &SCanvasTree::ClickNodeCall).UpNodeCallBack(this, &SCanvasTree::UpNodeCall)
 		];
@@ -355,7 +362,7 @@ FReply SCanvasTree::OnMouseButtonUp(const FGeometry& InMyGeometry, const FPointe
 	//左键抬起时结束本次绘制,判断下是否处于点中状态，判断下是否抬起点为当前节点
 	if (IsEnabled() && InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{
-		if (BStartDraw == true && LinkNode != nullptr && LinkNode != CurNode)
+		if (BStartDraw == true && LinkNode != nullptr && LinkNode != CurNode && CheckNodeCanBeConnect())
 		{
 			BStartDraw = false;
 			FVector2D CreatePos = InMouseEvent.GetScreenSpacePosition();
@@ -383,6 +390,75 @@ void SCanvasTree::ClearCurNode()
 {
 	CurNode = nullptr;
 	LinkNode = nullptr;
+}
+
+bool SCanvasTree::CheckNodeCanBeConnect()
+{
+	bool result = true;
+
+	if (CurNode->GetChildNode() != nullptr)
+		result = false;
+	if (LinkNode->GetParentNode() != nullptr)
+		result = false;
+
+	return result;
+}
+
+
+/******************************************
+	数据相关
+*/
+void SCanvasTree::InitNode()
+{
+	NodeData* testData = new NodeData(1);
+	testData->Pos = FVector2D(40, 40);
+	testData->LinePos = FVector2D(40+50, 40+30);
+	testData->ChildID = 2;
+
+	NodeData* testData2 = new NodeData(2);
+	testData2->Pos = FVector2D(140, 140);
+	testData2->LinePos = FVector2D(140 + 50, 140 + 30);
+	testData->ParentID = 1;
+	
+	NodeDataList = new TreeData();
+	NodeDataList->DataList.Add(testData->DataID, testData);
+	NodeDataList->DataList.Add(testData2->DataID, testData2);
+
+	CreateNode();
+	CreateArrow();
+}
+
+void SCanvasTree::CreateNode()
+{
+	for(TMap<int32, NodeData*>::TConstIterator iter(NodeDataList->DataList);iter ;++iter)
+	{
+		NodeData* tempData = iter->Value;
+		this->AddSlot().Position(tempData->Pos)[
+			SNew(STreeNode, this).ClickNodeCallBack(this, &SCanvasTree::ClickNodeCall).UpNodeCallBack(this, &SCanvasTree::UpNodeCall)
+		];
+	}
+}
+
+void SCanvasTree::CreateArrow()
+{
+	TArray<TArray<FVector2D>> ArrowList;
+	//寻找每一个节点的子对象，生成一个Arrow的列表用来生成箭头
+	for (TMap<int32, NodeData*>::TConstIterator iter(NodeDataList->DataList); iter; ++iter)
+	{
+		NodeData* tempData = iter->Value;
+		if (tempData->ChildID != -1)
+		{
+			NodeData* ChildData = NodeDataList->DataList[tempData->ChildID];
+			if (ChildData != nullptr)
+			{
+				TArray<FVector2D> TempArrow;
+				TempArrow = { tempData->LinePos , ChildData->LinePos };
+				ArrowList.Add(TempArrow);
+			}
+		}
+	}
+
+	mTreeArrowPanel->InitArrowData(ArrowList);
 }
 
 #undef   LOCTEXT_NAMESPACE

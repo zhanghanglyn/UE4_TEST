@@ -43,6 +43,8 @@ public class TestSlate : ModuleRules
 				"Slate",
 				"SlateCore",
                 "EditorStyle",
+                "Json",
+                "JsonUtilities",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

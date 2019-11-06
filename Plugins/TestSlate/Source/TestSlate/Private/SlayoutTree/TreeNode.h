@@ -21,6 +21,7 @@
 #include "Layout/Margin.h"
 #include "Widgets/SCompoundWidget.h"
 #include "Styling/CoreStyle.h"
+#include "TestSlate/Private/FileUtil/NodeDataUtil.h"
 #include "SlayoutTree/SLayoutTree.h"
 
 class SCanvasTree;
@@ -140,4 +141,8 @@ public:
 	STreeNode* GetParentNode();
 	//获取子节点
 	STreeNode* GetChildNode();
+
+//数据保存等相关
+private:
+	int32 DataID;		//数据的索引ID
 };

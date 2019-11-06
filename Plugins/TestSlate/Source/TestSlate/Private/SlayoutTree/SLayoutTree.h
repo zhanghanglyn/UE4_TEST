@@ -60,6 +60,12 @@ public:
 			return *this;
 		}
 
+		FSlot& Expose(FSlot*& OutVarToInit)
+		{
+			OutVarToInit = this;
+			return *this;
+		}
+
 		/** Position */
 		TAttribute<FVector2D> PositionAttr;
 
@@ -202,13 +208,24 @@ public:
 	void UpNodeCall(FVector2D Pos, STreeNode* _LinkNode);
 	//清除当前节点和离开节点
 	void ClearCurNode();
+	//判断当前松开点是否可以连接（暂时不支持选择节点之类的，一个节点只能有一个父类一个子类）
+	bool CheckNodeCanBeConnect();
 
 private:
 	//节点Array
-
+	TArray<FSlot*> NodeArray;
 	//当前节点
 	STreeNode* CurNode;
 	//鼠标松开后的链接节点
 	STreeNode* LinkNode;
+	//数据List
+	TreeData* NodeDataList;
 
+//数据相关	
+public:
+	void InitNode();
+	//逐个创建子节点
+	void CreateNode( );
+	//根据所有数据创建线
+	void CreateArrow();
 };

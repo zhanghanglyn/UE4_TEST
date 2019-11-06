@@ -53,7 +53,7 @@ private:
 //箭头数据相关方法
 public:
 	//打开该界面的时候，初始化线段数据
-	void InitArrowData();
+	void InitArrowData(TArray<TArray< FVector2D>> _ArrowList);
 	//j计算箭头朝向
 	float CalculateArrowRadians(FVector2D startPos, FVector2D endPos) const;
 
@@ -67,6 +67,8 @@ public:
 	//清空当前绘制线条
 	void ClearCurDrawArrow();
 
-	//测试代码
-	void TTTT();
+
+//数据相关
+public:
+
 };

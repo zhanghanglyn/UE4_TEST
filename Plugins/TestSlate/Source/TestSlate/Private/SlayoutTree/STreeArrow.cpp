@@ -8,8 +8,6 @@ STreeArrow::STreeArrow()
 void STreeArrow::Construct(const FArguments& InArgs)
 {
 	Size = InArgs._Size.Get();
-
-	InitArrowData();
 }
 
 
@@ -33,7 +31,7 @@ int32 STreeArrow::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeome
 				ESlateDrawEffect::None,
 				FLinearColor::White,
 				true,
-				5
+				4
 			);
 			//画小箭头相关
 			FVector2D endPos = ArrowList[ArrowCount][1];
@@ -50,12 +48,12 @@ int32 STreeArrow::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeome
 				LayerId,
 				FlippedGeometry.ToPaintGeometry(),
 				BrushResource,
-				ESlateDrawEffect::DisabledEffect,
+				ESlateDrawEffect::None,
 				//ArrowDegrees,
 				CalculateArrowRadians(ArrowList[ArrowCount][0] , ArrowList[ArrowCount][1]),
 				TOptional<FVector2D>(),
 				FSlateDrawElement::RelativeToElement,
-				BrushResource->GetTint(InWidgetStyle) * InWidgetStyle.GetColorAndOpacityTint() * FLinearColor::White
+				FLinearColor::White
 				//FLinearColor::White
 			);
 
@@ -95,18 +93,6 @@ FReply STreeArrow::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent&
 FReply STreeArrow::OnMouseButtonUp(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	return FReply::Unhandled();
-}
-
-
-//打开该界面的时候，初始化线段数据
-void STreeArrow::InitArrowData()
-{
-	/*TArray<FVector2D> LinePoints = { FVector2D(0, 0), FVector2D(10,50),FVector2D(50,90) };
-	TArray<FVector2D> LinePoints1 = { FVector2D(210,150),FVector2D(150,390) };
-	TArray<FVector2D> LinePoints2 = { FVector2D(40,50), FVector2D(140,150)};
-	ArrowList.Add(LinePoints);
-	ArrowList.Add(LinePoints1);
-	ArrowList.Add(LinePoints2);*/
 }
 
 void STreeArrow::StartDrawArrow(FVector2D startPos)
@@ -165,24 +151,15 @@ float STreeArrow::CalculateArrowRadians( FVector2D startPos , FVector2D endPos) 
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void STreeArrow::TTTT()
+/*
+	数据相关
+*/
+//打开该界面的时候，初始化线段数据
+void STreeArrow::InitArrowData(TArray<TArray< FVector2D>> _ArrowList)
 {
-	TArray<FVector2D> LinePoints = { FVector2D(0, 0), FVector2D(10,50),FVector2D(50,90) };
-	ArrowList.Empty();
-	ArrowList.Add( LinePoints);
+	ArrowList = _ArrowList;
 }
+
+
+
+
