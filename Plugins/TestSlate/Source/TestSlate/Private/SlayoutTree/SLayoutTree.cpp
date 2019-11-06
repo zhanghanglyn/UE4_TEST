@@ -297,7 +297,7 @@ FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointe
 		FVector2D ClickSizeInTree = CreatePos - absolutePos;
 
 		this->AddSlot().Position(ClickSizeInTree)[
-			SNew(STreeNode).ClickNodeCallBack(this, &SCanvasTree::ClickNodeCall)
+			SNew(STreeNode,this).ClickNodeCallBack(this, &SCanvasTree::ClickNodeCall).UpNodeCallBack(this, &SCanvasTree::UpNodeCall)
 		];
 
 		Reply = FReply::Handled();
@@ -320,10 +320,11 @@ FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointe
 #pragma  optimize("", on)
 
 //收到Tree的点击事件
-void SCanvasTree::ClickNodeCall(FVector2D Pos)
+void SCanvasTree::ClickNodeCall(FVector2D Pos, STreeNode* _CurNode)
 {
 	//mTreeArrowPanel->StartDrawArrow(Pos);
 	BStartDraw = true;
+	CurNode = _CurNode;
 }
 
 //当点击后鼠标移动！
@@ -342,20 +343,46 @@ FReply SCanvasTree::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent
 	return FReply::Handled();
 }
 
+//鼠标从节点上抬起时的回调
+void SCanvasTree::UpNodeCall(FVector2D Pos, STreeNode* _LinkNode)
+{
+	LinkNode = _LinkNode;
+}
+
+//应该是由Node发起的结束绘制,鼠标抬起时，一定会清除当前选中节点
 FReply SCanvasTree::OnMouseButtonUp(const FGeometry& InMyGeometry, const FPointerEvent& InMouseEvent)
 {
-	//左键抬起时结束本次绘制
-	if (IsEnabled() && InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton && BStartDraw == true)
+	//左键抬起时结束本次绘制,判断下是否处于点中状态，判断下是否抬起点为当前节点
+	if (IsEnabled() && InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{
-		BStartDraw = false;
-		FVector2D CreatePos = InMouseEvent.GetScreenSpacePosition();
-		FVector2D absolutePos = InMyGeometry.GetAbsolutePosition();
-		FVector2D ClickSizeInTree = CreatePos - absolutePos;
+		if (BStartDraw == true && LinkNode != nullptr && LinkNode != CurNode)
+		{
+			BStartDraw = false;
+			FVector2D CreatePos = InMouseEvent.GetScreenSpacePosition();
+			FVector2D absolutePos = InMyGeometry.GetAbsolutePosition();
+			FVector2D ClickSizeInTree = CreatePos - absolutePos;
 
-		mTreeArrowPanel->EndDrawArrow(ClickSizeInTree);
+			//mTreeArrowPanel->EndDrawArrow(ClickSizeInTree , FVector2D::ZeroVector);
+			mTreeArrowPanel->EndDrawArrow(CurNode->GetAbsoluteCenterLinePos() - absolutePos, LinkNode->GetAbsoluteCenterLinePos() - absolutePos);
+
+			//设置两个节点的父子节点
+			CurNode->SetChildNode(LinkNode);
+			LinkNode->SetParentNode(CurNode);
+		}
+		else //不满足条件则要清空当前绘制点
+			mTreeArrowPanel->ClearCurDrawArrow();
 	}
+	
+	ClearCurNode();
+	BStartDraw = false;
 
-	return FReply::Handled();
+	return FReply::Unhandled();
+}
+
+void SCanvasTree::ClearCurNode()
+{
+	CurNode = nullptr;
+	LinkNode = nullptr;
 }
 
 #undef   LOCTEXT_NAMESPACE

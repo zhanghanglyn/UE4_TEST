@@ -28,6 +28,7 @@ class FArrangedChildren;
 class FPaintArgs;
 class FSlateWindowElementList;
 class STreeArrow;
+class STreeNode;
 
 class  SCanvasTree : public SPanel
 {
@@ -189,12 +190,25 @@ protected:
 	//绘制边框的笔刷
 	TAttribute<const FSlateBrush*> BorderImg;
 
-	TSharedPtr< STreeArrow> mTreeArrowPanel;
+	TSharedPtr<STreeArrow> mTreeArrowPanel;
 
 	bool BStartDraw = false;
 
 //事件函数相关
 public:
-	void ClickNodeCall(FVector2D Pos);
+	//点击节点的回调
+	void ClickNodeCall(FVector2D Pos , STreeNode* _CurNode);
+	//当鼠标从一个节点移开的回调
+	void UpNodeCall(FVector2D Pos, STreeNode* _LinkNode);
+	//清除当前节点和离开节点
+	void ClearCurNode();
+
+private:
+	//节点Array
+
+	//当前节点
+	STreeNode* CurNode;
+	//鼠标松开后的链接节点
+	STreeNode* LinkNode;
 
 };

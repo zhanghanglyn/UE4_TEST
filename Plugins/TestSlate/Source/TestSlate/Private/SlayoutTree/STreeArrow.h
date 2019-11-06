@@ -58,7 +58,10 @@ public:
 	//一边移动一边进行划线
 	void MoveDrawArrow(FVector2D endPos);
 	//鼠标抬起时结束画线
-	void EndDrawArrow(FVector2D endPos);
+	void EndDrawArrow(FVector2D startPos, FVector2D endPos);
+
+	//清空当前绘制线条
+	void ClearCurDrawArrow();
 
 	//测试代码
 	void TTTT();

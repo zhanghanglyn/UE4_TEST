@@ -103,14 +103,21 @@ void STreeArrow::MoveDrawArrow(FVector2D endPos)
 		CurArrow[1] = endPos;
 }
 
-void STreeArrow::EndDrawArrow(FVector2D endPos)
+void STreeArrow::EndDrawArrow(FVector2D startPos, FVector2D endPos)
 {
-	if (CurArrow.Num() > 0 && CurArrow.Num() < 2)
+	/*if (CurArrow.Num() > 0 && CurArrow.Num() < 2)
 		CurArrow.Add(endPos);
 	else
-		CurArrow[1] = endPos;
+		CurArrow[1] = endPos;*/
+
+	CurArrow = { startPos, endPos };
 
 	ArrowList.Add(CurArrow);
+	CurArrow.Empty();
+}
+
+void STreeArrow::ClearCurDrawArrow()
+{
 	CurArrow.Empty();
 }
 

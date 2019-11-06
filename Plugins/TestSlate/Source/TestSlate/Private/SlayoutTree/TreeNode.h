@@ -12,11 +12,23 @@
 
 
 #pragma once
-#include "TestSlate.h"
+
+#include "CoreMinimal.h"
+#include "Misc/Attribute.h"
+#include "Styling/SlateColor.h"
+#include "Widgets/DeclarativeSyntaxSupport.h"
+#include "Widgets/SWidget.h"
+#include "Layout/Margin.h"
+#include "Widgets/SCompoundWidget.h"
+#include "Styling/CoreStyle.h"
+#include "SlayoutTree/SLayoutTree.h"
+
+class SCanvasTree;
 
 class  STreeNode : public SCompoundWidget
 {
-	DECLARE_DELEGATE_OneParam( ClickNodeCall , FVector2D)
+	DECLARE_DELEGATE_TwoParams( ClickNodeCall , FVector2D , STreeNode*)
+	DECLARE_DELEGATE_TwoParams(UpNodeCall, FVector2D, STreeNode*)
 
 public:
 	SLATE_BEGIN_ARGS(STreeNode)
@@ -34,12 +46,13 @@ public:
 
 	//绑定事件
 	SLATE_EVENT(ClickNodeCall , ClickNodeCallBack)
+	SLATE_EVENT(UpNodeCall , UpNodeCallBack)
 
 	SLATE_END_ARGS()
 
 	STreeNode();
 
-	void Construct(const FArguments& InArgs);
+	void Construct(const FArguments& InArgs , SCanvasTree* Tree);
 
 	virtual void SetContent(TSharedRef< SWidget > InContent);
 	//获取内容
@@ -62,12 +75,10 @@ public:
 	//virtual FReply OnKeyUp(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent) override;
 	virtual FReply OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 	virtual FReply OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
-	//virtual FReply OnMouseButtonDoubleClick(const FGeometry& InMyGeometry, const FPointerEvent& InMouseEvent) override;
-	/*virtual FReply OnMouseButtonUp(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
-	virtual FReply OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
+	virtual FReply OnMouseButtonUp(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 	virtual void OnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 	virtual void OnMouseLeave(const FPointerEvent& MouseEvent) override;
-	virtual void OnMouseCaptureLost(const FCaptureLostEvent& CaptureLostEvent) override;*/
+	//virtual void OnMouseCaptureLost(const FCaptureLostEvent& CaptureLostEvent) override;*/
 	virtual bool IsInteractable() const override;
 	//virtual bool ComputeVolatility() const override;
 
@@ -95,9 +106,38 @@ protected:
 //事件委托
 protected:
 	ClickNodeCall ClickNodeCallDelegate;
+	UpNodeCall UpNodeCallDelegate;
 
 //点击处理函数
 protected:
-	void PressFunction( FVector2D AbsolutePos);
+	void PressFunction(FVector2D AbsolutePos);
 
+private:
+	//Tree的指针
+	SCanvasTree* CanvasTree;
+	//父Node
+	STreeNode* ParentNode;
+	//子Node
+	STreeNode* ChildNode;
+	//自身在该树的Array的ID，该ID由树创建并且分配
+	int32 NodeId;
+	//自身的中心点
+	FVector2D CenterPosition;
+	//连线点
+	FVector2D LinePos;
+
+//外部使用逻辑函数
+public:
+	//设置自身连接点
+	void SetAbsoluteCenterLinePos(FVector2D NodeStartPos);
+	//获取自身连线点
+	FVector2D GetAbsoluteCenterLinePos();
+	//设置父节点
+	void SetParentNode( STreeNode* _ParentNode);
+	//设置子节点
+	void SetChildNode(STreeNode* _ChildNode);
+	//获取父节点
+	STreeNode* GetParentNode();
+	//获取子节点
+	STreeNode* GetChildNode();
 };
