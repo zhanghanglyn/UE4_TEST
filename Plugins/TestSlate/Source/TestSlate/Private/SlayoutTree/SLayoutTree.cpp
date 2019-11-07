@@ -410,7 +410,7 @@ bool SCanvasTree::CheckNodeCanBeConnect()
 */
 void SCanvasTree::InitNode()
 {
-	NodeData* testData = new NodeData(1);
+	/*NodeData* testData = new NodeData(1);
 	testData->Pos = FVector2D(40, 40);
 	testData->LinePos = FVector2D(40+50, 40+30);
 	testData->ChildID = 2;
@@ -423,6 +423,15 @@ void SCanvasTree::InitNode()
 	NodeDataList = new TreeData();
 	NodeDataList->DataList.Add(testData->DataID, testData);
 	NodeDataList->DataList.Add(testData2->DataID, testData2);
+
+	CreateNode();
+	CreateArrow();
+
+	FString test = "aaaaaaaaa";
+	//TreeDataMgr::SaveAllData(test);
+	TreeDataMgr::SaveAllData(NodeDataList);*/
+
+	NodeDataList = TreeDataMgr::ReadAllData();
 
 	CreateNode();
 	CreateArrow();

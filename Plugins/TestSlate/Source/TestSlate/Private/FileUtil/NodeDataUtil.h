@@ -3,15 +3,13 @@
 */
 #pragma once
 #include "CoreMinimal.h"
+#include "Core/Public/Misc/Paths.h"
+#include "Runtime/Json/Public/Json.h"
+#include "Core/Public/Misc/FileHelper.h"
 
 //单个节点的数据结构
 struct NodeData
 {
-public:
-	struct Detail
-	{
-		FString SkillName;	//
-	};
 
 public:
 	NodeData(int32 _DataID) :DataID(_DataID) {};
@@ -23,8 +21,7 @@ public:
 	FVector2D Pos;			//创建位置
 	FVector2D LinePos;	//连线位置
 
-	Detail DataDetail;
-
+	FString SkillName;
 };
 
 //总数据,初始化时根据该数据初始化节点，存储时将所有节点数据便利并存入
@@ -38,9 +35,28 @@ public:
 class TreeDataMgr
 {
 public:
+	//static TreeDataMgr* Instance;
+
+public:
+	/*static TreeDataMgr* GetInstance()
+	{
+		static TreeDataMgr* Instance;
+		if (Instance == nullptr)
+			Instance = new TreeDataMgr();
+
+		return Instance;
+	};*/
+
+public:
 	//读取所有DATA数据
-	static TreeData ReadAllData();
-	//保存所有数据
-	static void SaveAllData();
-	
+	static TreeData* ReadAllData();
+	//保存所有数据将数据写入本地文件
+	static void SaveAllData( TreeData* _TreeData );
+
+protected:
+	//把Data包成Json
+	static FString SaveToJson(TreeData* _TreeData);
+
+protected:
+	static FString FileName;// = "TreeConfig.txt";
 };
