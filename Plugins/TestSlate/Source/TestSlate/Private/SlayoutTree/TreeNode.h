@@ -50,7 +50,7 @@ public:
 	//绑定事件
 	SLATE_EVENT(ClickNodeCall , ClickNodeCallBack)
 	SLATE_EVENT(UpNodeCall , UpNodeCallBack)
-	SLATE_EVENT(DeleteNodeCallDelegate , DeleteNodeCallBack)
+	SLATE_EVENT(DeleteNodeCall, DeleteNodeCallBack)
 
 	SLATE_END_ARGS()
 
@@ -143,6 +143,17 @@ public:
 	STreeNode* GetParentNode();
 	//获取子节点
 	STreeNode* GetChildNode();
+	//设置当前线段AIDD
+	void SetChildAID(int32 _AID);
+	int32 GetChildAID();
+	void SetParentAID(int32 _AID);
+	int32 GetParentAID();
+
+	//清除父Node
+	void ClearParentNode();
+
+	//清除子Node
+	void ClearChildNode();
 
 	//设置自身Node数据
 	void SetNodeData( NodeData* _NodeData);

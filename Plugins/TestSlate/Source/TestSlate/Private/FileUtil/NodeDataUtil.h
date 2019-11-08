@@ -15,6 +15,8 @@ public:
 	NodeData(int32 _DataID) :DataID(_DataID) {
 		ParentID = -1;
 		ChildID = -1;
+		C_AID = -1;
+		P_AID = -1;
 	};
 	NodeData(NodeData* _NodeData)
 	{
@@ -24,6 +26,8 @@ public:
 		Pos = _NodeData->Pos;
 		LinePos = _NodeData->LinePos;
 		SkillName = _NodeData->SkillName;
+		C_AID = _NodeData->C_AID;
+		P_AID = _NodeData->P_AID;
 	};
 public:
 	int32 DataID = -1;		//当前节点的ID
@@ -31,6 +35,8 @@ public:
 	int32 ChildID = -1;		//子节点ID
 	FVector2D Pos;			//创建位置
 	FVector2D LinePos;	//连线位置
+	int32 C_AID = -1;		//作为子线段ID
+	int32 P_AID = -1;		//作为父线段ID
 
 	FString SkillName;
 };

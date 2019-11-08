@@ -59,6 +59,22 @@ int32 SCanvasTree::RemoveSlot(const TSharedRef<SWidget>& SlotWidget)
 	return -1;
 }
 
+#pragma  optimize("", off)
+int32 SCanvasTree::RemoveSlot(int32 NodeId)
+{
+	for (int32 count = 0; count < Children.Num(); count++)
+	{
+		if (NodeId == Children[count].m_NodeID)
+		{
+			Children.RemoveAt(count);
+			return count;
+		}
+	}
+
+	return -1;
+}
+#pragma  optimize("", on)
+
 void SCanvasTree::ClearChildren()
 {
 	Children.Empty();
@@ -377,13 +393,16 @@ FReply SCanvasTree::OnMouseButtonUp(const FGeometry& InMyGeometry, const FPointe
 			FVector2D ClickSizeInTree = CreatePos - absolutePos;
 
 			//mTreeArrowPanel->EndDrawArrow(ClickSizeInTree , FVector2D::ZeroVector);
-			mTreeArrowPanel->EndDrawArrow(CurNode->GetAbsoluteCenterLinePos() - absolutePos, LinkNode->GetAbsoluteCenterLinePos() - absolutePos);
+			int32 CurAID = mTreeArrowPanel->EndDrawArrow(CurNode->GetAbsoluteCenterLinePos() - absolutePos, LinkNode->GetAbsoluteCenterLinePos() - absolutePos 
+				, CurNode->M_NodeData->DataID , LinkNode->M_NodeData->DataID);
 
 			//设置两个节点的父子节点
 			CurNode->SetChildNode(LinkNode);
 			CurNode->SetNodeLinePos(CurNode->GetAbsoluteCenterLinePos() - absolutePos);
+			CurNode->SetParentAID(CurAID);
 			LinkNode->SetParentNode(CurNode);
 			LinkNode->SetNodeLinePos(LinkNode->GetAbsoluteCenterLinePos() - absolutePos);
+			LinkNode->SetChildAID(CurAID);
 		}
 		else //不满足条件则要清空当前绘制点
 			mTreeArrowPanel->ClearCurDrawArrow();
@@ -405,9 +424,11 @@ bool SCanvasTree::CheckNodeCanBeConnect()
 {
 	bool result = true;
 
-	if (CurNode->GetChildNode() != nullptr)
+	//if (CurNode->GetChildNode() != nullptr)
+	if (CurNode->M_NodeData->ChildID != -1)
 		result = false;
-	if (LinkNode->GetParentNode() != nullptr)
+	//if (LinkNode->GetParentNode() != nullptr)
+	if (LinkNode->M_NodeData->ParentID != -1)
 		result = false;
 
 	return result;
@@ -421,20 +442,24 @@ void SCanvasTree::DeleteNodeCall(STreeNode* _DelNode)
 	if (_DelNode->M_NodeData->ParentID != -1)
 	{
 		STreeNode* Parent = NodeArray[_DelNode->M_NodeData->ParentID];
-		Parent->M_NodeData->ChildID = -1;
+		//Parent->M_NodeData->ChildID = -1;
+		Parent->ClearChildNode();
 	}
 	if (_DelNode->M_NodeData->ChildID != -1)
 	{
-		STreeNode* Parent = NodeArray[_DelNode->M_NodeData->ChildID];
-		Parent->M_NodeData->ParentID = -1;
+		STreeNode* ChildNode = NodeArray[_DelNode->M_NodeData->ChildID];
+		//Parent->M_NodeData->ParentID = -1;
+		ChildNode->ClearParentNode();
 	}
 	
 	//清除Arrow
+	mTreeArrowPanel->ClearArrow(_DelNode->GetParentAID());
+	mTreeArrowPanel->ClearArrow(_DelNode->GetChildAID());
 
 	//NodeArray中删除
-
+	NodeArray.Remove(_DelNode->M_NodeData->DataID);
 	//直接把Slot删除
-
+	RemoveSlot(_DelNode->M_NodeData->DataID);
 }
 
 /******************************************
@@ -477,6 +502,7 @@ void SCanvasTree::CreateNode()
 		NodeData* tempData = iter->Value;
 		this->AddSlot().Position(tempData->Pos).NodeID(iter->Value->DataID)[  //并且设置Slot的标识
 			SAssignNew(NewTreeNode , STreeNode, this).ClickNodeCallBack(this, &SCanvasTree::ClickNodeCall).UpNodeCallBack(this, &SCanvasTree::UpNodeCall)
+				.DeleteNodeCallBack(this, &SCanvasTree::DeleteNodeCall)
 		];
 		
 		//计算一下鼠标动态生成的Node的ID
@@ -511,7 +537,9 @@ void SCanvasTree::CreateNode()
 
 void SCanvasTree::CreateArrow()
 {
-	TArray<TArray<FVector2D>> ArrowList;
+	TMap< int32, TArray<FVector2D>> ArrowList;
+	TMap<int32, TPair< int32, int32 >> NodeRelationList;
+
 	//寻找每一个节点的子对象，生成一个Arrow的列表用来生成箭头
 	for (TMap<int32, NodeData*>::TConstIterator iter(NodeDataList->DataList); iter; ++iter)
 	{
@@ -523,12 +551,17 @@ void SCanvasTree::CreateArrow()
 			{
 				TArray<FVector2D> TempArrow;
 				TempArrow = { tempData->LinePos , ChildData->LinePos };
-				ArrowList.Add(TempArrow);
+
+				//获取一下当前AID
+				int32 AID = mTreeArrowPanel->GetNextArrID();
+
+				ArrowList.Add(AID,TempArrow);
+				NodeRelationList.Add(AID, TPair<int32, int32>(tempData->DataID , tempData->ChildID));
 			}
 		}
 	}
 
-	mTreeArrowPanel->InitArrowData(ArrowList);
+	mTreeArrowPanel->InitArrowData(ArrowList, NodeRelationList);
 }
 
 //通用调用，创建一个子节点
@@ -540,6 +573,7 @@ void SCanvasTree::CreateNewNode( FVector2D Pos)
 
 	this->AddSlot().Position(Pos).NodeID(curId)[  //并且设置Slot的标识
 		SAssignNew(NewTreeNode, STreeNode, this).ClickNodeCallBack(this, &SCanvasTree::ClickNodeCall).UpNodeCallBack(this, &SCanvasTree::UpNodeCall)
+			.DeleteNodeCallBack(this, &SCanvasTree::DeleteNodeCall)
 	];
 
 	NodeArray.Add(curId, NewTreeNode.Get());

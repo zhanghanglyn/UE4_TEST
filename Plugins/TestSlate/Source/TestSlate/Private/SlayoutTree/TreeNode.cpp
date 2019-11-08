@@ -175,6 +175,7 @@ FReply STreeNode::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerE
 	else if (IsEnabled() && MouseEvent.GetEffectingButton() == EKeys::RightMouseButton || MouseEvent.IsTouchEvent())
 	{
 		DeleteNodeCallDelegate.ExecuteIfBound(this);
+		Reply = FReply::Handled();
 	}
 	Invalidate(EInvalidateWidget::Layout);
 
@@ -275,4 +276,36 @@ void STreeNode::SetNodeData(NodeData* _NodeData)
 void STreeNode::SetNodeLinePos(FVector2D _LinePos)
 {
 	M_NodeData->LinePos = _LinePos;
+}
+
+void STreeNode::SetChildAID(int32 _AID)
+{
+	M_NodeData->C_AID = _AID;
+}
+
+int32 STreeNode::GetChildAID()
+{
+	return M_NodeData->C_AID;
+}
+
+void STreeNode::SetParentAID(int32 _AID)
+{
+	M_NodeData->P_AID = _AID;
+}
+
+int32 STreeNode::GetParentAID()
+{
+	return M_NodeData->P_AID;
+}
+
+void STreeNode::ClearParentNode()
+{
+	M_NodeData->ParentID = -1;
+	ParentNode = nullptr;
+}
+
+void STreeNode::ClearChildNode()
+{
+	M_NodeData->ChildID = -1;
+	ChildNode = nullptr;
 }

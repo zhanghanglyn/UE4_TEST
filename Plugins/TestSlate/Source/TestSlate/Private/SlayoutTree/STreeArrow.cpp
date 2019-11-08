@@ -21,21 +21,23 @@ int32 STreeArrow::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeome
 	//TArray<FVector2D> LinePoints = { FVector2D(0, 0), FVector2D(10,50),FVector2D(50,90) };
 	if (ArrowList.Num() > 0)
 	{
-		for (int ArrowCount = 0; ArrowCount < ArrowList.Num(); ArrowCount++)
+		//for (int ArrowCount = 0; ArrowCount < ArrowList.Num(); ArrowCount++)
+		for (TMap< int32, TArray<FVector2D>>::TConstIterator iter(ArrowList);iter;++iter)
 		{
 			FSlateDrawElement::MakeLines(
 				OutDrawElements,
 				LayerId,
 				AllottedGeometry.ToPaintGeometry(),
-				ArrowList[ArrowCount],
+				//ArrowList[ArrowCount],
+				iter->Value,
 				ESlateDrawEffect::None,
 				FLinearColor::White,
 				true,
 				4
 			);
 			//画小箭头相关
-			FVector2D endPos = ArrowList[ArrowCount][1];
-			FVector2D startPos = ArrowList[ArrowCount][0];
+			FVector2D endPos = iter->Value[1];//ArrowList[ArrowCount][1];
+			FVector2D startPos = iter->Value[0];// ArrowList[ArrowCount][0];
 			FVector2D DrawPos = FVector2D(startPos.X + (endPos.X - startPos.X)/2, startPos.Y + (endPos.Y - startPos.Y)/2);
 			FVector2D DrawPosTest = FVector2D(DrawPos.X - 10, DrawPos.Y - 10);
 
@@ -50,7 +52,7 @@ int32 STreeArrow::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeome
 				BrushResource,
 				ESlateDrawEffect::None,
 				//ArrowDegrees,
-				CalculateArrowRadians(ArrowList[ArrowCount][0] , ArrowList[ArrowCount][1]),
+				CalculateArrowRadians(iter->Value[0], iter->Value[1]),
 				TOptional<FVector2D>(),
 				FSlateDrawElement::RelativeToElement,
 				FLinearColor::White
@@ -111,7 +113,7 @@ void STreeArrow::MoveDrawArrow(FVector2D endPos)
 		CurArrow[1] = endPos;
 }
 
-void STreeArrow::EndDrawArrow(FVector2D startPos, FVector2D endPos)
+int32 STreeArrow::EndDrawArrow(FVector2D startPos, FVector2D endPos, int32 ParentId, int32 ChildId)
 {
 	/*if (CurArrow.Num() > 0 && CurArrow.Num() < 2)
 		CurArrow.Add(endPos);
@@ -120,9 +122,15 @@ void STreeArrow::EndDrawArrow(FVector2D startPos, FVector2D endPos)
 
 	CurArrow = { startPos, endPos };
 
-	ArrowList.Add(CurArrow);
+	int32 Cur_AID = GetNextArrID();
+
+	ArrowList.Add(Cur_AID,CurArrow);
+	//还要添加父子的对应关系
+	NodeRelationList.Add(Cur_AID, TPair<int32, int32>(ParentId, ChildId));
+
 	CurArrow.Empty();
 
+	return Cur_AID;
 }
 
 void STreeArrow::ClearCurDrawArrow()
@@ -156,11 +164,29 @@ float STreeArrow::CalculateArrowRadians( FVector2D startPos , FVector2D endPos) 
 	数据相关
 */
 //打开该界面的时候，初始化线段数据
-void STreeArrow::InitArrowData(TArray<TArray< FVector2D>> _ArrowList)
+void STreeArrow::InitArrowData(TMap< int32, TArray<FVector2D>> _ArrowList , TMap<int32, TPair< int32, int32 >> _NodeRelationList)
 {
 	ArrowList = _ArrowList;
+	NodeRelationList = _NodeRelationList;
 }
 
+void STreeArrow::CalulateNextArrID(int32 Cur_AID)
+{
+	if (NextArrID < Cur_AID)
+		NextArrID = Cur_AID;
+}
 
+int32 STreeArrow::GetNextArrID()
+{
+	NextArrID++;
+	return NextArrID;
+}
 
-
+void STreeArrow::ClearArrow(int32 _AID)
+{
+	if (ArrowList.Num() > 0 && ArrowList.Find(_AID) != nullptr && NodeRelationList.Num()>0 && NodeRelationList.Find(_AID) != nullptr)
+	{
+		ArrowList.Remove(_AID);
+		NodeRelationList.Remove(_AID);
+	}
+}

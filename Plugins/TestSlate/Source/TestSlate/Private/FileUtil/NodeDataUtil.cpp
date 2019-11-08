@@ -31,6 +31,8 @@ FString TreeDataMgr::SaveToJson(TreeData* _TreeData)
 		NodeJson->SetNumberField("PosY", iter->Value->Pos.Y);
 		NodeJson->SetNumberField("LinePosX", iter->Value->LinePos.X);
 		NodeJson->SetNumberField("LinePosY", iter->Value->LinePos.Y);
+		NodeJson->SetNumberField("C_AID", iter->Value->C_AID);
+		NodeJson->SetNumberField("P_AID)", iter->Value->P_AID);
 		NodeJson->SetStringField("SkillName", iter->Value->SkillName);
 
 		//FString NodeId = "Node_" + FString::FromInt(iter->Value->DataID);
@@ -76,6 +78,8 @@ TreeData* TreeDataMgr::ReadAllData()
 				const int32 PosY = EntryObject->GetIntegerField(TEXT("PosY"));
 				const int32 LinePosX = EntryObject->GetIntegerField(TEXT("LinePosX"));
 				const int32 LinePosY = EntryObject->GetIntegerField(TEXT("LinePosY"));
+				const int32 C_AID = EntryObject->GetIntegerField(TEXT("C_AID"));
+				const int32 P_AID = EntryObject->GetIntegerField(TEXT("P_AID"));
 				const FString SkillName = EntryObject->GetStringField(TEXT("SkillName"));
 
 				//创建一个TempNode
@@ -85,6 +89,8 @@ TreeData* TreeDataMgr::ReadAllData()
 				TempNodeData->Pos = FVector2D(PosX, PosY);
 				TempNodeData->LinePos = FVector2D(LinePosX, LinePosY);
 				TempNodeData->SkillName = SkillName;
+				TempNodeData->C_AID = C_AID;
+				TempNodeData->P_AID = P_AID;
 
 				ResultData->DataList.Add(DataID ,TempNodeData);
 			}

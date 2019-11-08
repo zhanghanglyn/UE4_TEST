@@ -161,6 +161,7 @@ public:
 	 * @param SlotWidget The widget in the slot to remove.
 	 */
 	int32 RemoveSlot(const TSharedRef<SWidget>& SlotWidget);
+	int32 RemoveSlot(int32 NodeId);
 
 	/**
 	 * Removes all slots from the panel.
