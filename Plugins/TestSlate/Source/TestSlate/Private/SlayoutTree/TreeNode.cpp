@@ -21,6 +21,8 @@ void STreeNode::Construct(const FArguments& InArgs, SCanvasTree* Tree)
 
 	UpNodeCallDelegate = InArgs._UpNodeCallBack;
 
+	DeleteNodeCallDelegate = InArgs._DeleteNodeCallBack;
+
 	//设置Tree的指针
 	CanvasTree = Tree;
 	ChildNode = nullptr;
@@ -169,9 +171,10 @@ FReply STreeNode::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerE
 		//向上冒泡！才能获取正确的点击位置
 		Reply = FReply::Unhandled();
 	}
+	//测试删除
 	else if (IsEnabled() && MouseEvent.GetEffectingButton() == EKeys::RightMouseButton || MouseEvent.IsTouchEvent())
 	{
-
+		DeleteNodeCallDelegate.ExecuteIfBound(this);
 	}
 	Invalidate(EInvalidateWidget::Layout);
 
@@ -231,7 +234,7 @@ void STreeNode::OnMouseLeave(const FPointerEvent& MouseEvent)
 void STreeNode::SetAbsoluteCenterLinePos(FVector2D NodeStartPos)
 {
 	LinePos =(NodeStartPos + CenterPosition);
-	UE_LOG(LogTemp, Warning, TEXT("Pos!!! : %f + %f"), LinePos.X, LinePos.Y);
+	UE_LOG(LogTemp, Warning, TEXT("Pos!!! : %f + %f"), M_NodeData->LinePos.X, M_NodeData->LinePos.Y);
 }
 FVector2D STreeNode::GetAbsoluteCenterLinePos()
 {
@@ -241,11 +244,13 @@ FVector2D STreeNode::GetAbsoluteCenterLinePos()
 void STreeNode::SetChildNode(STreeNode* _ChildNode)
 {
 	ChildNode = _ChildNode;
+	M_NodeData->ChildID = _ChildNode->M_NodeData->DataID;
 }
 
 void STreeNode::SetParentNode(STreeNode* _ParentNode)
 {
 	ParentNode = _ParentNode;
+	M_NodeData->ParentID = _ParentNode->M_NodeData->DataID;
 }
 
 STreeNode* STreeNode::GetChildNode()
@@ -261,3 +266,13 @@ STreeNode* STreeNode::GetParentNode()
 /*********************
 	数据相关	
 */
+void STreeNode::SetNodeData(NodeData* _NodeData)
+{
+	M_NodeData = new NodeData(_NodeData);
+
+}
+
+void STreeNode::SetNodeLinePos(FVector2D _LinePos)
+{
+	M_NodeData->LinePos = _LinePos;
+}

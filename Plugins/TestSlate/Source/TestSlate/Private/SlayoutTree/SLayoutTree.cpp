@@ -303,9 +303,10 @@ FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointe
 		//保存一份生成的Slot指针
 
 
-		this->AddSlot().Position(ClickSizeInTree)[
-			SNew(STreeNode,this).ClickNodeCallBack(this, &SCanvasTree::ClickNodeCall).UpNodeCallBack(this, &SCanvasTree::UpNodeCall)
-		];
+		//this->AddSlot().Position(ClickSizeInTree)[
+		//	SNew(STreeNode,this).ClickNodeCallBack(this, &SCanvasTree::ClickNodeCall).UpNodeCallBack(this, &SCanvasTree::UpNodeCall)
+		//];
+		CreateNewNode(ClickSizeInTree);
 
 		Reply = FReply::Handled();
 	}
@@ -319,6 +320,12 @@ FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointe
 
 		mTreeArrowPanel->StartDrawArrow(ClickSizeInTree);
 
+		Reply = FReply::Handled();
+	}
+	//测试用 鼠标中间按下，保存
+	if (IsEnabled() && MouseEvent.GetEffectingButton() == EKeys::MiddleMouseButton)
+	{
+		SaveAllNodes();
 		Reply = FReply::Handled();
 	}
 
@@ -374,7 +381,9 @@ FReply SCanvasTree::OnMouseButtonUp(const FGeometry& InMyGeometry, const FPointe
 
 			//设置两个节点的父子节点
 			CurNode->SetChildNode(LinkNode);
+			CurNode->SetNodeLinePos(CurNode->GetAbsoluteCenterLinePos() - absolutePos);
 			LinkNode->SetParentNode(CurNode);
+			LinkNode->SetNodeLinePos(LinkNode->GetAbsoluteCenterLinePos() - absolutePos);
 		}
 		else //不满足条件则要清空当前绘制点
 			mTreeArrowPanel->ClearCurDrawArrow();
@@ -404,6 +413,29 @@ bool SCanvasTree::CheckNodeCanBeConnect()
 	return result;
 }
 
+/* 删除节点回调
+*/
+void SCanvasTree::DeleteNodeCall(STreeNode* _DelNode)
+{
+	//清除对应的父子关系以及对应父子关系上的
+	if (_DelNode->M_NodeData->ParentID != -1)
+	{
+		STreeNode* Parent = NodeArray[_DelNode->M_NodeData->ParentID];
+		Parent->M_NodeData->ChildID = -1;
+	}
+	if (_DelNode->M_NodeData->ChildID != -1)
+	{
+		STreeNode* Parent = NodeArray[_DelNode->M_NodeData->ChildID];
+		Parent->M_NodeData->ParentID = -1;
+	}
+	
+	//清除Arrow
+
+	//NodeArray中删除
+
+	//直接把Slot删除
+
+}
 
 /******************************************
 	数据相关
@@ -434,17 +466,46 @@ void SCanvasTree::InitNode()
 	NodeDataList = TreeDataMgr::ReadAllData();
 
 	CreateNode();
-	CreateArrow();
+	//CreateArrow();
 }
 
 void SCanvasTree::CreateNode()
 {
 	for(TMap<int32, NodeData*>::TConstIterator iter(NodeDataList->DataList);iter ;++iter)
 	{
+		TSharedPtr<STreeNode> NewTreeNode;
 		NodeData* tempData = iter->Value;
-		this->AddSlot().Position(tempData->Pos)[
-			SNew(STreeNode, this).ClickNodeCallBack(this, &SCanvasTree::ClickNodeCall).UpNodeCallBack(this, &SCanvasTree::UpNodeCall)
+		this->AddSlot().Position(tempData->Pos).NodeID(iter->Value->DataID)[  //并且设置Slot的标识
+			SAssignNew(NewTreeNode , STreeNode, this).ClickNodeCallBack(this, &SCanvasTree::ClickNodeCall).UpNodeCallBack(this, &SCanvasTree::UpNodeCall)
 		];
+		
+		//计算一下鼠标动态生成的Node的ID
+		CalulateNextNodeID(iter->Value->DataID);
+
+		NodeArray.Add(iter->Value->DataID, NewTreeNode.Get());
+		NewTreeNode.Get()->SetNodeData(tempData);
+	}
+
+	CreateArrow();
+
+	//为所有的节点设置父子关系
+	for (TMap<int32, STreeNode*>::TIterator iter(NodeArray); iter; ++iter)
+	{
+		STreeNode* Node = iter->Value;
+		//设置子节点
+		if (Node->M_NodeData->ChildID != -1)
+		{
+			STreeNode* child = NodeArray[Node->M_NodeData->ChildID];
+			if(child != nullptr)
+				Node->SetChildNode(child);
+		}
+		//设置父节点
+		if (Node->M_NodeData->ParentID != -1)
+		{
+			STreeNode* parent = NodeArray[Node->M_NodeData->ParentID];
+			if (parent != nullptr)
+				Node->SetParentNode(parent);
+		}
 	}
 }
 
@@ -468,6 +529,51 @@ void SCanvasTree::CreateArrow()
 	}
 
 	mTreeArrowPanel->InitArrowData(ArrowList);
+}
+
+//通用调用，创建一个子节点
+void SCanvasTree::CreateNewNode( FVector2D Pos)
+{
+	TSharedPtr<STreeNode> NewTreeNode;
+
+	int32 curId = GetNextNodeID();
+
+	this->AddSlot().Position(Pos).NodeID(curId)[  //并且设置Slot的标识
+		SAssignNew(NewTreeNode, STreeNode, this).ClickNodeCallBack(this, &SCanvasTree::ClickNodeCall).UpNodeCallBack(this, &SCanvasTree::UpNodeCall)
+	];
+
+	NodeArray.Add(curId, NewTreeNode.Get());
+	NodeData* temp_Data = new NodeData(curId);
+	temp_Data->Pos = Pos;
+	NewTreeNode.Get()->SetNodeData(temp_Data);
+}
+
+void SCanvasTree::CalulateNextNodeID(int32 C_ID)
+{
+	if (NextNodeID < C_ID)
+		NextNodeID = C_ID;
+}
+
+int32 SCanvasTree::GetNextNodeID()
+{
+	NextNodeID++;
+	return NextNodeID;
+}
+
+/*遍历保存所有的节点！
+*/
+void SCanvasTree::SaveAllNodes()
+{
+	//先清空所有的列表
+	NodeDataList->DataList.Empty();
+
+	for ( TMap<int32 , STreeNode*>::TConstIterator iter(NodeArray);iter ; ++iter)
+	{
+		STreeNode* tempData = iter->Value;
+		NodeDataList->DataList.Add(tempData->M_NodeData->DataID, tempData->M_NodeData);
+	}
+
+	TreeDataMgr::SaveAllData(NodeDataList);
 }
 
 #undef   LOCTEXT_NAMESPACE

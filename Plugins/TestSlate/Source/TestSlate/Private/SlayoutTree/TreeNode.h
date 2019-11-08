@@ -23,6 +23,7 @@
 #include "Styling/CoreStyle.h"
 #include "TestSlate/Private/FileUtil/NodeDataUtil.h"
 #include "SlayoutTree/SLayoutTree.h"
+#include "TestSlate/Private/FileUtil/NodeDataUtil.h"
 
 class SCanvasTree;
 
@@ -30,6 +31,7 @@ class  STreeNode : public SCompoundWidget
 {
 	DECLARE_DELEGATE_TwoParams( ClickNodeCall , FVector2D , STreeNode*)
 	DECLARE_DELEGATE_TwoParams(UpNodeCall, FVector2D, STreeNode*)
+	DECLARE_DELEGATE_OneParam(DeleteNodeCall, STreeNode*)
 
 public:
 	SLATE_BEGIN_ARGS(STreeNode)
@@ -48,6 +50,7 @@ public:
 	//绑定事件
 	SLATE_EVENT(ClickNodeCall , ClickNodeCallBack)
 	SLATE_EVENT(UpNodeCall , UpNodeCallBack)
+	SLATE_EVENT(DeleteNodeCallDelegate , DeleteNodeCallBack)
 
 	SLATE_END_ARGS()
 
@@ -108,6 +111,7 @@ protected:
 protected:
 	ClickNodeCall ClickNodeCallDelegate;
 	UpNodeCall UpNodeCallDelegate;
+	DeleteNodeCall DeleteNodeCallDelegate;
 
 //点击处理函数
 protected:
@@ -120,8 +124,6 @@ private:
 	STreeNode* ParentNode;
 	//子Node
 	STreeNode* ChildNode;
-	//自身在该树的Array的ID，该ID由树创建并且分配
-	int32 NodeId;
 	//自身的中心点
 	FVector2D CenterPosition;
 	//连线点
@@ -142,7 +144,12 @@ public:
 	//获取子节点
 	STreeNode* GetChildNode();
 
+	//设置自身Node数据
+	void SetNodeData( NodeData* _NodeData);
+	//设置自身LinePos
+	void SetNodeLinePos(FVector2D _LinePos);
+
 //数据保存等相关
-private:
-	int32 DataID;		//数据的索引ID
+public:
+	NodeData* M_NodeData;	//自身的Node数据
 };

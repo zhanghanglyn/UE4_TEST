@@ -66,11 +66,20 @@ public:
 			return *this;
 		}
 
+		FSlot& NodeID(int32 _NodeID)
+		{
+			m_NodeID = _NodeID;
+			return *this;
+		}
+
 		/** Position */
 		TAttribute<FVector2D> PositionAttr;
 
 		/** Size */
 		TAttribute<FVector2D> SizeAttr;
+
+		//该SLOT对应的Node的NodeID,删除用
+		int32 m_NodeID;
 
 		/** Horizontal Alignment
 		*  Given a top aligned slot, where '+' represents the
@@ -107,6 +116,7 @@ public:
 			, SizeAttr(FVector2D(1.0f, 1.0f))
 			, HAlignment(HAlign_Left)
 			, VAlignment(VAlign_Top)
+			, m_NodeID(-1)
 		{ }
 	};
 
@@ -210,16 +220,20 @@ public:
 	void ClearCurNode();
 	//判断当前松开点是否可以连接（暂时不支持选择节点之类的，一个节点只能有一个父类一个子类）
 	bool CheckNodeCanBeConnect();
+	//删除节点
+	void DeleteNodeCall( STreeNode* _DelNode );
 
 private:
 	//节点Array
-	TArray<FSlot*> NodeArray;
+	TMap< int32, STreeNode*> NodeArray;
 	//当前节点
 	STreeNode* CurNode;
 	//鼠标松开后的链接节点
 	STreeNode* LinkNode;
 	//数据List
 	TreeData* NodeDataList;
+	//下一个创建的Node的ID
+	int32 NextNodeID = 0;
 
 //数据相关	
 public:
@@ -228,4 +242,14 @@ public:
 	void CreateNode( );
 	//根据所有数据创建线
 	void CreateArrow();
+	//通用创建一个子节点
+	void CreateNewNode(FVector2D Pos);
+
+protected:
+	//更新下一个创建的Node的ID
+	void CalulateNextNodeID(int32 C_ID);
+	//获取下一个创建的NODE的ID
+	int32 GetNextNodeID();
+	//遍历所有节点并且将其保存
+	void SaveAllNodes();
 };

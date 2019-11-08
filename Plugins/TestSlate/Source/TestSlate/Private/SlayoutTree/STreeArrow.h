@@ -69,6 +69,5 @@ public:
 
 
 //数据相关
-public:
-
+protected:
 };

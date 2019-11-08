@@ -12,8 +12,19 @@ struct NodeData
 {
 
 public:
-	NodeData(int32 _DataID) :DataID(_DataID) {};
-
+	NodeData(int32 _DataID) :DataID(_DataID) {
+		ParentID = -1;
+		ChildID = -1;
+	};
+	NodeData(NodeData* _NodeData)
+	{
+		DataID = _NodeData->DataID;
+		ParentID = _NodeData->ParentID;
+		ChildID = _NodeData->ChildID;
+		Pos = _NodeData->Pos;
+		LinePos = _NodeData->LinePos;
+		SkillName = _NodeData->SkillName;
+	};
 public:
 	int32 DataID = -1;		//当前节点的ID
 	int32 ParentID = -1;	//父节点ID

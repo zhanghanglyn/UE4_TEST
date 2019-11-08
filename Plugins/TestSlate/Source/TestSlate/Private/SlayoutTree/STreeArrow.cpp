@@ -122,6 +122,7 @@ void STreeArrow::EndDrawArrow(FVector2D startPos, FVector2D endPos)
 
 	ArrowList.Add(CurArrow);
 	CurArrow.Empty();
+
 }
 
 void STreeArrow::ClearCurDrawArrow()
