@@ -32,7 +32,7 @@ FString TreeDataMgr::SaveToJson(TreeData* _TreeData)
 		NodeJson->SetNumberField("LinePosX", iter->Value->LinePos.X);
 		NodeJson->SetNumberField("LinePosY", iter->Value->LinePos.Y);
 		NodeJson->SetNumberField("C_AID", iter->Value->C_AID);
-		NodeJson->SetNumberField("P_AID)", iter->Value->P_AID);
+		NodeJson->SetNumberField("P_AID", iter->Value->P_AID);
 		NodeJson->SetStringField("SkillName", iter->Value->SkillName);
 
 		//FString NodeId = "Node_" + FString::FromInt(iter->Value->DataID);

@@ -81,6 +81,9 @@ public:
 		//该SLOT对应的Node的NodeID,删除用
 		int32 m_NodeID;
 
+		//移动用，点击开始时的初始位置
+		FVector2D StartClickPos;
+
 		/** Horizontal Alignment
 		*  Given a top aligned slot, where '+' represents the
 		*  anchor point defined by PositionAttr.
@@ -163,6 +166,12 @@ public:
 	int32 RemoveSlot(const TSharedRef<SWidget>& SlotWidget);
 	int32 RemoveSlot(int32 NodeId);
 
+	/*
+	获取某个FSLot
+	*/
+	SCanvasTree::FSlot* GetSlot(const TSharedRef<SWidget>& SlotWidget);
+	SCanvasTree::FSlot* GetSlot(int32 NodeId);
+
 	/**
 	 * Removes all slots from the panel.
 	 */
@@ -221,8 +230,10 @@ public:
 	void ClearCurNode();
 	//判断当前松开点是否可以连接（暂时不支持选择节点之类的，一个节点只能有一个父类一个子类）
 	bool CheckNodeCanBeConnect();
-	//删除节点
+	//删除节点回调
 	void DeleteNodeCall( STreeNode* _DelNode );
+	//移动节点的回调
+	void MoveNodeCall(STreeNode* _MoveNode , FVector2D _MoveOffset);
 
 private:
 	//节点Array

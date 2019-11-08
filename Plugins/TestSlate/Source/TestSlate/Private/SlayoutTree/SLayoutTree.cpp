@@ -75,6 +75,26 @@ int32 SCanvasTree::RemoveSlot(int32 NodeId)
 }
 #pragma  optimize("", on)
 
+SCanvasTree::FSlot* SCanvasTree::GetSlot(const TSharedRef<SWidget>& SlotWidget)
+{
+	for (int32 count = 0; count < Children.Num(); count++)
+	{
+		if (SlotWidget == Children.GetChildAt(count))
+			return &Children[count];
+	}
+
+	return nullptr;
+}
+SCanvasTree::FSlot* SCanvasTree::GetSlot(int32 NodeId)
+{
+	for (int32 count = 0; count < Children.Num(); count++)
+	{
+		if (NodeId == Children[count].m_NodeID)
+			return &Children[count];
+	}
+	return nullptr;
+}
+
 void SCanvasTree::ClearChildren()
 {
 	Children.Empty();
@@ -316,8 +336,9 @@ FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointe
 		FVector2D absolutePos = MyGeometry.GetAbsolutePosition();
 		FVector2D ClickSizeInTree = CreatePos - absolutePos;
 
-		//保存一份生成的Slot指针
-
+		//生成在中心店
+		ClickSizeInTree.X -= 50;
+		ClickSizeInTree.Y -= 30;
 
 		//this->AddSlot().Position(ClickSizeInTree)[
 		//	SNew(STreeNode,this).ClickNodeCallBack(this, &SCanvasTree::ClickNodeCall).UpNodeCallBack(this, &SCanvasTree::UpNodeCall)
@@ -353,6 +374,10 @@ FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointe
 void SCanvasTree::ClickNodeCall(FVector2D Pos, STreeNode* _CurNode)
 {
 	//mTreeArrowPanel->StartDrawArrow(Pos);
+	//设置初始点击位置
+	FSlot* tempSlot = GetSlot(_CurNode->M_NodeData->DataID);
+	tempSlot->StartClickPos = tempSlot->PositionAttr.Get();
+
 	BStartDraw = true;
 	CurNode = _CurNode;
 }
@@ -462,6 +487,22 @@ void SCanvasTree::DeleteNodeCall(STreeNode* _DelNode)
 	RemoveSlot(_DelNode->M_NodeData->DataID);
 }
 
+/*
+移动节点回调
+*/
+void SCanvasTree::MoveNodeCall(STreeNode* _MoveNode , FVector2D _MoveOffset)
+{
+	//在slot中设置位置，
+	FSlot* tempSlot = GetSlot(_MoveNode->M_NodeData->DataID);
+	UE_LOG(LogTemp, Warning, TEXT(" POSX : %f    +  OFFSETX :  %f") , tempSlot->StartClickPos.X , _MoveOffset.X);
+	UE_LOG(LogTemp, Warning, TEXT(" POSY : %f    +  OFFSETY :  %f"), tempSlot->StartClickPos.Y, _MoveOffset.Y);
+	if (tempSlot != nullptr)
+		tempSlot->Position(tempSlot->StartClickPos + _MoveOffset);
+
+	//设置箭头位置
+
+}
+
 /******************************************
 	数据相关
 */
@@ -502,7 +543,7 @@ void SCanvasTree::CreateNode()
 		NodeData* tempData = iter->Value;
 		this->AddSlot().Position(tempData->Pos).NodeID(iter->Value->DataID)[  //并且设置Slot的标识
 			SAssignNew(NewTreeNode , STreeNode, this).ClickNodeCallBack(this, &SCanvasTree::ClickNodeCall).UpNodeCallBack(this, &SCanvasTree::UpNodeCall)
-				.DeleteNodeCallBack(this, &SCanvasTree::DeleteNodeCall)
+				.DeleteNodeCallBack(this, &SCanvasTree::DeleteNodeCall).MoveNodeCallBack(this, &SCanvasTree::MoveNodeCall)
 		];
 		
 		//计算一下鼠标动态生成的Node的ID
@@ -573,7 +614,7 @@ void SCanvasTree::CreateNewNode( FVector2D Pos)
 
 	this->AddSlot().Position(Pos).NodeID(curId)[  //并且设置Slot的标识
 		SAssignNew(NewTreeNode, STreeNode, this).ClickNodeCallBack(this, &SCanvasTree::ClickNodeCall).UpNodeCallBack(this, &SCanvasTree::UpNodeCall)
-			.DeleteNodeCallBack(this, &SCanvasTree::DeleteNodeCall)
+			.DeleteNodeCallBack(this, &SCanvasTree::DeleteNodeCall).MoveNodeCallBack(this, &SCanvasTree::MoveNodeCall)
 	];
 
 	NodeArray.Add(curId, NewTreeNode.Get());

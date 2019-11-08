@@ -23,6 +23,8 @@ void STreeNode::Construct(const FArguments& InArgs, SCanvasTree* Tree)
 
 	DeleteNodeCallDelegate = InArgs._DeleteNodeCallBack;
 
+	MoveNodeCallDelegate = InArgs._MoveNodeCallBack;
+
 	//设置Tree的指针
 	CanvasTree = Tree;
 	ChildNode = nullptr;
@@ -30,6 +32,13 @@ void STreeNode::Construct(const FArguments& InArgs, SCanvasTree* Tree)
 
 	//19.11.04 先暂时定死设计尺寸
 	DesiredSizeScale = FVector2D(100, 60);
+	//设置点击区域
+	MoveRect = new A_Rect();
+
+	MoveRect->left = LineRange;
+	MoveRect->right = DesiredSizeScale.Get().X - LineRange;
+	MoveRect->top = LineRange;
+	MoveRect->bottom = DesiredSizeScale.Get().Y - LineRange;
 
 	//设置连线点为控件中心
 	CenterPosition = FVector2D(DesiredSizeScale.Get().X / 2, DesiredSizeScale.Get().Y / 2);
@@ -85,14 +94,12 @@ int32 STreeNode::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeomet
 
 }
 
-#pragma  optimize("", off)
 FVector2D STreeNode::ComputeDesiredSize(float LayoutScaleMultiplier) const
 {
 
 	//return DesiredSizeScale.Get() * SCompoundWidget::ComputeDesiredSize(LayoutScaleMultiplier);
 	return DesiredSizeScale.Get();
 }
-#pragma  optimize("", on)
 
 void STreeNode::SetContent(TSharedRef< SWidget > InContent)
 {
@@ -151,7 +158,10 @@ bool STreeNode::IsInteractable() const
 	return true;
 }
 
-//鼠标点击时，记录一个生成状态，并且向上层发送，开始创建箭头
+/*
+鼠标点击时，记录一个生成状态，并且向上层发送，开始创建箭头
+点击高亮区域时，画线，点击非高亮区域时，可以拖动！
+*/
 #pragma  optimize("", off)
 FReply STreeNode::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
@@ -162,11 +172,24 @@ FReply STreeNode::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerE
 	{
 		PressedScreenSpacePosition = MouseEvent.GetScreenSpacePosition();
 		FVector2D absolutePos = MyGeometry.GetAbsolutePosition();
-		FVector2D ClickSizeInTree = PressedScreenSpacePosition - absolutePos;
+		FVector2D ClickSizeInNode = PressedScreenSpacePosition - absolutePos;
 
-		SetAbsoluteCenterLinePos(absolutePos);
+		//创建Line
+		if (CheckClickPosType(ClickSizeInNode) == ClickType::CLICK_LINE)
+		{
+			BNodeMove = false;
+			SetAbsoluteCenterLinePos(absolutePos);
 
-		PressFunction(ClickSizeInTree);
+			PressFunction(ClickSizeInNode);
+		}
+		else//移动！！！
+		{
+			MouseClickPos = PressedScreenSpacePosition;
+			BNodeMove = true;
+		}
+
+		PressFunction(ClickSizeInNode);
+
 
 		//向上冒泡！才能获取正确的点击位置
 		Reply = FReply::Unhandled();
@@ -189,12 +212,31 @@ void STreeNode::PressFunction(FVector2D AbsolutePos)
 	ClickNodeCallDelegate.ExecuteIfBound(AbsolutePos,this);
 }
 
+/* 移动时，判断下，如果是在拖线的区域移动，则高亮拖线区域，
+*/
+#pragma  optimize("", off)
 FReply STreeNode::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	FReply Reply = FReply::Unhandled();
 
+	if (IsEnabled() && BNodeMove == true)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Moving!!!"));
+	
+		//计算移动后的当前位置
+		PressedScreenSpacePosition = MouseEvent.GetScreenSpacePosition();
+		FVector2D absolutePos = MyGeometry.GetAbsolutePosition();
+		FVector2D ClickSizeInNode = PressedScreenSpacePosition - absolutePos;
+
+		//根据点击的位置，做一个OFFSET
+		FVector2D offsetPos = -1 * (MouseClickPos - PressedScreenSpacePosition);
+
+		MoveNodeCallDelegate.ExecuteIfBound(this , offsetPos);
+	}
+	
 	return Reply;
 }
+#pragma  optimize("", on)
 
 /* 鼠标抬起时时判断是否当前Tree有选中节点，如果有：
 	判断当前NODE是否为Tree的选中节点，如果是，不处理；如果不是：
@@ -216,6 +258,9 @@ FReply STreeNode::OnMouseButtonUp(const FGeometry& MyGeometry, const FPointerEve
 		UpNodeCallDelegate.ExecuteIfBound(ClickSizeInNode, this);
 	}
 
+	//清空移动标识
+	BNodeMove = false;
+
 	return Reply;
 }
 
@@ -224,9 +269,22 @@ void STreeNode::OnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& M
 	
 }
 
+
 void STreeNode::OnMouseLeave(const FPointerEvent& MouseEvent)
 {
+	BNodeMove = false;
+}
 
+/*先计算下中间区域，然后判断点击点是否在中间区域
+*/
+STreeNode::ClickType STreeNode::CheckClickPosType(FVector2D ClickPos)
+{
+	if (ClickPos.X < MoveRect->right && ClickPos.X > MoveRect->left)
+	{
+		if (ClickPos.Y < MoveRect->bottom && ClickPos.Y > MoveRect->top)
+			return ClickType::CLICK_MOVE;
+	}
+	return ClickType::CLICK_LINE;
 }
 
 /************************************************************************/

@@ -32,6 +32,23 @@ class  STreeNode : public SCompoundWidget
 	DECLARE_DELEGATE_TwoParams( ClickNodeCall , FVector2D , STreeNode*)
 	DECLARE_DELEGATE_TwoParams(UpNodeCall, FVector2D, STreeNode*)
 	DECLARE_DELEGATE_OneParam(DeleteNodeCall, STreeNode*)
+	DECLARE_DELEGATE_TwoParams(MoveNodeCall, STreeNode* , FVector2D)
+
+public:
+	enum ClickType
+	{
+		NONE = 0,
+		CLICK_LINE = 1,
+		CLICK_MOVE = 2,
+	};
+
+	struct A_Rect
+	{
+		float top;
+		float left;
+		float right;
+		float bottom;
+	};
 
 public:
 	SLATE_BEGIN_ARGS(STreeNode)
@@ -51,6 +68,7 @@ public:
 	SLATE_EVENT(ClickNodeCall , ClickNodeCallBack)
 	SLATE_EVENT(UpNodeCall , UpNodeCallBack)
 	SLATE_EVENT(DeleteNodeCall, DeleteNodeCallBack)
+	SLATE_EVENT(MoveNodeCall , MoveNodeCallBack)
 
 	SLATE_END_ARGS()
 
@@ -107,15 +125,21 @@ protected:
 	//记录一个开始点击的位置
 	FVector2D PressedScreenSpacePosition;
 
+	//是否开始移动
+	bool BNodeMove = false;
+
 //事件委托
 protected:
 	ClickNodeCall ClickNodeCallDelegate;
 	UpNodeCall UpNodeCallDelegate;
 	DeleteNodeCall DeleteNodeCallDelegate;
+	MoveNodeCall MoveNodeCallDelegate;
 
 //点击处理函数
 protected:
 	void PressFunction(FVector2D AbsolutePos);
+	//判断鼠标点击区域是位于拖动区域还是画线区域
+	ClickType CheckClickPosType( FVector2D ClickPos );
 
 private:
 	//Tree的指针
@@ -128,6 +152,8 @@ private:
 	FVector2D CenterPosition;
 	//连线点
 	FVector2D LinePos;
+	//鼠标点击位置
+	FVector2D MouseClickPos;
 
 //外部使用逻辑函数
 public:
@@ -163,4 +189,6 @@ public:
 //数据保存等相关
 public:
 	NodeData* M_NodeData;	//自身的Node数据
+	int32 LineRange = 10;
+	A_Rect* MoveRect;			//点击移动区域RECT
 };
