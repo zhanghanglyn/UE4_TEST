@@ -1,0 +1,123 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "StoryPlaySystem.h"
+
+/* 需要在此解析是否为结束页，如果是结束页，结束本次播放 */
+void UStoryPlaySystem::GetPlayData()
+{
+
+}
+
+/* 正式播放剧情 */
+void UStoryPlaySystem::Play()
+{
+	PlayNextState();
+}
+
+/*  */
+void UStoryPlaySystem::FinishPlay()
+{
+
+}
+
+/* 播放下一状态，一开始状态为0，之后逐渐增加，当最大后回归0（清空当页时回归0） */
+void UStoryPlaySystem::PlayNextState()
+{
+	//重置计数器
+	EventPlayerCallCount = 0;
+	SequencerPlayerCallCount = 0;
+	SelectPlayerCallCount = 0;
+
+	//将当前状态加一
+	CurPlayState = UStoryPlaySystem::AddState(CurPlayState);
+	/* 如果相加后为0，则说明已经完成了一个轮询,播放下一页 */
+	if (CurPlayState == STORY_PLAYSATAE::NONE)
+	{
+		ResetParamPlayNext();
+		return;
+	}
+
+	EventPlayerDelegate.Broadcast(FString("Broad somthing"));
+	SequencerPlayerDelegate.Broadcast(FString("Broad somthing"));
+	SelectPlayerDelegate.Broadcast(FString("Broad somthing"));
+}
+
+/* 重置计时器，重新获取下页数据，如果有结束标识，则在此结束
+*/
+void UStoryPlaySystem::ResetParamPlayNext()
+{
+	if (bFinishTag == false)
+		GetPlayData();
+	else
+		FinishPlay();
+}
+
+/* 外部注册事件调用该函数来标识完成本次play */
+void UStoryPlaySystem::PlayerDelegateCallBack(STORY_PLAYERTYPE _TYPE)
+{
+	switch (_TYPE)
+	{
+	case STORY_PLAYERTYPE::EVENT_PLAYER:
+		EventPlayerCallCount++;
+		break;
+	case STORY_PLAYERTYPE::SEQ_PLAYER:
+		SequencerPlayerCallCount++;
+		break;
+	case STORY_PLAYERTYPE::SELECT_PLAYER:
+		SelectPlayerCallCount++;
+		break;
+	}
+
+	CheckBePlayNext();
+}
+
+void UStoryPlaySystem::CheckBePlayNext()
+{
+	if (EventPlayerCallCount >= EventPlayerCount && SequencerPlayerCallCount >= SequencerPlayerCount && SelectPlayerCallCount >= SelectPlayerCount)
+		PlayNextState();
+}
+
+/* 接受回调并增加计数 */
+void UStoryPlaySystem::AddPlayerCount(STORY_PLAYERTYPE _TYPE)
+{
+	switch (_TYPE)
+	{
+	case STORY_PLAYERTYPE::EVENT_PLAYER:
+		EventPlayerCount++;
+		break;
+	case STORY_PLAYERTYPE::SEQ_PLAYER:
+		SequencerPlayerCount++;
+		break;
+	case STORY_PLAYERTYPE::SELECT_PLAYER:
+		SelectPlayerCount++;
+		break;
+	default:
+		break;
+	}
+}
+
+void UStoryPlaySystem::ReducePlayerCount(STORY_PLAYERTYPE _TYPE)
+{
+	switch (_TYPE)
+	{
+	case STORY_PLAYERTYPE::EVENT_PLAYER:
+		EventPlayerCount--;
+		break;
+	case STORY_PLAYERTYPE::SEQ_PLAYER:
+		SequencerPlayerCount--;
+		break;
+	case STORY_PLAYERTYPE::SELECT_PLAYER:
+		SelectPlayerCount--;
+		break;
+	default:
+		break;
+	}
+}
+
+void UStoryPlaySystem::ClearDelegate()
+{
+	EventPlayerDelegate.Clear();
+	SequencerPlayerDelegate.Clear();
+	SelectPlayerDelegate.Clear();
+}
