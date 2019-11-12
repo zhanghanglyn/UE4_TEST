@@ -26,7 +26,7 @@
 	return rs;
 };*/
 
-//播放器状态枚举
+//播放器类型枚举
 UENUM(BlueprintType)
 enum class STORY_PLAYERTYPE : uint8
 {
@@ -35,6 +35,17 @@ enum class STORY_PLAYERTYPE : uint8
 	SEQ_PLAYER = 2,
 	SELECT_PLAYER = 3,
 };
+
+/*定义播放类型枚举*/
+enum STORY_PLAYSATAE
+{
+	NONE,
+	BEFORE_PLAY,
+	PLAYING,
+	AFTER_PLAY,
+};
+
+class UStoryPlayerBase;
 
 /**
  * 剧情播放系统初版，播放剧情分为播放前，播放时，播放后三种情况，三种情况均会调用委托,
@@ -47,29 +58,21 @@ class UStoryPlaySystem : public UObject
 	GENERATED_BODY()
 
 public:
-	//事件播放器委托
-	DECLARE_MULTICAST_DELEGATE_OneParam(EventPlayer, FString)
+	//事件播放器委托  ,参数为当前播放状态是开始前，开始时还是开始后
+	DECLARE_MULTICAST_DELEGATE_OneParam(EventPlayer, STORY_PLAYSATAE)
 	EventPlayer EventPlayerDelegate;
 	//Sequencer委托
-	DECLARE_MULTICAST_DELEGATE_OneParam(SequencerPlayer, FString)
+	DECLARE_MULTICAST_DELEGATE_OneParam(SequencerPlayer, STORY_PLAYSATAE)
 	SequencerPlayer SequencerPlayerDelegate;
 	//Select委托
-	DECLARE_MULTICAST_DELEGATE_OneParam(SelectPlayer, FString)
+	DECLARE_MULTICAST_DELEGATE_OneParam(SelectPlayer, STORY_PLAYSATAE)
 	SelectPlayer SelectPlayerDelegate;
 
-	/*定义枚举与自增加函数*/
-	enum STORY_PLAYSATAE
-	{
-		NONE,
-		BEFORE_PLAY,
-		PLAYING,
-		AFTER_PLAY,
-	};
 	static STORY_PLAYSATAE AddState(STORY_PLAYSATAE &out)
 	{
 		int32 i = out;
 		i++;
-		if (i > AFTER_PLAY)
+		if (i > STORY_PLAYSATAE::AFTER_PLAY)
 			out = STORY_PLAYSATAE::NONE;
 		else
 			out = (enum STORY_PLAYSATAE)(i);
@@ -77,25 +80,11 @@ public:
 	};
 
 public:
-	//外部调用，向故事播放器注册播放事件,不支持蓝图
-	template <typename UserClass, typename... ParamTypes, typename... VarTypes>
-	void RegistEventPlayer(UserClass* InUserObject, typename TMemFunPtrType<false, UserClass, void(ParamTypes..., VarTypes...)>::Type InFunc, VarTypes... Vars)
-	{
-		EventPlayerDelegate.AddUObject(InUserObject, InFunc, Vars);
-		AddPlayerCount(EVENT_PLAYER);
-	};
-	template <typename UserClass, typename... ParamTypes, typename... VarTypes>
-	void RegistSequencerPlayer(UserClass* InUserObject, typename TMemFunPtrType<false, UserClass, void(ParamTypes..., VarTypes...)>::Type InFunc, VarTypes... Vars)
-	{
-		SequencerPlayerDelegate.AddUObject(InUserObject, InFunc, Vars);
-		AddPlayerCount(SEQ_PLAYER);
-	};
-	template <typename UserClass, typename... ParamTypes, typename... VarTypes>
-	void RegistSelectPlayer(UserClass* InUserObject, typename TMemFunPtrType<false, UserClass, void(ParamTypes..., VarTypes...)>::Type InFunc, VarTypes... Vars)
-	{
-		SelectPlayerDelegate.AddUObject(InUserObject, InFunc, Vars);
-		AddPlayerCount(SELECT_PLAYER);
-	};
+	//外部还是调用这个吧 获取需要设置的委托
+	TMulticastDelegate<void, STORY_PLAYSATAE>& GetDelegate(STORY_PLAYERTYPE _TYPE);
+	
+	//传入播放器，为其设置一个播放完毕回调
+	void SetCallBack(UStoryPlayerBase *PlayerBase);
 
 	//增加委托计数
 	UFUNCTION(BlueprintCallable)
@@ -105,6 +94,47 @@ public:
 	//清空委托
 	void ClearDelegate();
 
+/* 以下为失败的测试方法，后续再研究吧 */
+protected:
+	// 不用这个！！ 外部调用，向故事播放器注册播放事件,不支持蓝图 param : _Delegate 事件播放器的委托，会在上绑定一个事件完成的回调函数
+	template <typename UserClass, typename... ParamTypes, typename... VarTypes>
+	void RegistPlayer(STORY_PLAYERTYPE PlayerType, UserClass* InUserObject, typename TMemFunPtrType<true, UserClass, void(ParamTypes..., VarTypes...)>::Type InFunc, VarTypes... Vars)
+		//void RegistPlayer(STORY_PLAYERTYPE PlayerType, UserClass* InUserObject, typename TMemFunPtrType<false, UserClass, void(ParamTypes...)>::Type InFunc)
+	{
+		//绑定一个播放完毕的委托
+		(Cast<UStoryPlayerBase>(InUserObject))->M_PlayOverDelegate.BindUObject(this, &UStoryPlaySystem::PlayerDelegateCallBack);
+
+		switch (PlayerType)
+		{
+		case STORY_PLAYERTYPE::EVENT_PLAYER:
+			RegistEventPlayer(InUserObject, InFunc);
+			break;
+		case STORY_PLAYERTYPE::SEQ_PLAYER:
+			RegistSequencerPlayer(InUserObject, InFunc);
+			break;
+		case STORY_PLAYERTYPE::SELECT_PLAYER:
+			RegistSelectPlayer(InUserObject, InFunc);
+			break;
+		}
+	}
+	template <typename UserClass, typename... ParamTypes, typename... VarTypes>
+	void RegistEventPlayer(UserClass* InUserObject, typename TMemFunPtrType<true, UserClass, void(ParamTypes..., VarTypes...)>::Type InFunc, VarTypes... Vars)
+	{
+		EventPlayerDelegate.AddUObject(InUserObject, InFunc);
+		AddPlayerCount(EVENT_PLAYER);
+	};
+	template <typename UserClass, typename... ParamTypes, typename... VarTypes>
+	void RegistSequencerPlayer(UserClass* InUserObject, typename TMemFunPtrType<true, UserClass, void(ParamTypes..., VarTypes...)>::Type InFunc, VarTypes... Vars)
+	{
+		SequencerPlayerDelegate.AddUObject(InUserObject, InFunc);
+		AddPlayerCount(SEQ_PLAYER);
+	};
+	template <typename UserClass, typename... ParamTypes, typename... VarTypes>
+	void RegistSelectPlayer(UserClass* InUserObject, typename TMemFunPtrType<true, UserClass, void(ParamTypes..., VarTypes...)>::Type InFunc, VarTypes... Vars)
+	{
+		SelectPlayerDelegate.AddUObject(InUserObject, InFunc);
+		AddPlayerCount(SELECT_PLAYER);
+	};
 
 private:
 	//绑定事件计数,三种

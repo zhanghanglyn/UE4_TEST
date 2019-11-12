@@ -6,7 +6,8 @@
 void UStoryGameInstance::Init() 
 {
 	UMGManagerInstance = NewObject<UUMGManager>(); //UUMGManager::GetInstance();
-	
+	PlayerSystem = NewObject<UStoryPlaySystem>();
+
 	if (GEngine)
 	{
 		UGameUserSettings* settings = GEngine->GetGameUserSettings();

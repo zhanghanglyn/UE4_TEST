@@ -620,7 +620,7 @@ void AStoryPlayerPawn::TestFuncTwo()
 
 void AStoryPlayerPawn::TestFuncThree()
 {
-	UStoryGameInstance* instance2 = UStoryGameInstance::GetInstance();
+	/*UStoryGameInstance* instance2 = UStoryGameInstance::GetInstance();
 
 	FString screenPath2 = "WidgetBlueprint'/Game/StoryTest/UI/BP_FullScreenTest2.BP_FullScreenTest2_C'";
 	UStoryGameInstance* instance = UStoryGameInstance::GetInstance(GetWorld());
@@ -640,7 +640,16 @@ void AStoryPlayerPawn::TestFuncThree()
 		NewWidget->SetZorder<UCanvasPanelSlot>(2);
 		//NewWidget->SetAnchors<UCanvasPanelSlot>(FAnchors(1, 1, 1, 1));
 	}
-		
+	*/
+
+	//storyPlayer测试
+	UStoryGameInstance* instance = UStoryGameInstance::GetInstance(GetWorld());
+	UStoryPlayerBase* base = NewObject<UStoryPlayerBase>();
+	
+	base->RegistToSystem(instance->PlayerSystem);
+
+	instance->PlayerSystem->Play();
+	
 	
 }
 

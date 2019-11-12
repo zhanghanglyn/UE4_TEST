@@ -30,6 +30,7 @@
 #include "StoryTest/GameMgr/StoryGameInstance.h"
 #include "Classes/GameFramework/Character.h"
 #include "StoryTest/TestTouchUI.h"
+#include "StoryPlaySystem/StoryPlayerBase.h"
 #include "StoryPlayerPawn.generated.h"
 
 UCLASS()

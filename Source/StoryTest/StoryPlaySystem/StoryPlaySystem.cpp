@@ -2,6 +2,38 @@
 
 
 #include "StoryPlaySystem.h"
+#include "StoryPlaySystem/StoryPlayerBase.h"
+/************************************************************************/
+/*                       设置委托等相关                            */
+/************************************************************************/
+TMulticastDelegate<void, STORY_PLAYSATAE>& UStoryPlaySystem::GetDelegate(STORY_PLAYERTYPE _TYPE)
+{
+	switch (_TYPE)
+	{
+	case STORY_PLAYERTYPE::EVENT_PLAYER:
+		return EventPlayerDelegate;
+		break;
+	case STORY_PLAYERTYPE::SEQ_PLAYER:
+		return SequencerPlayerDelegate;
+		break;
+	case STORY_PLAYERTYPE::SELECT_PLAYER:
+		return SelectPlayerDelegate;
+		break;
+	}
+
+	return EventPlayerDelegate;
+}
+
+void UStoryPlaySystem::SetCallBack(UStoryPlayerBase *PlayerBase)
+{
+	//绑定一个播放完毕的委托
+	if (PlayerBase != nullptr)
+		PlayerBase->M_PlayOverDelegate.BindUObject(this, &UStoryPlaySystem::PlayerDelegateCallBack);
+
+}
+
+
+
 
 /* 需要在此解析是否为结束页，如果是结束页，结束本次播放 */
 void UStoryPlaySystem::GetPlayData()
@@ -38,9 +70,9 @@ void UStoryPlaySystem::PlayNextState()
 		return;
 	}
 
-	EventPlayerDelegate.Broadcast(FString("Broad somthing"));
-	SequencerPlayerDelegate.Broadcast(FString("Broad somthing"));
-	SelectPlayerDelegate.Broadcast(FString("Broad somthing"));
+	EventPlayerDelegate.Broadcast(CurPlayState);
+	SequencerPlayerDelegate.Broadcast(CurPlayState);
+	SelectPlayerDelegate.Broadcast(CurPlayState);
 }
 
 /* 重置计时器，重新获取下页数据，如果有结束标识，则在此结束

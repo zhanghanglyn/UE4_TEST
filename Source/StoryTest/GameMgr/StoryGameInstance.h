@@ -8,6 +8,7 @@
 #include "Classes/Kismet/GameplayStatics.h"
 #include "Classes/GameFramework/GameUserSettings.h"
 #include "Engine/Classes/Engine/World.h"
+#include "StoryPlaySystem/StoryPlaySystem.h"
 #include "FullUMG/UMGManager.h"
 #include "StoryGameInstance.generated.h"
 
@@ -34,7 +35,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UUMGManager* GetUMGManager();
 
-protected:
+public:
 	//在此初始化并且保存一份UMGManager
 	UUMGManager* UMGManagerInstance;
+	UStoryPlaySystem* PlayerSystem;
+	
 };
