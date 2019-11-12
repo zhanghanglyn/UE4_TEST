@@ -3,21 +3,20 @@
 
 #include "StoryPlayerBase.h"
 
-UStoryPlayerBase::UStoryPlayerBase()
+UStoryPlayerBase::UStoryPlayerBase(const FObjectInitializer& ObjectInitializer)
 {
-	SelfType = STORY_PLAYERTYPE::EVENT_PLAYER;
+	SelfType = STORY_PLAYERTYPE::NONE;
 }
 
+/* 如果自身类型为NONE，不注册 */
 void UStoryPlayerBase::RegistToSystem(UStoryPlaySystem* PlayerSystem)
 {
-	if (PlayerSystem == nullptr)
+	if (PlayerSystem == nullptr || SelfType == STORY_PLAYERTYPE::NONE)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Can't find StoryPlayer System !!!"));
 		return;
 	}
 		
-	//PlayerSystem->RegistPlayer<UStoryPlayerBase, STORY_PLAYSATAE,void>(SelfType, this, &UStoryPlayerBase::PlayStateCall);
-	//PlayerSystem->RegistPlayer(SelfType, this, &UStoryPlayerBase::PlayStateCall);
 	(PlayerSystem->GetDelegate(SelfType)).AddUObject(this, &UStoryPlayerBase::PlayStateCall);
 	PlayerSystem->SetCallBack(this);
 }

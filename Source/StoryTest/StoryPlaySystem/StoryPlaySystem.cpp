@@ -23,16 +23,17 @@ TMulticastDelegate<void, STORY_PLAYSATAE>& UStoryPlaySystem::GetDelegate(STORY_P
 
 	return EventPlayerDelegate;
 }
-
+/* 注册回调的同时，增加计数 */
 void UStoryPlaySystem::SetCallBack(UStoryPlayerBase *PlayerBase)
 {
+	if (PlayerBase == nullptr || PlayerBase->SelfType == STORY_PLAYERTYPE::NONE)
+		return;
+
 	//绑定一个播放完毕的委托
-	if (PlayerBase != nullptr)
-		PlayerBase->M_PlayOverDelegate.BindUObject(this, &UStoryPlaySystem::PlayerDelegateCallBack);
+	PlayerBase->M_PlayOverDelegate.BindUObject(this, &UStoryPlaySystem::PlayerDelegateCallBack);
+	AddPlayerCount(PlayerBase->SelfType);
 
 }
-
-
 
 
 /* 需要在此解析是否为结束页，如果是结束页，结束本次播放 */

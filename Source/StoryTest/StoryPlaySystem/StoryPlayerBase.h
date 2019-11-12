@@ -19,13 +19,15 @@ class UStoryPlayerBase : public UObject
 	DECLARE_DELEGATE_OneParam(PlayOverDelegate, STORY_PLAYERTYPE)
 
 public:
-	UStoryPlayerBase();
+	UStoryPlayerBase(const FObjectInitializer& ObjectInitializer);
 
 	/* 想播放系统注册自身 */
 	virtual void RegistToSystem( UStoryPlaySystem* PlayerSystem );
 
 	/* 播放器播放时注册的调用事件委托 , 参数为当前播放状态*/
 	virtual void PlayStateCall(STORY_PLAYSATAE _CurState);
+
+protected:
 	
 public:
 	STORY_PLAYERTYPE SelfType = STORY_PLAYERTYPE::NONE; //当前自身播放器类型
