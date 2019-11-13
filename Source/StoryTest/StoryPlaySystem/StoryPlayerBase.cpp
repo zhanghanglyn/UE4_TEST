@@ -21,7 +21,7 @@ void UStoryPlayerBase::RegistToSystem(UStoryPlaySystem* PlayerSystem)
 	PlayerSystem->SetCallBack(this);
 }
 
-void UStoryPlayerBase::PlayStateCall(STORY_PLAYSATAE _CurState)
+void UStoryPlayerBase::PlayStateCall(STORY_PLAYSATAE _CurState, TEST_PAGE_DATA _TestData)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Parent PlayerBase Is Worked!"));
 	M_PlayOverDelegate.ExecuteIfBound(SelfType);

@@ -65,3 +65,14 @@ void UStoryGameInstance::ChangeLevel(UWorld* _world, FName _levelName)
 {
 	UGameplayStatics::OpenLevel(_world, _levelName, false);
 }
+
+UWorld* UStoryGameInstance::InsGetWorld()
+{
+	UWorld *world = (GEngine->GetWorldContexts())[0].World();
+	if (world)
+	{
+		return world;
+	}
+
+	return nullptr;
+}

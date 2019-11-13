@@ -648,6 +648,7 @@ void AStoryPlayerPawn::TestFuncThree()
 	USequencerPlayer* sequancerPlayer = NewObject<USequencerPlayer>();
 	
 	base->RegistToSystem(instance->PlayerSystem);
+	sequancerPlayer->Init(GetWorld());
 	sequancerPlayer->RegistToSystem(instance->PlayerSystem);
 
 	instance->PlayerSystem->Play();

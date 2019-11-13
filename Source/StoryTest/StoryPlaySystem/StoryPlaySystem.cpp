@@ -6,7 +6,7 @@
 /************************************************************************/
 /*                       设置委托等相关                            */
 /************************************************************************/
-TMulticastDelegate<void, STORY_PLAYSATAE>& UStoryPlaySystem::GetDelegate(STORY_PLAYERTYPE _TYPE)
+TMulticastDelegate<void, STORY_PLAYSATAE, TEST_PAGE_DATA>& UStoryPlaySystem::GetDelegate(STORY_PLAYERTYPE _TYPE)
 {
 	switch (_TYPE)
 	{
@@ -40,11 +40,16 @@ void UStoryPlaySystem::SetCallBack(UStoryPlayerBase *PlayerBase)
 void UStoryPlaySystem::GetPlayData()
 {
 
+	//先添加一个测试数据
+	test_Data = new TEST_PAGE_DATA();
+	test_Data->SequencerPath = "/Game/StoryTest/Sequencer/NewLevelSequence.NewLevelSequence";
+
 }
 
 /* 正式播放剧情 */
 void UStoryPlaySystem::Play()
 {
+	GetPlayData();
 	PlayNextState();
 }
 
@@ -71,9 +76,9 @@ void UStoryPlaySystem::PlayNextState()
 		return;
 	}
 
-	EventPlayerDelegate.Broadcast(CurPlayState);
-	SequencerPlayerDelegate.Broadcast(CurPlayState);
-	SelectPlayerDelegate.Broadcast(CurPlayState);
+	EventPlayerDelegate.Broadcast(CurPlayState, *test_Data);
+	SequencerPlayerDelegate.Broadcast(CurPlayState, *test_Data);
+	SelectPlayerDelegate.Broadcast(CurPlayState, *test_Data);
 }
 
 /* 重置计时器，重新获取下页数据，如果有结束标识，则在此结束
@@ -81,7 +86,8 @@ void UStoryPlaySystem::PlayNextState()
 void UStoryPlaySystem::ResetParamPlayNext()
 {
 	if (bFinishTag == false)
-		GetPlayData();
+		//GetPlayData();
+		Play();
 	else
 		FinishPlay();
 }

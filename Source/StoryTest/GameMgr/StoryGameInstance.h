@@ -30,6 +30,8 @@ public:
 	//ÇÐ»»¹Ø¿¨
 	void ChangeLevel(UWorld* _world, FName _levelName);
 
+	UWorld* InsGetWorld();
+
 
 public:
 	UFUNCTION(BlueprintCallable)

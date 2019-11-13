@@ -25,7 +25,7 @@ public:
 	virtual void RegistToSystem( UStoryPlaySystem* PlayerSystem );
 
 	/* 播放器播放时注册的调用事件委托 , 参数为当前播放状态*/
-	virtual void PlayStateCall(STORY_PLAYSATAE _CurState);
+	virtual void PlayStateCall(STORY_PLAYSATAE _CurState , TEST_PAGE_DATA _TestData);
 
 protected:
 	

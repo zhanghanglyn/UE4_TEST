@@ -45,6 +45,13 @@ enum STORY_PLAYSATAE
 	AFTER_PLAY,
 };
 
+/* 测试发送数据结构 */
+struct TEST_PAGE_DATA
+{
+public:
+	FString SequencerPath;
+};
+
 class UStoryPlayerBase;
 
 /**
@@ -59,13 +66,13 @@ class UStoryPlaySystem : public UObject
 
 public:
 	//事件播放器委托  ,参数为当前播放状态是开始前，开始时还是开始后
-	DECLARE_MULTICAST_DELEGATE_OneParam(EventPlayer, STORY_PLAYSATAE)
+	DECLARE_MULTICAST_DELEGATE_TwoParams(EventPlayer, STORY_PLAYSATAE , TEST_PAGE_DATA)
 	EventPlayer EventPlayerDelegate;
 	//Sequencer委托
-	DECLARE_MULTICAST_DELEGATE_OneParam(SequencerPlayer, STORY_PLAYSATAE)
+	DECLARE_MULTICAST_DELEGATE_TwoParams(SequencerPlayer, STORY_PLAYSATAE , TEST_PAGE_DATA)
 	SequencerPlayer SequencerPlayerDelegate;
 	//Select委托
-	DECLARE_MULTICAST_DELEGATE_OneParam(SelectPlayer, STORY_PLAYSATAE)
+	DECLARE_MULTICAST_DELEGATE_TwoParams(SelectPlayer, STORY_PLAYSATAE , TEST_PAGE_DATA)
 	SelectPlayer SelectPlayerDelegate;
 
 	static STORY_PLAYSATAE AddState(STORY_PLAYSATAE &out)
@@ -81,7 +88,7 @@ public:
 
 public:
 	//外部还是调用这个吧 获取需要设置的委托
-	TMulticastDelegate<void, STORY_PLAYSATAE>& GetDelegate(STORY_PLAYERTYPE _TYPE);
+	TMulticastDelegate<void, STORY_PLAYSATAE , TEST_PAGE_DATA>& GetDelegate(STORY_PLAYERTYPE _TYPE);
 	
 	//传入播放器，为其设置一个播放完毕回调
 	void SetCallBack(UStoryPlayerBase *PlayerBase);
@@ -152,6 +159,9 @@ private:
 	FString CurData;
 	//是否有结束标识
 	bool bFinishTag;
+
+	//测试数据
+	TEST_PAGE_DATA* test_Data;
 
 /*
 	正式播放以及获取数据等相关
