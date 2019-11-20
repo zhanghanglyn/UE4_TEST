@@ -180,7 +180,7 @@ FReply STreeNode::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerE
 			BNodeMove = false;
 			SetAbsoluteCenterLinePos(absolutePos);
 
-			PressFunction(ClickSizeInNode);
+			//PressFunction(ClickSizeInNode);
 		}
 		else//移动！！！
 		{
@@ -227,6 +227,9 @@ FReply STreeNode::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& 
 		PressedScreenSpacePosition = MouseEvent.GetScreenSpacePosition();
 		FVector2D absolutePos = MyGeometry.GetAbsolutePosition();
 		FVector2D ClickSizeInNode = PressedScreenSpacePosition - absolutePos;
+
+		/* 19.11.20 */
+		SetAbsoluteCenterLinePos(absolutePos);
 
 		//根据点击的位置，做一个OFFSET
 		FVector2D offsetPos = -1 * (MouseClickPos - PressedScreenSpacePosition);
@@ -366,4 +369,10 @@ void STreeNode::ClearChildNode()
 {
 	M_NodeData->ChildID = -1;
 	ChildNode = nullptr;
+}
+
+void STreeNode::SetNodePos(FVector2D _NodePos)
+{
+	M_NodeData->Pos = FVector2D(_NodePos);
+
 }

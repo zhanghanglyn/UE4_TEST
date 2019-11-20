@@ -125,9 +125,6 @@ protected:
 	//记录一个开始点击的位置
 	FVector2D PressedScreenSpacePosition;
 
-	//是否开始移动
-	bool BNodeMove = false;
-
 //事件委托
 protected:
 	ClickNodeCall ClickNodeCallDelegate;
@@ -185,10 +182,15 @@ public:
 	void SetNodeData( NodeData* _NodeData);
 	//设置自身LinePos
 	void SetNodeLinePos(FVector2D _LinePos);
+	//设置移动后自身位置
+	void SetNodePos(FVector2D _NodePos);
 
 //数据保存等相关
 public:
 	NodeData* M_NodeData;	//自身的Node数据
 	int32 LineRange = 10;
 	A_Rect* MoveRect;			//点击移动区域RECT
+
+	//是否开始移动
+	bool BNodeMove = false;
 };

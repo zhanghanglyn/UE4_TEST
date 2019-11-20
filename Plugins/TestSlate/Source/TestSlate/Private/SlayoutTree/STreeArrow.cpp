@@ -190,3 +190,41 @@ void STreeArrow::ClearArrow(int32 _AID)
 		NodeRelationList.Remove(_AID);
 	}
 }
+
+/*  */
+void STreeArrow::MoveArrowByNode(STreeNode* _Node)
+{
+	int32 ParentArrowId = -1;
+	int32 ChildArrowId = -1;
+
+	/* 循环查找对应的父与子线段，获取Node的链接点，重新设置 */
+	for (TMap<int32, TPair< int32, int32 >>::TConstIterator iter(NodeRelationList); iter; ++iter)
+	{
+		TPair< int32, int32 > CurRelation = iter->Value;
+		if (CurRelation.Key == _Node->M_NodeData->DataID)
+		{
+			ParentArrowId = iter->Key;
+			if (ChildArrowId != -1)	/* 如果两个值都已经查到了，就直接break*/
+				break;
+		}
+		if (CurRelation.Value == _Node->M_NodeData->DataID)
+		{
+			ChildArrowId = iter->Key;
+			if (ParentArrowId != -1)	/* 如果两个值都已经查到了，就直接break*/
+				break;
+		}
+	}
+
+	/*重新设置作为父类的Arrow起始点*/
+	if (ParentArrowId != -1)
+	{
+		//if(ArrowList.Num>0 && ArrowList[ParentArrowId].Num() > 0)
+			ArrowList[ParentArrowId][0] = FVector2D(_Node->M_NodeData->LinePos);
+	}
+	/*重新设置作为子类的Arrow的结束点*/
+	if (ChildArrowId != -1)
+	{
+		//if (ArrowList.Num > 0 && ArrowList[ParentArrowId].Num() > 0)
+			ArrowList[ChildArrowId][1] = FVector2D( _Node->M_NodeData->LinePos);
+	}
+}

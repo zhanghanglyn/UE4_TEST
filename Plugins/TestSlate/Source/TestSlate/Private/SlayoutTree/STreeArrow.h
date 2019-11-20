@@ -12,8 +12,11 @@
 
 #pragma once
 #include "TestSlate/Public/TestSlate.h"
+#include "TestSlate/Private/SlayoutTree/TreeNode.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Public/Math/UnrealMath.h"
+
+class STreeNode;
 
 class  STreeArrow : public SBorder
 {
@@ -76,6 +79,9 @@ public:
 
 	//根据AID清除一条线
 	void ClearArrow(int32 _AID);
+
+	/* 19.11.20 重新设置线段当一个节点移动时 */
+	void MoveArrowByNode(STreeNode* _Node);
 
 //数据相关
 protected:

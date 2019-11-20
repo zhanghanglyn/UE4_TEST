@@ -220,6 +220,8 @@ protected:
 
 	bool BStartDraw = false;
 
+	bool BNodeMove = false;
+
 //事件函数相关
 public:
 	//点击节点的回调

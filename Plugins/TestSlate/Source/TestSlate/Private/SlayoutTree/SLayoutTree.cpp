@@ -348,7 +348,7 @@ FReply SCanvasTree::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointe
 		Reply = FReply::Handled();
 	}
 	//左键为开始画线，此事件因为TreeNode的冒泡事件
-	if (IsEnabled() && MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton && BStartDraw == true)
+	if (IsEnabled() && MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton && BStartDraw == true && BNodeMove == false)
 	{
 		//计算一下生成位置，因为有一个相对位置的问题
 		FVector2D CreatePos = MouseEvent.GetScreenSpacePosition();
@@ -378,6 +378,7 @@ void SCanvasTree::ClickNodeCall(FVector2D Pos, STreeNode* _CurNode)
 	FSlot* tempSlot = GetSlot(_CurNode->M_NodeData->DataID);
 	tempSlot->StartClickPos = tempSlot->PositionAttr.Get();
 
+	BNodeMove = _CurNode->BNodeMove;
 	BStartDraw = true;
 	CurNode = _CurNode;
 }
@@ -385,17 +386,32 @@ void SCanvasTree::ClickNodeCall(FVector2D Pos, STreeNode* _CurNode)
 //当点击后鼠标移动！
 FReply SCanvasTree::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
-	if (BStartDraw == false)
-		return FReply::Unhandled();
+	if (BStartDraw == true && BNodeMove == false)
+	{
+		FReply Reply = FReply::Unhandled();
+		FVector2D CreatePos = MouseEvent.GetScreenSpacePosition();
+		FVector2D absolutePos = MyGeometry.GetAbsolutePosition();
+		FVector2D ClickSizeInTree = CreatePos - absolutePos;
 
-	FReply Reply = FReply::Unhandled();
-	FVector2D CreatePos = MouseEvent.GetScreenSpacePosition();
-	FVector2D absolutePos = MyGeometry.GetAbsolutePosition();
-	FVector2D ClickSizeInTree = CreatePos - absolutePos;
+		mTreeArrowPanel->MoveDrawArrow(ClickSizeInTree);
 
-	mTreeArrowPanel->MoveDrawArrow(ClickSizeInTree);
+		return FReply::Handled();
+	}
+	/* 19.11.20 在移动时设置其位置 */
+	if (BNodeMove == true)
+	{
+		FReply Reply = FReply::Unhandled();
+		FVector2D CreatePos = MouseEvent.GetScreenSpacePosition();
+		FVector2D absolutePos = MyGeometry.GetAbsolutePosition();
+		FVector2D ClickSizeInTree = CreatePos - absolutePos;
 
-	return FReply::Handled();
+		if(CurNode != nullptr)
+			CurNode->SetNodeLinePos(CurNode->GetAbsoluteCenterLinePos() - absolutePos);
+
+		return FReply::Handled();
+	}
+
+	return FReply::Unhandled();
 }
 
 //鼠标从节点上抬起时的回调
@@ -410,9 +426,10 @@ FReply SCanvasTree::OnMouseButtonUp(const FGeometry& InMyGeometry, const FPointe
 	//左键抬起时结束本次绘制,判断下是否处于点中状态，判断下是否抬起点为当前节点
 	if (IsEnabled() && InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{
-		if (BStartDraw == true && LinkNode != nullptr && LinkNode != CurNode && CheckNodeCanBeConnect())
+		if (BStartDraw == true && BNodeMove == false && LinkNode != nullptr && LinkNode != CurNode && CheckNodeCanBeConnect())
 		{
 			BStartDraw = false;
+			BNodeMove = true;
 			FVector2D CreatePos = InMouseEvent.GetScreenSpacePosition();
 			FVector2D absolutePos = InMyGeometry.GetAbsolutePosition();
 			FVector2D ClickSizeInTree = CreatePos - absolutePos;
@@ -498,8 +515,11 @@ void SCanvasTree::MoveNodeCall(STreeNode* _MoveNode , FVector2D _MoveOffset)
 	UE_LOG(LogTemp, Warning, TEXT(" POSY : %f    +  OFFSETY :  %f"), tempSlot->StartClickPos.Y, _MoveOffset.Y);
 	if (tempSlot != nullptr)
 		tempSlot->Position(tempSlot->StartClickPos + _MoveOffset);
+	_MoveNode->SetNodePos(tempSlot->PositionAttr.Get());
 
-	//设置箭头位置
+	//设置箭头位置 19.11.20 继续开始
+	/* 找到该节点作为父和子的两条线段，分别修改其线段的起始段和结束端 */
+	mTreeArrowPanel->MoveArrowByNode(_MoveNode);
 
 }
 

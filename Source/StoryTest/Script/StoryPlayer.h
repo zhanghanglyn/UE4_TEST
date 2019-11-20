@@ -12,6 +12,7 @@
 #include "StoryTest/DataUtil/ScenarioScenarioConfig.h"
 #include "Runtime/LevelSequence/Public/LevelSequenceActor.h"
 #include "Runtime/LevelSequence/Public/LevelSequence.h"
+#include "Engine/Classes/Engine/SkeletalMesh.h"
 #include "StoryPlayer.generated.h"
 
 UCLASS()
@@ -87,3 +88,4 @@ public:
 
 
 };
+
