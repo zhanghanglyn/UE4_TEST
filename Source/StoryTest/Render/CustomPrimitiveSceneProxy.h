@@ -35,12 +35,12 @@ class FCustomVertexFactory : public FLocalVertexFactory
 {
 
 public:
-	FCustomVertexFactory(ERHIFeatureLevel::Type InFeatureLevel = ERHIFeatureLevel::SM4, /* 支持的渲染级别，比如DX11啊DX10啊OPENGLxxx啊 */
+	FCustomVertexFactory(ERHIFeatureLevel::Type InFeatureLevel = ERHIFeatureLevel::ES3_1, /* 支持的渲染级别，比如DX11啊DX10啊OPENGLxxx啊 */
 		const char* InDebugName = "CustomProxy") : FLocalVertexFactory(InFeatureLevel, InDebugName)
 	{};
 
-	void Init(const FCustomVertexBuffer* VerTexBuffer)
-	{
+	void Init(const FCustomVertexBuffer* VerTexBuffer);
+	/*{
 		if (IsInRenderingThread())
 		{
 			FDataType MeshData;
@@ -49,7 +49,7 @@ public:
 			);
 			MeshData.TextureCoordinates.Add(
 				FVertexStreamComponent(VerTexBuffer, STRUCT_OFFSET(FDynamicMeshVertex, TextureCoordinate),
-					sizeof(FDynamicMeshVertex), EVertexElementType::VET_Float2) /* UV所以是FLOAT2, */
+					sizeof(FDynamicMeshVertex), EVertexElementType::VET_Float2) // UV所以是FLOAT2,
 			);
 			MeshData.TangentBasisComponents[0] = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(
 				VerTexBuffer, FDynamicMeshVertex, TangentX,
@@ -61,8 +61,8 @@ public:
 			);
 			SetData(MeshData);
 		}
-		/* 如果不在渲染进程中，要将该初始化代码加入渲染进程中（大象的教程中写的，不过我感觉根据用法不同有可能不需要） */
-		/*else
+		// 如果不在渲染进程中，要将该初始化代码加入渲染进程中（大象的教程中写的，不过我感觉根据用法不同有可能不需要
+		else
 		{
 			ENQUEUE_UNIQUE_RENDER_COMMAND_TWOPARAMETER(
 				FName(InitFCustomVertexFactory), FCustomVertexFactory*, VertexFactory, this,
@@ -87,8 +87,8 @@ public:
 					VertexFactory->SetData(MeshData);
 				}
 			);
-		}*/
-	}
+		}
+	}*/
 
 };
 
@@ -136,10 +136,10 @@ public:
 	virtual FPrimitiveViewRelevance GetViewRelevance(const FSceneView* View) const override
 	{
 		FPrimitiveViewRelevance relevance;
-		relevance.bDrawRelevance = IsShown(View);
+		relevance.bDrawRelevance = true;// IsShown(View);
 		relevance.bDynamicRelevance = true;
-		relevance.bShadowRelevance = IsShadowCast(View);
-		relevance.bEditorPrimitiveRelevance = UseEditorCompositing(View);
+		relevance.bShadowRelevance = true;//IsShadowCast(View);
+		relevance.bEditorPrimitiveRelevance = true;//UseEditorCompositing(View);
 		//relevance.bUseCustomViewData = true;
 
 		return relevance;

@@ -7,7 +7,7 @@ FCustomPrimitiveSceneProxy::FCustomPrimitiveSceneProxy(const UPrimitiveComponent
 	FName ResourceName /* = NAME_None */) : FPrimitiveSceneProxy(InComponent, ResourceName)
 {
 	//m_VerTexFactory = new FCustomVertexFactory(ERHIFeatureLevel::SM4, "TestDraw!!!");
-	SetVerTex();
+	//SetVerTex();
 }
 
 void FCustomPrimitiveSceneProxy::SetVerTex()
@@ -100,4 +100,57 @@ void FCustomIndexBuffer::InitRHI()
 	FMemory::Memcmp(LockedData, Indices.GetData(), Indices.Num() * sizeof(int32));
 	RHIUnlockIndexBuffer(IndexBufferRHI);
 
+}
+
+/* 工厂相关 */
+void FCustomVertexFactory::Init(const FCustomVertexBuffer* VerTexBuffer)
+{
+	if (IsInRenderingThread())
+	{
+		FDataType MeshData;
+		MeshData.PositionComponent = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(
+			VerTexBuffer, FDynamicMeshVertex, Position, VET_Float3
+		);
+		MeshData.TextureCoordinates.Add(
+			FVertexStreamComponent(VerTexBuffer, STRUCT_OFFSET(FDynamicMeshVertex, TextureCoordinate),
+				sizeof(FDynamicMeshVertex), EVertexElementType::VET_Float2) // UV所以是FLOAT2,
+		);
+		MeshData.TangentBasisComponents[0] = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(
+			VerTexBuffer, FDynamicMeshVertex, TangentX, VET_PackedNormal
+			//VET_Float3
+		);
+		//MeshData.TangentBasisComponents[1] = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(VertexBuffer,FDynamicMeshVertex,Tan,VET_PackedNormal)
+		MeshData.TangentBasisComponents[1] = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(
+			VerTexBuffer, FDynamicMeshVertex, TangentZ,
+			VET_PackedNormal
+		);
+		SetData(MeshData);
+	}
+	// 如果不在渲染进程中，要将该初始化代码加入渲染进程中（大象的教程中写的，不过我感觉根据用法不同有可能不需要
+	else
+	{
+		ENQUEUE_UNIQUE_RENDER_COMMAND_TWOPARAMETER( InitCustomVertexFactor
+			/*FName(InitFCustomVertexFactory)*/, FCustomVertexFactory*, VertexFactory, this,
+			const FCustomVertexBuffer*, VerTexBuffer, VerTexBuffer,
+			{
+				FDataType MeshData;
+				MeshData.PositionComponent = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(
+					VerTexBuffer, FDynamicMeshVertex, Position, VET_Float3
+				);
+				MeshData.TextureCoordinates.Add(
+					FVertexStreamComponent(VerTexBuffer,STRUCT_OFFSET(FDynamicMeshVertex,TextureCoordinate),
+					sizeof(FDynamicMeshVertex),EVertexElementType::VET_Float2) // UV所以是FLOAT2, 
+				);
+				MeshData.TangentBasisComponents[0] = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(
+					VerTexBuffer, FDynamicMeshVertex,TangentX,
+					VET_PackedNormal
+				);
+				MeshData.TangentBasisComponents[1] = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(
+					VerTexBuffer, FDynamicMeshVertex, TangentZ,
+					VET_PackedNormal
+				);
+				VertexFactory->SetData(MeshData);
+			}
+		);
+	}
 }
