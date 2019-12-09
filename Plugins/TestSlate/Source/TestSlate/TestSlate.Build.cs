@@ -1,4 +1,4 @@
-// Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
+﻿// Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
 
@@ -45,14 +45,27 @@ public class TestSlate : ModuleRules
                 "EditorStyle",
                 "Json",
                 "JsonUtilities",
+                //为了资产新添加的
+                "AssetRegistry",
+                "EditorWidgets",
+                "ContentBrowser",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
-		
-		
-		DynamicallyLoadedModuleNames.AddRange(
+
+        PrivateIncludePathModuleNames.AddRange(
+            new string[]
+            {
+                "Settings",
+                "IntroTutorials",
+            }
+        );
+
+
+        DynamicallyLoadedModuleNames.AddRange(
 			new string[]
 			{
+                "AssetTools",
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
