@@ -3,16 +3,21 @@
 	"EngineAssociation": "4.23",
 	"Category": "",
 	"Description": "",
-	"Modules": [
-		{
-			"Name": "StoryTest",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine",
-				"UMG",
-				"CoreUObject"
-			]
-		}
-	]
+  "Modules": [
+    {
+      "Name": "StoryTest",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "AdditionalDependencies": [
+        "Engine",
+        "UMG",
+        "CoreUObject"
+      ]
+    },
+    {
+      "Name": "CustomAssetEditor",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ]
 }

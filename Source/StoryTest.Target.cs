@@ -9,5 +9,6 @@ public class StoryTestTarget : TargetRules
 	{
 		Type = TargetType.Game;
 		ExtraModuleNames.Add("StoryTest");
-	}
+
+    }
 }

@@ -10,6 +10,7 @@ public class CustomAssetEditor : ModuleRules
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
+                "CustomAssetEditor/public"
 				// ... add public include paths required here ...
 			}
 			);
@@ -17,6 +18,7 @@ public class CustomAssetEditor : ModuleRules
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
+                "CustomAssetEditor/private"
 				// ... add other private include paths required here ...
 			}
 			);
@@ -49,6 +51,8 @@ public class CustomAssetEditor : ModuleRules
                 "AssetRegistry",
                 "EditorWidgets",
                 "ContentBrowser",
+                "EditorStyle",
+                "EditorWidgets"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
@@ -58,6 +62,8 @@ public class CustomAssetEditor : ModuleRules
             {
                 "Settings",
                 "IntroTutorials",
+                "AssetTools",
+                "LevelEditor"
             }
         );
 

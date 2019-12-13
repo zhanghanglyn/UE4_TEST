@@ -1,6 +1,8 @@
 
 #include "AssetTypeActions_MyCustomAsset.h"
-
+#include "MyCustomAsset.h"
+#include "CustomAssetEditorModule.h"
+#define LOCTEXT_NAMESPACE "AssetTypeActions_MyCustomAsset"
 
 FText FAssetTypeActions_MyCustomAsset::GetName() const
 {
@@ -19,7 +21,7 @@ UClass* FAssetTypeActions_MyCustomAsset::GetSupportedClass() const
 
 uint32 FAssetTypeActions_MyCustomAsset::GetCategories()
 {
-	return EAssetTypeCategories::Misc;
+	return EAssetTypeCategories::Sounds;
 }
 
 void FAssetTypeActions_MyCustomAsset::OpenAssetEditor(
@@ -32,8 +34,11 @@ void FAssetTypeActions_MyCustomAsset::OpenAssetEditor(
 	{
 		UMyCustomAsset* CustomAsset = Cast< UMyCustomAsset>(*Object);
 
-		FCustomAssetEditorModule CustomAssetEditorModuele = FModuleManager::GetModuleChecked<FCustomAssetEditorModule>("CustomAssetEditor");
-		CustomAssetEditorModuele.CreateCustomAssetEditor(Mode, EditWithinLevelEditor, CustomAsset);
+		ICustomAssetEditorModule* CustomAssetEditorModuele = &FModuleManager::GetModuleChecked<ICustomAssetEditorModule>("CustomAssetEditor");
+		CustomAssetEditorModuele->CreateCustomAssetEditor(Mode, EditWithinLevelEditor, CustomAsset);
 	}
 
 }
+
+
+#undef LOCTEXT_NAMESPACE

@@ -13,11 +13,16 @@
 	"CanContainContent": false,
 	"IsBetaVersion": false,
 	"Installed": false,
-	"Modules": [
-		{
-			"Name": "TestSlate",
-			"Type": "Editor",
-			"LoadingPhase": "Default"
-		}
-	]
+  "Modules": [
+    {
+      "Name": "TestSlate",
+      "Type": "Editor",
+      "LoadingPhase": "Default"
+    },
+    {
+      "Name": "CustomAssetEditor",
+      "Type": "Editor",
+      "LoadingPhase": "Default"
+    }
+  ]
 }

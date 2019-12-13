@@ -3,8 +3,7 @@
 #include "CoreMinimal.h"
 #include "Toolkits/IToolkitHost.h"
 #include "AssetTypeActions_Base.h"
-#include "MyCustomAssetBase.h"
-#include "TestSlate/Private/CustomAssetEditorModule/CustomAssetEditorModule.cpp"
+#include "MyCustomAsset.h"
 
 class FAssetTypeActions_MyCustomAsset : public FAssetTypeActions_Base
 {

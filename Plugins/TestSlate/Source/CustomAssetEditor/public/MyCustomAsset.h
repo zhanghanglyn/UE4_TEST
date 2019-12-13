@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "MyCustomAsset.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class UMyCustomAsset : public UObject
 {
 	GENERATED_BODY()
