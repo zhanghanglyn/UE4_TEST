@@ -9,6 +9,10 @@ class UMyCustomAsset : public UObject
 
 public:
 	UMyCustomAsset() {};
+	
+	/** Graph for Behavior Tree */
+	UPROPERTY()
+	class UEdGraph* StoryGraph;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = MyCustomAsset)
 	FString Description;

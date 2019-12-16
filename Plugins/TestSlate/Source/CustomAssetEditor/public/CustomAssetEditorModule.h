@@ -9,6 +9,7 @@
 
 class ICustomAssetEditor;
 class UMyCustomAsset;
+class FScenarioEditor;
 
 extern const FName CustomAssetEditorAppIdentifier;
 
@@ -21,6 +22,13 @@ public:
 	*/
 	virtual TSharedRef<ICustomAssetEditor> CreateCustomAssetEditor(
 		const EToolkitMode::Type Mode , const TSharedPtr< IToolkitHost>& InitToolkitHost,
+		UMyCustomAsset* CustomAsset) = 0;
+
+	/*
+	create a new Story Asset Editor
+	*/
+	virtual TSharedRef<FScenarioEditor> CreateCustomStoryEditor(
+		const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost>& InitToolkitHost,
 		UMyCustomAsset* CustomAsset) = 0;
 
 };

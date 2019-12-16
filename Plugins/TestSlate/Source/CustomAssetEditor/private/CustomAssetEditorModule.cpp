@@ -2,6 +2,7 @@
 #include "Toolkits/IToolkit.h"
 #include "ModuleManager.h"
 #include "CustomAssetEditor.h"
+#include "ScenarioEditor.h"
 
 //const FName CustomAssetEditorAppIdentifier = FName(TEXT("CustomAssetEditorApp")); //自定义资产编辑器应用程序标识符
 
@@ -44,6 +45,11 @@ public:
 		NewCustomAssetEditor->InitCustomAssetEditorEditor(Mode, InitToolkitHost, CustomAsset);
 		return NewCustomAssetEditor;
 	}
+	
+	/* 创建一个自定义的剧情播放器 */
+	virtual TSharedRef<FScenarioEditor> CreateCustomStoryEditor(
+		const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost>& InitToolkitHost,
+		UMyCustomAsset* CustomAsset) override;
 
 #pragma optimize("",off)
 	//模块被写进去的时候就要吧Asset注册进去！
@@ -83,3 +89,11 @@ void FCustomAssetEditorModule::RegisterAssetTypeAction(TSharedRef<IAssetTypeActi
 	ActionList.Add(Actions);
 }
 #pragma optimize("",on)
+
+TSharedRef<FScenarioEditor> FCustomAssetEditorModule::CreateCustomStoryEditor(const EToolkitMode::Type Mode,
+	const TSharedPtr<IToolkitHost>& InitToolkitHost, UMyCustomAsset* CustomAsset)
+{
+	TSharedRef< FScenarioEditor > NewCustomAssetEditor(new FScenarioEditor());
+	NewCustomAssetEditor->InitScenarioEditor(Mode, InitToolkitHost, CustomAsset);
+	return NewCustomAssetEditor;
+}
