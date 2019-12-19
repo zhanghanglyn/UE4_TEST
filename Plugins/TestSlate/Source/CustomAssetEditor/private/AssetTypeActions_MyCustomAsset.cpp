@@ -36,8 +36,8 @@ void FAssetTypeActions_MyCustomAsset::OpenAssetEditor(
 
 		ICustomAssetEditorModule* CustomAssetEditorModuele = &FModuleManager::GetModuleChecked<ICustomAssetEditorModule>("CustomAssetEditor");
 		//CustomAssetEditorModuele->CreateCustomAssetEditor(Mode, EditWithinLevelEditor, CustomAsset);
-		TSharedRef<FScenarioEditor> NewEditor = CustomAssetEditorModuele->CreateCustomStoryEditor(Mode, EditWithinLevelEditor, CustomAsset);
-
+		//TSharedRef<FScenarioEditor> NewEditor = CustomAssetEditorModuele->CreateCustomStoryEditor(Mode, EditWithinLevelEditor, CustomAsset);
+		CustomAssetEditorModuele->CreateCustomStoryEditor(Mode, EditWithinLevelEditor, CustomAsset);
 	}
 
 }

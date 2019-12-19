@@ -5,10 +5,15 @@
 #include "Runtime/CoreUObject/Public/Misc/NotifyHook.h"
 #include "MyCustomAsset.h"
 #include "ScenarioGraphEditorSummoner.h"
+#include "ScenarioGraph.h"
+#include "SWidget.h"
+#include "Editor/EditorStyle/Public/EditorStyle.h"
 #include "Kismet/Public/BlueprintEditor.h"
+#include "Editor/UnrealEd/Public/Kismet2/BlueprintEditorUtils.h"
+#include "ScenarioApplicationMode.h"
 #include "Kismet/Public/WorkflowOrientedApp/WorkflowTabManager.h"
 
-class FScenarioEditor : public FWorkflowCentricApplication, public FNotifyHook
+class FScenarioEditor : public FWorkflowCentricApplication , public FEditorUndoClient ,public FNotifyHook
 {
 public:
 
@@ -21,7 +26,7 @@ public:
 	void InitScenarioEditor(const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost>& InitToolkitHost,
 		UMyCustomAsset* CustomAsset);
 
-
+	virtual void RegisterTabSpawners(const TSharedRef<class FTabManager>& TabManager) override;
 
 	/* 一下方法继承自FAssetEditorToolkit */
 	virtual FName GetToolkitFName() const override;
@@ -33,11 +38,26 @@ public:
 	virtual bool IsPrimaryEditor() const override { return true; }
 	/* OVER */
 
+	// @todo This is a hack for now until we reconcile the default toolbar with application modes [duplicated from counterpart in Blueprint Editor]
+	void RegisterToolbarTab(const TSharedRef<class FTabManager>& TabManager);
+
 	/* 创建时调用 */
 	void OnGraphEditorFocused(const TSharedRef<SGraphEditor>& InGraphEditor) {  };
 	/** Restores the Story graph we were editing or creates a new one if none is available */
 	void RestoreStoryGraph();
 
+	/**
+	 * Get the localized text to display for the specified mode
+	 * @param	InMode	The mode to display
+	 * @return the localized text representation of the mode
+	 */
+	static FText GetLocalizedMode(FName InMode);
+
+	UMyCustomAsset* GetCustomAsset() const;
+	void SetCustomAsset(UMyCustomAsset* InCustomAsset);
+private:
+	//在选择ITEM改变时调用
+	virtual void OnSelectedNodesChanged(const TSet<class UObject*>& NewSelection);
 
 private:
 	/** Create widget for graph editing */
@@ -52,7 +72,9 @@ private:
 	TSharedPtr<FDocumentTracker> DocumentManager;
 	TWeakPtr<FDocumentTabFactory> GraphEditorTabFactoryPtr;
 
+public:
 	/* 当前正在编辑的资源，MyCustomAsset */
 	UMyCustomAsset* CustomAsset;
-
+	//剧情模块ID
+	static const FName ScenarioMode;
 };

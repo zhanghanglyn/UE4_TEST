@@ -37,3 +37,18 @@ const FSlateBrush* FScenarioGraphEditorSummoner::GetTabIconForObject(const FWork
 {
 	return FEditorStyle::GetBrush("NoBrush");
 }
+
+void FScenarioGraphEditorSummoner::SaveState(TSharedPtr<SDockTab> Tab, TSharedPtr<FTabPayload> Payload) const
+{
+	check(ScenarioEditorPtr.IsValid());
+	check(ScenarioEditorPtr.Pin()->GetCustomAsset());
+
+	TSharedRef<SGraphEditor> GraphEditor = StaticCastSharedRef<SGraphEditor>(Tab->GetContent());
+
+	FVector2D ViewLocation;
+	float ZoomAmount;
+	GraphEditor->GetViewLocation(ViewLocation, ZoomAmount);
+
+	UEdGraph* Graph = FTabPayload_UObject::CastChecked<UEdGraph>(Payload);
+	ScenarioEditorPtr.Pin()->GetCustomAsset()->LastEditedDocuments.Add(FEditedDocumentInfo(Graph, ViewLocation, ZoomAmount));
+}

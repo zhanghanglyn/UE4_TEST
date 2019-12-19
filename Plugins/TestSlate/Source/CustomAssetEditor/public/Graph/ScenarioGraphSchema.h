@@ -2,10 +2,17 @@
 
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
-#include "ScenarioGraphSchema.generate.h"
+#include "UObject/Object.h"
+#include "Runtime/Engine/Classes/EdGraph/EdGraphSchema.h"
+#include "Runtime/CoreUObject/Public/UObject/Class.h"
+#include "EdGraph/EdGraphNode.h"
+#include "EdGraph/EdGraphPin.h"
+#include "AssetData.h"
+#include "UObject/ObjectKey.h"
+#include "ScenarioGraphSchema.generated.h"
 
 UCLASS()
-class UScenarioGraphSchema : public UObject
+class UScenarioGraphSchema : public UEdGraphSchema
 {
 	GENERATED_UCLASS_BODY()
 

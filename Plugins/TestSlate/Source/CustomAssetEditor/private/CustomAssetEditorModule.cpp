@@ -81,15 +81,14 @@ protected:
 
 IMPLEMENT_GAME_MODULE(FCustomAssetEditorModule, CustomAssetEditor)
 
-#pragma optimize("",off)
 void FCustomAssetEditorModule::RegisterAssetTypeAction(TSharedRef<IAssetTypeActions> Actions)
 {
 	IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
 	AssetTools.RegisterAssetTypeActions(Actions);
 	ActionList.Add(Actions);
 }
-#pragma optimize("",on)
 
+#pragma optimize("",off)
 TSharedRef<FScenarioEditor> FCustomAssetEditorModule::CreateCustomStoryEditor(const EToolkitMode::Type Mode,
 	const TSharedPtr<IToolkitHost>& InitToolkitHost, UMyCustomAsset* CustomAsset)
 {
@@ -97,3 +96,4 @@ TSharedRef<FScenarioEditor> FCustomAssetEditorModule::CreateCustomStoryEditor(co
 	NewCustomAssetEditor->InitScenarioEditor(Mode, InitToolkitHost, CustomAsset);
 	return NewCustomAssetEditor;
 }
+#pragma optimize("",on)

@@ -17,4 +17,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = MyCustomAsset)
 	FString Description;
 
+
+	/** Info about the graphs we last edited */
+	UPROPERTY()
+	TArray<FEditedDocumentInfo> LastEditedDocuments;
+
 };

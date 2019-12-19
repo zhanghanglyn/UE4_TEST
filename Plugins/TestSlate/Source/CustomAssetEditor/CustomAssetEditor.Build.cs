@@ -10,7 +10,8 @@ public class CustomAssetEditor : ModuleRules
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
-                //"CustomAssetEditor/public"
+                //"CustomAssetEditor/public",
+                //"CustomAssetEditor/public/Graph"
 				// ... add public include paths required here ...
 			}
 			);
@@ -18,7 +19,8 @@ public class CustomAssetEditor : ModuleRules
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
-                //"CustomAssetEditor/private"
+                //"CustomAssetEditor/private",
+                //"CustomAssetEditor/private/Graph"
 				// ... add other private include paths required here ...
 			}
 			);

@@ -106,14 +106,14 @@ void FCustomAssetEditor::SetCustomAsset(UMyCustomAsset* InCustomAsset)
 
 void FCustomAssetEditor::InitCustomAssetEditorEditor(const EToolkitMode::Type Mode,
 	const TSharedPtr< IToolkitHost>& InitToolkitHost,
-	UMyCustomAsset* CustomAsset)
+	UMyCustomAsset* InCustomAsset)
 {
 
 	const bool bIsUpdatable = false;
 	const bool bAllowFavorites = true;
 	const bool bIsLockable = false;
 
-	SetCustomAsset(CustomAsset);
+	SetCustomAsset(InCustomAsset);
 
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	const FDetailsViewArgs DetailsViewArgs(bIsUpdatable, bIsLockable, true, FDetailsViewArgs::ObjectsUseNameArea, false);
@@ -147,10 +147,10 @@ void FCustomAssetEditor::InitCustomAssetEditorEditor(const EToolkitMode::Type Mo
 		StandaloneDefaultLayout,
 		true,
 		true,
-		(UObject*)CustomAsset
+		(UObject*)InCustomAsset
 	);
 	if(DetailsView.IsValid())
-		DetailsView->SetObject((UObject*)CustomAsset);
+		DetailsView->SetObject((UObject*)InCustomAsset);
 }
 
 #undef LOCTEXT_NAMESPACE

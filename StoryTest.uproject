@@ -1,8 +1,8 @@
 {
-	"FileVersion": 3,
-	"EngineAssociation": "4.23",
-	"Category": "",
-	"Description": "",
+  "FileVersion": 3,
+  "EngineAssociation": "4.23",
+  "Category": "",
+  "Description": "",
   "Modules": [
     {
       "Name": "StoryTest",
@@ -13,11 +13,6 @@
         "UMG",
         "CoreUObject"
       ]
-    },
-    {
-      "Name": "CustomAssetEditor",
-      "Type": "Runtime",
-      "LoadingPhase": "Default"
     }
   ]
 }
