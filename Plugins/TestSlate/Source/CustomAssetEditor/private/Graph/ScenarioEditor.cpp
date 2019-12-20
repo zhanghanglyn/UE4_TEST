@@ -186,7 +186,8 @@ UMyCustomAsset* FScenarioEditor::GetCustomAsset() const
 //在选择ITEM改变时调用
 void FScenarioEditor::OnSelectedNodesChanged(const TSet<class UObject *>& NewSelection)
 {
-
+	int32 a = 1;
+	int32 b = 2;
 }
 
 

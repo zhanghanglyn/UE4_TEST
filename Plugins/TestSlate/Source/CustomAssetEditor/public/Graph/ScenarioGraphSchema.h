@@ -7,8 +7,11 @@
 #include "Runtime/CoreUObject/Public/UObject/Class.h"
 #include "EdGraph/EdGraphNode.h"
 #include "EdGraph/EdGraphPin.h"
+#include "Runtime/Engine/Classes/EdGraph/EdGraph.h"
+#include "ScenarioSchemaAction.h"
 #include "AssetData.h"
 #include "UObject/ObjectKey.h"
+#include "ScenarioNodeBase.h"
 #include "ScenarioGraphSchema.generated.h"
 
 UCLASS()
