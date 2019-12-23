@@ -222,7 +222,7 @@ TSharedPtr< SGraphEditor> FScenarioEditor::CreateGraphEditorWidgetNoDocument()
 }
 
 /* 创建GraphEditor! */
-TSharedRef<SGraphEditor> FScenarioEditor::CreateGraphEditorWidget(UEdGraph* InGraph)
+/*TSharedRef<SGraphEditor> FScenarioEditor::CreateGraphEditorWidget(UEdGraph* InGraph)
 {
 	check(InGraph != NULL);
 	
@@ -253,7 +253,7 @@ TSharedRef<SGraphEditor> FScenarioEditor::CreateGraphEditorWidget(UEdGraph* InGr
 		.GraphEvents(InEvents)
 		;
 
-}
+}*/
 
 /* 在此创建GraphTab */
 TSharedRef<SDockTab> FScenarioEditor::SpawnGraphEditorTab(const FSpawnTabArgs& Args)
@@ -281,7 +281,7 @@ TSharedRef<SDockTab> FScenarioEditor::SpawnPropertiesTab(const FSpawnTabArgs& Ar
 }
 
 /* 加载或者重新创建一个Graph */
-void FScenarioEditor::RestoreStoryGraph()
+/*void FScenarioEditor::RestoreStoryGraph()
 {
 	UScenarioGraph* MyGraph = Cast<UScenarioGraph>(CustomAsset->StoryGraph);
 	const bool bNewGraph = MyGraph == NULL;
@@ -299,16 +299,7 @@ void FScenarioEditor::RestoreStoryGraph()
 	//把MyGraph 做成一个新的有效负载包装,使用OpenDocument创建了一个新的TAB！
 	TSharedRef<FTabPayload_UObject> Payload = FTabPayload_UObject::Make(MyGraph);
 	TSharedPtr<SDockTab> DocumentTab = DocumentManager->OpenDocument(Payload, bNewGraph ? FDocumentTracker::OpenNewDocument : FDocumentTracker::RestorePreviousDocument);
-
-	//关于lastEditedDocuments那段，先不写
-	/*
-	if(BehaviorTree->LastEditedDocuments.Num() > 0)
-	{
-		TSharedRef<SGraphEditor> GraphEditor = StaticCastSharedRef<SGraphEditor>(DocumentTab->GetContent());
-		GraphEditor->SetViewLocation(BehaviorTree->LastEditedDocuments[0].SavedViewOffset, BehaviorTree->LastEditedDocuments[0].SavedZoomAmount);
-	}
-	*/
-}
+}*/
 
 void FScenarioEditor::RegisterToolbarTab(const TSharedRef<class FTabManager>& InTabManager)
 {

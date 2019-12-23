@@ -1,5 +1,5 @@
 ﻿#include "ScenarioSchemaAction.h"
-#include "ScenarioNodeBase.h"
+#include "ScenarioNodeNormal.h"
 
 #define LOCTEXT_NAMESPACE "ScenarioSchemaAction"
 
@@ -33,7 +33,7 @@ UEdGraphNode* FScenarioSchemaAction::CreateNode(UEdGraph* ParentGraph, UEdGraphP
 	UEdGraphNode* ResultNode;
 	if (InNodeTemplate == nullptr)
 	{
-		FGraphNodeCreator<UScenarioNodeBase> NodeCreater(*ParentGraph);
+		FGraphNodeCreator<UScenarioNodeNormal> NodeCreater(*ParentGraph);
 		ResultNode = NodeCreater.CreateNode(bSelectNewNode);
 		NodeCreater.Finalize();
 	}

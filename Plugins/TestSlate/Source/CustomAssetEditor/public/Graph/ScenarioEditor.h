@@ -48,7 +48,7 @@ public:
 	/* 创建时调用 */
 	void OnGraphEditorFocused(const TSharedRef<SGraphEditor>& InGraphEditor) {  };
 	/** Restores the Story graph we were editing or creates a new one if none is available */
-	void RestoreStoryGraph();
+	//void RestoreStoryGraph();
 
 	/**
 	 * Get the localized text to display for the specified mode
@@ -72,7 +72,7 @@ private:
 
 private:
 	/** Create widget for graph editing */
-	TSharedRef<class SGraphEditor> CreateGraphEditorWidget(UEdGraph* InGraph);
+	//TSharedRef<class SGraphEditor> CreateGraphEditorWidget(UEdGraph* InGraph);
 
 	/* 新测试不使用FDocumentTracker */
 	TSharedPtr< SGraphEditor> CreateGraphEditorWidgetNoDocument();

@@ -76,7 +76,7 @@ void FScenarioApplicationMode::PostActivateMode()
 	check(ScenarioEditor.IsValid());
 	TSharedPtr<FScenarioEditor> ScenarioEditorPtr = ScenarioEditor.Pin();
 
-	ScenarioEditorPtr->RestoreStoryGraph();
+	//ScenarioEditorPtr->RestoreStoryGraph();
 
 	FApplicationMode::PostActivateMode();
 }

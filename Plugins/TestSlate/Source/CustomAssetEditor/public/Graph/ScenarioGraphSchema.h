@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
@@ -21,24 +21,29 @@ class UScenarioGraphSchema : public UEdGraphSchema
 
 public:
 	/*
-	Ê¹ÓÃÈÎºÎÄ¬ÈÏ½ÚµãÌî³äĞÂÍ¼ĞÎ
+	ä½¿ç”¨ä»»ä½•é»˜è®¤èŠ‚ç‚¹å¡«å……æ–°å›¾å½¢
 	*
-	* @paramÍ¼ĞÎÓÃÓÚÌí¼ÓÄ¬ÈÏ½Úµã
-	* @param contextclassÈç¹ûÖ¸¶¨£¬Í¼ĞÎÖÕ¶Ë½«Ê¹ÓÃÕâ¸öÀàÀ´ËÑË÷Ç©ÃûµÄÉÏÏÂÎÄ(¼´½Ó¿Úº¯Êı)
+	* @paramå›¾å½¢ç”¨äºæ·»åŠ é»˜è®¤èŠ‚ç‚¹
+	* @param contextclasså¦‚æœæŒ‡å®šï¼Œå›¾å½¢ç»ˆç«¯å°†ä½¿ç”¨è¿™ä¸ªç±»æ¥æœç´¢ç­¾åçš„ä¸Šä¸‹æ–‡(å³æ¥å£å‡½æ•°)
 	*/
 	virtual void CreateDefaultNodesForGraph(UEdGraph& Graph) const;
 	/*
-	»ñÈ¡µ±ÓÒ¼üµã»÷Í¼ĞÎÊ±¿ÉÒÔ½øĞĞµÄËùÓĞ²Ù×÷
-	GetGraphContextActions·½·¨¿ÉÒÔ¸æËßÀ¶Í¼ÔÚÓÒ¼üÊ±ÄÄĞ©ÀàÄÜÏÔÊ¾£¬¼´ÄÜ´´½¨µÄ½ÚµãÀàĞÍ
+	è·å–å½“å³é”®ç‚¹å‡»å›¾å½¢æ—¶å¯ä»¥è¿›è¡Œçš„æ‰€æœ‰æ“ä½œ
+	GetGraphContextActionsæ–¹æ³•å¯ä»¥å‘Šè¯‰è“å›¾åœ¨å³é”®æ—¶å“ªäº›ç±»èƒ½æ˜¾ç¤ºï¼Œå³èƒ½åˆ›å»ºçš„èŠ‚ç‚¹ç±»å‹
 	*/
 	virtual void GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const;
 	/*
-	È·¶¨ÊÇ·ñ¿ÉÒÔÔÚÁ½¸öÒı½ÅÖ®¼ä´´½¨Á¬½Ó¡£
+	ç¡®å®šæ˜¯å¦å¯ä»¥åœ¨ä¸¤ä¸ªå¼•è„šä¹‹é—´åˆ›å»ºè¿æ¥ã€‚
 	*
-	* @paramÊÇµÚÒ»¸öpinÂë¡£
-	* @param bµÚ¶ş¸öÒı½Å¡£
+	* @paramæ˜¯ç¬¬ä¸€ä¸ªpinç ã€‚
+	* @param bç¬¬äºŒä¸ªå¼•è„šã€‚
 	*
-	* @ @Èç¹ûÁ¬½ÓÊÇºÏ·¨µÄ£¬·µ»ØÒ»¸ö¿Õ×Ö·û´®£¬·ñÔò»á³öÏÖÃèÊöÁ¬½ÓÊ§°ÜÔ­ÒòµÄÏûÏ¢¡£
+	* @ @å¦‚æœè¿æ¥æ˜¯åˆæ³•çš„ï¼Œè¿”å›ä¸€ä¸ªç©ºå­—ç¬¦ä¸²ï¼Œå¦åˆ™ä¼šå‡ºç°æè¿°è¿æ¥å¤±è´¥åŸå› çš„æ¶ˆæ¯ã€‚
 	*/
-	virtual const FPinConnectionResponse CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const;
+	virtual const FPinConnectionResponse CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const override;
+
+	/*é“¾æ¥ä¸¤ä¸ªå¼•è„šå¹¶é€šè¿‡ä¸­é—´èŠ‚ç‚¹ å¯ä»¥åœ¨æ­¤è‡ªå®šä¹‰ä¸­é—´èŠ‚ç‚¹ï¼Œä½†æ˜¯ä¸å†™äº†*/
+	virtual bool CreateAutomaticConversionNodeAndConnections(UEdGraphPin* A, UEdGraphPin* B) const override;
+
+	virtual bool TryCreateConnection(UEdGraphPin* A, UEdGraphPin* B) const;
 };

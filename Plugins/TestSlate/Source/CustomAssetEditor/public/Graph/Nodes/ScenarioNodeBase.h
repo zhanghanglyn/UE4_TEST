@@ -11,10 +11,6 @@ class UScenarioNodeBase : public UEdGraphNode
 	GENERATED_UCLASS_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, Category = DialogueGraphNode)
-	FString TestData;
-
-public:
 
 	//~ Begin UEdGraphNode Interface
 	//创建一个新节点的时候调用，会在里面生成该节点的Instance
