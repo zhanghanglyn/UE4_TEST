@@ -1,9 +1,9 @@
-#include "ScenarioSchemaAction.h"
+ï»¿#include "ScenarioSchemaAction.h"
 #include "ScenarioNodeBase.h"
 
 #define LOCTEXT_NAMESPACE "ScenarioSchemaAction"
 
-/* ÔÚµ±¸öActionÖĞÖ»ÔİÊ±Ğ´µ¥Òı½ÅÁ¬½Ó¹ıÀ´µÄ */
+/* åœ¨å½“ä¸ªActionä¸­åªæš‚æ—¶å†™å•å¼•è„šè¿æ¥è¿‡æ¥çš„ */
 UEdGraphNode* FScenarioSchemaAction::PerformAction(class UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode /* = true */)
 {
 	UEdGraphNode* ResultNode = nullptr;
@@ -27,7 +27,7 @@ UEdGraphNode* FScenarioSchemaAction::PerformAction(class UEdGraph* ParentGraph, 
 	return ResultNode;
 }
 
-/*Ä¬ÈÏÏÈÔİÊ±ÈÏÎªTemplateÎªnull*/
+/*é»˜è®¤å…ˆæš‚æ—¶è®¤ä¸ºTemplateä¸ºnull*/
 UEdGraphNode* FScenarioSchemaAction::CreateNode(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, class UEdGraphNode* InNodeTemplate , bool bSelectNewNode)
 {
 	UEdGraphNode* ResultNode;

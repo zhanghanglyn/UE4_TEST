@@ -2,7 +2,7 @@
 #include "Widgets/Docking/SDockTab.h"
 
 FScenarioGraphEditorSummoner::FScenarioGraphEditorSummoner(TSharedPtr<class FScenarioEditor> ScenarioEditorPtr, FOnCreateGraphEditorWidget CreateGraphEditorWidgetCallback)
-	: FDocumentTabFactoryForObjects<UEdGraph>(TEXT("STory"), ScenarioEditorPtr)
+	: FDocumentTabFactoryForObjects<UEdGraph>(FScenarioEditorTabsUtil::GraphEditorID, ScenarioEditorPtr)
 	, ScenarioEditorPtr(ScenarioEditorPtr)
 	, OnCreateGraphEditorWidget(CreateGraphEditorWidgetCallback)
 {

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "ScenarioEditor.h"
 #include "WorkflowOrientedApp/ApplicationMode.h"
+#include "EditTabsUtil.h"
 #include "ScenarioGraphEditorSummoner.h"
 
 class FScenarioEditor;

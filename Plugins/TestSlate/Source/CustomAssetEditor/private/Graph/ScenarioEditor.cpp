@@ -48,6 +48,19 @@ void FScenarioEditor::RegisterTabSpawners(const TSharedRef<class FTabManager>& I
 	DocumentManager->SetTabManager(InTabManager);
 
 	FWorkflowCentricApplication::RegisterTabSpawners(InTabManager);
+
+	//在这里注册一个details试试
+	InTabManager->RegisterTabSpawner(PropertiesTabId,
+		FOnSpawnTab::CreateSP(this, &FScenarioEditor::SpawnPropertiesTab)) //注册一个当产生TAB时触发的委托
+		.SetDisplayName(LOCTEXT("PropertiesTab", "Details"))
+		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
+		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
+}
+
+void FScenarioEditor::UnregisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager)
+{
+	FWorkflowCentricApplication::UnregisterTabSpawners(InTabManager);
+	InTabManager->UnregisterTabSpawner(PropertiesTabId);
 }
 
 void FScenarioEditor::InitScenarioEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UMyCustomAsset* InCustomAsset)
@@ -76,10 +89,39 @@ void FScenarioEditor::InitScenarioEditor(const EToolkitMode::Type Mode, const TS
 	const TArray<UObject*>* EditedObjects = GetObjectsCurrentlyBeingEdited();
 	if (EditedObjects == nullptr || EditedObjects->Num() == 0)
 	{
-		const TSharedRef<FTabManager::FLayout> DummyLayout = FTabManager::NewLayout("NullLayout")->AddArea(FTabManager::NewPrimaryArea());
+		//const TSharedRef<FTabManager::FLayout> DummyLayout = FTabManager::NewLayout("NullLayout")->AddArea(FTabManager::NewPrimaryArea());
+		TSharedRef<FTabManager::FLayout> DummyLayout = FTabManager::NewLayout("Standalone_CustomAssetEditor_Layout_v1")
+			->AddArea(
+				FTabManager::NewPrimaryArea()->SetOrientation(Orient_Vertical)
+				->Split(
+					FTabManager::NewStack()
+					->SetSizeCoefficient(0.1f)
+					->SetHideTabWell(true)
+					->AddTab(GetToolbarTabId(), ETabState::OpenedTab)
+				)
+				// Split the tab and pass the tab id to the tab spawner
+				->Split(
+					FTabManager::NewSplitter()
+					->Split
+					(
+						FTabManager::NewStack()
+						->AddTab(PropertiesTabId, ETabState::OpenedTab)
+					)
+				)
+				->Split(
+					FTabManager::NewSplitter()
+					->Split
+					(
+						FTabManager::NewStack()
+						->AddTab(TEXT("ddd"), ETabState::OpenedTab)
+					)
+				)
+			);
 
 		//我觉得，之前就是缺少了这一步！！
 		InitAssetEditor(Mode, InitToolkitHost, TEXT("ScenarioEditorTreeEditorApp"), DummyLayout,true,true, InCustomAsset);
+
+		CreateInternalWidgets();
 
 		AddApplicationMode(ScenarioMode, MakeShareable(new FScenarioApplicationMode(SharedThis(this))));
 	}
@@ -115,7 +157,7 @@ TSharedRef<SGraphEditor> FScenarioEditor::CreateGraphEditorWidget(UEdGraph* InGr
 		[
 			SNew(STextBlock)
 			.Text(LOCTEXT("ScenarioGraphLabel", "Scenario"))
-		.TextStyle(FEditorStyle::Get(), TEXT("GraphBreadcrumbButtonText"))
+			.TextStyle(FEditorStyle::Get(), TEXT("GraphBreadcrumbButtonText"))
 		]
 		];
 	
@@ -125,6 +167,20 @@ TSharedRef<SGraphEditor> FScenarioEditor::CreateGraphEditorWidget(UEdGraph* InGr
 		.GraphEvents(InEvents)
 		;
 
+}
+
+TSharedRef<SDockTab> FScenarioEditor::SpawnPropertiesTab(const FSpawnTabArgs& Args)
+{
+	check(Args.GetTabId() == PropertiesTabId);
+
+	return SNew(SDockTab)
+		.Icon(FEditorStyle::GetBrush("GenericEditor.Tabs.Properties"))
+		.Label(LOCTEXT("GenericDetailsTitle", "Details"))
+		.TabColorScale(GetTabColorScale())
+		[
+			// Provide the details view as this tab its content
+			DetailsView.ToSharedRef()
+		];
 }
 
 /* 加载或者重新创建一个Graph */
@@ -162,6 +218,20 @@ void FScenarioEditor::RegisterToolbarTab(const TSharedRef<class FTabManager>& In
 	FAssetEditorToolkit::RegisterTabSpawners(InTabManager);
 }
 
+/* 在此创建Details等内部的Widget */
+void FScenarioEditor::CreateInternalWidgets()
+{
+	FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
+	FDetailsViewArgs DetailsViewArgs(false, false, true, FDetailsViewArgs::ObjectsUseNameArea, false);
+	//DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
+	DetailsViewArgs.NotifyHook = this;
+	//创建DetailsView
+	DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
+	DetailsView->SetObject( NULL );
+	DetailsView->SetIsPropertyEditingEnabledDelegate(FIsPropertyEditingEnabled::CreateSP(this, &FScenarioEditor::IsPropertyEditable));
+	//设置改Node名Node显示之类的？
+	DetailsView->OnFinishedChangingProperties().AddSP(this, &FScenarioEditor::OnFinishedChangingProperties);
+}
 
 FText FScenarioEditor::GetLocalizedMode(FName InMode)
 {
@@ -186,9 +256,38 @@ UMyCustomAsset* FScenarioEditor::GetCustomAsset() const
 //在选择ITEM改变时调用
 void FScenarioEditor::OnSelectedNodesChanged(const TSet<class UObject *>& NewSelection)
 {
-	int32 a = 1;
-	int32 b = 2;
+	//在这里添加点击Item时对DetailsView的改变 , 目前只写对一个Node的操作
+	int32 SelectionNodeNum = NewSelection.Num();
+
+	if (DetailsView.IsValid() == true)
+	{
+		if (SelectionNodeNum == 1)
+		{
+			for (UObject* Object : NewSelection)
+			{
+				DetailsView->SetObject(Object);
+			}
+		}
+		else
+		{
+			DetailsView->SetObject(NULL);
+		}
+		
+	}	
 }
+
+bool FScenarioEditor::IsPropertyEditable() const
+{
+	UE_LOG(LogTemp, Warning, TEXT(" IsPropertyEditable"));
+	return true;
+}
+
+/*修改了Detail属性后在此调用，进行Node更改*/
+void FScenarioEditor::OnFinishedChangingProperties(const FPropertyChangedEvent& PropertyChangedEvent)
+{
+	UE_LOG(LogTemp, Warning, TEXT(" Now The DetailsView Update ! UpdateNode!"));
+}
+
 
 
 #undef LOCTEXT_NAMESPACE

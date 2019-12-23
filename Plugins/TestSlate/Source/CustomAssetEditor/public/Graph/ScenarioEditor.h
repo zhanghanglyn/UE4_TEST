@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CoreMinimal.h"
 #include "Kismet/Public/WorkflowOrientedApp/WorkflowCentricApplication.h"
@@ -8,9 +8,12 @@
 #include "ScenarioGraph.h"
 #include "SWidget.h"
 #include "Editor/EditorStyle/Public/EditorStyle.h"
+#include "Slate/Public/Widgets/Docking/SDockTab.h"
 #include "Kismet/Public/BlueprintEditor.h"
 #include "Editor/UnrealEd/Public/Kismet2/BlueprintEditorUtils.h"
 #include "ScenarioApplicationMode.h"
+#include "Editor/PropertyEditor/Public/IDetailsView.h"
+#include "Editor/PropertyEditor/Public/PropertyEditorModule.h"
 #include "Kismet/Public/WorkflowOrientedApp/WorkflowTabManager.h"
 
 class FScenarioEditor : public FWorkflowCentricApplication , public FEditorUndoClient ,public FNotifyHook
@@ -18,17 +21,18 @@ class FScenarioEditor : public FWorkflowCentricApplication , public FEditorUndoC
 public:
 
 	/*
-		±à¼­ÖÆ¶¨×Ê²ú¶ÔÏó
-		Param : Mode			    ´Ë±à¼­Æ÷µÄ×Ê²ú±à¼­Ä£Ê½(¶ÀÁ¢»òÒÔÊÀ½çÎªÖĞĞÄ)
-		@param	InitToolkitHost     µ±Ä£Ê½ÒÔÊÀ½çÎªÖĞĞÄÊ±£¬ÕâÊÇÉú³É²¢°üº¬¸Ã±à¼­Æ÷µÄLevelEditorÊµÀı
-		@param	InCustomAsset		Òª±à¼­µÄ×Ô¶¨Òå×Ê²ú
+		ç¼–è¾‘åˆ¶å®šèµ„äº§å¯¹è±¡
+		Param : Mode			    æ­¤ç¼–è¾‘å™¨çš„èµ„äº§ç¼–è¾‘æ¨¡å¼(ç‹¬ç«‹æˆ–ä»¥ä¸–ç•Œä¸ºä¸­å¿ƒ)
+		@param	InitToolkitHost     å½“æ¨¡å¼ä»¥ä¸–ç•Œä¸ºä¸­å¿ƒæ—¶ï¼Œè¿™æ˜¯ç”Ÿæˆå¹¶åŒ…å«è¯¥ç¼–è¾‘å™¨çš„LevelEditorå®ä¾‹
+		@param	InCustomAsset		è¦ç¼–è¾‘çš„è‡ªå®šä¹‰èµ„äº§
 	*/
 	void InitScenarioEditor(const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost>& InitToolkitHost,
 		UMyCustomAsset* CustomAsset);
 
-	virtual void RegisterTabSpawners(const TSharedRef<class FTabManager>& TabManager) override;
+	virtual void RegisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager) override;
+	virtual void UnregisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager) override;
 
-	/* Ò»ÏÂ·½·¨¼Ì³Ğ×ÔFAssetEditorToolkit */
+	/* ä¸€ä¸‹æ–¹æ³•ç»§æ‰¿è‡ªFAssetEditorToolkit */
 	virtual FName GetToolkitFName() const override;
 	virtual FText GetBaseToolkitName() const override;
 	virtual FText GetToolkitName() const override;
@@ -41,7 +45,7 @@ public:
 	// @todo This is a hack for now until we reconcile the default toolbar with application modes [duplicated from counterpart in Blueprint Editor]
 	void RegisterToolbarTab(const TSharedRef<class FTabManager>& TabManager);
 
-	/* ´´½¨Ê±µ÷ÓÃ */
+	/* åˆ›å»ºæ—¶è°ƒç”¨ */
 	void OnGraphEditorFocused(const TSharedRef<SGraphEditor>& InGraphEditor) {  };
 	/** Restores the Story graph we were editing or creates a new one if none is available */
 	void RestoreStoryGraph();
@@ -55,13 +59,24 @@ public:
 
 	UMyCustomAsset* GetCustomAsset() const;
 	void SetCustomAsset(UMyCustomAsset* InCustomAsset);
+
+	/* åœ¨TabManagetä¸­æ³¨å†Œçš„ï¼Œäº§ç”ŸTabçš„å§”æ‰˜å‡½æ•° */
+	TSharedRef<SDockTab> SpawnPropertiesTab(const FSpawnTabArgs& Args);
+
 private:
-	//ÔÚÑ¡ÔñITEM¸Ä±äÊ±µ÷ÓÃ
+	//åœ¨é€‰æ‹©ITEMæ”¹å˜æ—¶è°ƒç”¨
 	virtual void OnSelectedNodesChanged(const TSet<class UObject*>& NewSelection);
 
 private:
 	/** Create widget for graph editing */
 	TSharedRef<class SGraphEditor> CreateGraphEditorWidget(UEdGraph* InGraph);
+
+	/*åˆ›å»ºå†…éƒ¨Widgetï¼ŒDetails*/
+	void CreateInternalWidgets();
+	/* DetailsViewæ›´æ–°ç›¸å…³ */
+	bool IsPropertyEditable() const;
+	/*å½“å‘ç”Ÿå±æ€§å˜åŒ–æ—¶çš„æ›´æ–°*/
+	void OnFinishedChangingProperties(const FPropertyChangedEvent& PropertyChangedEvent);
 
 private:
 	/**	The tab ids for all the tabs used */
@@ -72,9 +87,12 @@ private:
 	TSharedPtr<FDocumentTracker> DocumentManager;
 	TWeakPtr<FDocumentTabFactory> GraphEditorTabFactoryPtr;
 
+	/* å±æ€§Details */
+	TSharedPtr<class IDetailsView> DetailsView;
+
 public:
-	/* µ±Ç°ÕıÔÚ±à¼­µÄ×ÊÔ´£¬MyCustomAsset */
+	/* å½“å‰æ­£åœ¨ç¼–è¾‘çš„èµ„æºï¼ŒMyCustomAsset */
 	UMyCustomAsset* CustomAsset;
-	//¾çÇéÄ£¿éID
+	//å‰§æƒ…æ¨¡å—ID
 	static const FName ScenarioMode;
 };
