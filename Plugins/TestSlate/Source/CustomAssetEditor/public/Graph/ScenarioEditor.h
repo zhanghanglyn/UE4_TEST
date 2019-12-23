@@ -27,7 +27,7 @@ public:
 		@param	InCustomAsset		要编辑的自定义资产
 	*/
 	void InitScenarioEditor(const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost>& InitToolkitHost,
-		UMyCustomAsset* CustomAsset);
+		UMyCustomAsset* InCustomAsset);
 
 	virtual void RegisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager) override;
 	virtual void UnregisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager) override;
@@ -60,6 +60,9 @@ public:
 	UMyCustomAsset* GetCustomAsset() const;
 	void SetCustomAsset(UMyCustomAsset* InCustomAsset);
 
+	/* 在TabManaget中注册的，产生SGraphEditor的委托函数 */
+	TSharedRef<SDockTab> SpawnGraphEditorTab(const FSpawnTabArgs& Args);
+
 	/* 在TabManaget中注册的，产生Tab的委托函数 */
 	TSharedRef<SDockTab> SpawnPropertiesTab(const FSpawnTabArgs& Args);
 
@@ -71,6 +74,9 @@ private:
 	/** Create widget for graph editing */
 	TSharedRef<class SGraphEditor> CreateGraphEditorWidget(UEdGraph* InGraph);
 
+	/* 新测试不使用FDocumentTracker */
+	TSharedPtr< SGraphEditor> CreateGraphEditorWidgetNoDocument();
+
 	/*创建内部Widget，Details*/
 	void CreateInternalWidgets();
 	/* DetailsView更新相关 */
@@ -78,11 +84,23 @@ private:
 	/*当发生属性变化时的更新*/
 	void OnFinishedChangingProperties(const FPropertyChangedEvent& PropertyChangedEvent);
 
+
+public:
+	/* 当前正在编辑的资源，MyCustomAsset */
+	UMyCustomAsset* CustomAsset;
+	//剧情模块ID
+	static const FName ScenarioMode;
+
+	/* 19.12.23 新测试使用，创建的GraphEditor */
+	TSharedPtr< SGraphEditor> GraphEditorView;
+
 private:
 	/**	The tab ids for all the tabs used */
 	static const FName PropertiesTabId;
 
 	static const FName ToolkitFName;
+	/* 创建一个Details的ID */
+	static const FName DetailsFNameId;
 
 	TSharedPtr<FDocumentTracker> DocumentManager;
 	TWeakPtr<FDocumentTabFactory> GraphEditorTabFactoryPtr;
@@ -90,9 +108,5 @@ private:
 	/* 属性Details */
 	TSharedPtr<class IDetailsView> DetailsView;
 
-public:
-	/* 当前正在编辑的资源，MyCustomAsset */
-	UMyCustomAsset* CustomAsset;
-	//剧情模块ID
-	static const FName ScenarioMode;
+
 };

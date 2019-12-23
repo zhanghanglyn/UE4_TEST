@@ -2,6 +2,8 @@
 
 const FName FScenarioEditor::ToolkitFName(TEXT("CustomStoryEditor"));
 const FName FScenarioEditor::PropertiesTabId(TEXT("CustomAssetEditor_Story"));
+const FName FScenarioEditor::DetailsFNameId(TEXT("ScenarioDetail_Story"));
+
 
 const FName FScenarioEditor::ScenarioMode(TEXT("Scenario"));
 
@@ -45,25 +47,42 @@ void FScenarioEditor::SetCustomAsset(UMyCustomAsset* InCustomAsset)
 
 void FScenarioEditor::RegisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager)
 {
-	DocumentManager->SetTabManager(InTabManager);
+	//DocumentManager->SetTabManager(InTabManager);  19.12.23 屏蔽
+	//FWorkflowCentricApplication::RegisterTabSpawners(InTabManager);
+
+	/* 19.12.23 新添加 */
+	TabManager->AddLocalWorkspaceMenuCategory(LOCTEXT("WorkspaceMenu_FSMAssetEditor", "FSM Asset Editor"));
+	//const TSharedRef<FWorkspaceItem> WorkspaceMenuCategoryRef = WorkspaceMenuCategory.ToSharedRef();
 
 	FWorkflowCentricApplication::RegisterTabSpawners(InTabManager);
 
 	//在这里注册一个details试试
 	InTabManager->RegisterTabSpawner(PropertiesTabId,
+		FOnSpawnTab::CreateSP(this, &FScenarioEditor::SpawnGraphEditorTab)) //注册一个当产生TAB时触发的委托
+		.SetDisplayName(LOCTEXT("GraphCanvasTab", "Viewport"))
+		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
+		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "GraphEditor.EventGraph_16x"));
+
+	//尝试一下注册多个，注册一个Detail
+	InTabManager->RegisterTabSpawner(DetailsFNameId,
 		FOnSpawnTab::CreateSP(this, &FScenarioEditor::SpawnPropertiesTab)) //注册一个当产生TAB时触发的委托
 		.SetDisplayName(LOCTEXT("PropertiesTab", "Details"))
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
 		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
+
+	//再注册一个toolbar
+	RegisterToolbarTab(InTabManager);
 }
 
 void FScenarioEditor::UnregisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager)
 {
 	FWorkflowCentricApplication::UnregisterTabSpawners(InTabManager);
 	InTabManager->UnregisterTabSpawner(PropertiesTabId);
+	InTabManager->UnregisterTabSpawner(DetailsFNameId);
+	
 }
 
-void FScenarioEditor::InitScenarioEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UMyCustomAsset* InCustomAsset)
+/*void FScenarioEditor::InitScenarioEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UMyCustomAsset* InCustomAsset)
 {
 	SetCustomAsset(InCustomAsset);
 
@@ -108,14 +127,6 @@ void FScenarioEditor::InitScenarioEditor(const EToolkitMode::Type Mode, const TS
 						->AddTab(PropertiesTabId, ETabState::OpenedTab)
 					)
 				)
-				->Split(
-					FTabManager::NewSplitter()
-					->Split
-					(
-						FTabManager::NewStack()
-						->AddTab(TEXT("ddd"), ETabState::OpenedTab)
-					)
-				)
 			);
 
 		//我觉得，之前就是缺少了这一步！！
@@ -133,6 +144,81 @@ void FScenarioEditor::InitScenarioEditor(const EToolkitMode::Type Mode, const TS
 	SetCurrentMode(ScenarioMode);
 
 
+}
+*/
+
+void FScenarioEditor::InitScenarioEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UMyCustomAsset* InCustomAsset)
+{
+	SetCustomAsset(InCustomAsset);
+
+	GraphEditorView = CreateGraphEditorWidgetNoDocument();
+	//创建Details
+	CreateInternalWidgets();
+
+	//创建UI
+	TSharedRef<FTabManager::FLayout> DummyLayout = FTabManager::NewLayout("Standalone_ScenarioEditor_Layout_v1")
+		->AddArea(
+			FTabManager::NewPrimaryArea()->SetOrientation(Orient_Vertical)
+			/* 这是个Toolbar 但是居然没显示默认的 */
+			->Split(
+				FTabManager::NewStack()
+				->SetSizeCoefficient(0.1f)
+				->SetHideTabWell(true)
+				->AddTab(GetToolbarTabId(), ETabState::OpenedTab)
+			)
+			// Split the tab and pass the tab id to the tab spawner
+			->Split(
+				FTabManager::NewSplitter()
+				->Split
+				(
+					FTabManager::NewStack()
+					->AddTab(PropertiesTabId, ETabState::OpenedTab)
+				)
+				->Split(
+					FTabManager::NewStack()
+					->SetSizeCoefficient(0.3f)
+					->AddTab(DetailsFNameId, ETabState::OpenedTab)
+				)
+			)
+		);
+
+	InitAssetEditor(Mode, InitToolkitHost, TEXT("ScenarioEditorTreeEditorApp"), DummyLayout, true, true, InCustomAsset);
+}
+
+/* 新测试不使用FDocumentTracker */
+TSharedPtr< SGraphEditor> FScenarioEditor::CreateGraphEditorWidgetNoDocument()
+{
+	//创建一个Graph
+	UScenarioGraph* MyGraph = Cast<UScenarioGraph>(CustomAsset->StoryGraph);
+	if (MyGraph == NULL)
+	{
+		CustomAsset->StoryGraph = FBlueprintEditorUtils::CreateNewGraph(CustomAsset, TEXT("MyScenario Tree"), UScenarioGraph::StaticClass(), UScenarioGraphSchema::StaticClass());
+		MyGraph = Cast<UScenarioGraph>(CustomAsset->StoryGraph);
+		MyGraph->bAllowDeletion = false;
+
+		//初始化编辑器的Graph
+		const UScenarioGraphSchema* Schema = Cast<UScenarioGraphSchema>(MyGraph->GetSchema());
+		Schema->CreateDefaultNodesForGraph(*MyGraph);
+	}
+
+	/* 以下开始创建GraphEditor */
+
+	// 自定义Graph的显示
+	FGraphAppearanceInfo AppearanceInfo;
+	AppearanceInfo.CornerText = LOCTEXT("ScenarioCornerText_FSM","Scenario!");
+	AppearanceInfo.InstructionText = LOCTEXT("ScenarioCornerText_FSM", "Scenario~");
+
+
+
+	//创建一个点击事件
+	SGraphEditor::FGraphEditorEvents InEvents;
+	InEvents.OnSelectionChanged = SGraphEditor::FOnSelectionChanged::CreateSP(this, &FScenarioEditor::OnSelectedNodesChanged);
+
+	return SNew(SGraphEditor)
+		.Appearance(AppearanceInfo)
+		.GraphToEdit(MyGraph)
+		.GraphEvents(InEvents)
+	;
 }
 
 /* 创建GraphEditor! */
@@ -169,9 +255,20 @@ TSharedRef<SGraphEditor> FScenarioEditor::CreateGraphEditorWidget(UEdGraph* InGr
 
 }
 
-TSharedRef<SDockTab> FScenarioEditor::SpawnPropertiesTab(const FSpawnTabArgs& Args)
+/* 在此创建GraphTab */
+TSharedRef<SDockTab> FScenarioEditor::SpawnGraphEditorTab(const FSpawnTabArgs& Args)
 {
 	check(Args.GetTabId() == PropertiesTabId);
+	return SNew(SDockTab)
+		.Label(LOCTEXT("EditorGraphCanvas", "Viewport"))
+		[
+			GraphEditorView.ToSharedRef()
+		];
+}
+
+TSharedRef<SDockTab> FScenarioEditor::SpawnPropertiesTab(const FSpawnTabArgs& Args)
+{
+	check(Args.GetTabId() == DetailsFNameId);
 
 	return SNew(SDockTab)
 		.Icon(FEditorStyle::GetBrush("GenericEditor.Tabs.Properties"))

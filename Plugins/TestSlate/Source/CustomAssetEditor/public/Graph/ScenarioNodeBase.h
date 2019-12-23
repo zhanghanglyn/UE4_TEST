@@ -11,7 +11,8 @@ class UScenarioNodeBase : public UEdGraphNode
 	GENERATED_UCLASS_BODY()
 
 public:
-
+	UPROPERTY(EditAnywhere, Category = DialogueGraphNode)
+	FString TestData;
 
 public:
 
