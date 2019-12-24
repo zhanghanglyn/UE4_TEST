@@ -354,6 +354,7 @@ void FScenarioEditor::OnSelectedNodesChanged(const TSet<class UObject *>& NewSel
 			for (UObject* Object : NewSelection)
 			{
 				DetailsView->SetObject(Object);
+				CurFocusNode = Cast<UEdGraphNode>(Object);
 			}
 		}
 		else
@@ -374,6 +375,15 @@ bool FScenarioEditor::IsPropertyEditable() const
 void FScenarioEditor::OnFinishedChangingProperties(const FPropertyChangedEvent& PropertyChangedEvent)
 {
 	UE_LOG(LogTemp, Warning, TEXT(" Now The DetailsView Update ! UpdateNode!"));
+	if (CurFocusNode)
+	{
+		//UScenarioNodeNormal* NodeNormal = Cast<UScenarioNodeNormal>(CurFocusNode);
+		//if (NodeNormal)   //理论上应该是存有所有数据的!
+		//{
+		//	NodeNormal
+		//}
+	}
+
 }
 
 

@@ -1,38 +1,67 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 #include "Runtime/Engine/Classes/EdGraph/EdGraphNode.h"
-#include "ScenarioNodeBase.h"
 #include "Editor/GraphEditor/Public/SGraphNode.h"
+
+//#include "ScenarioPin.h"
+//#include "Runtime/Engine/Classes/EdGraph/EdGraph.h"
+
 #include "ScenarioNodeNormal.generated.h"
 
-/* ´æ´¢½ÚµãÊı¾İµÄ²¿·Ö */
+/* å­˜å‚¨èŠ‚ç‚¹æ•°æ®çš„éƒ¨åˆ† */
 UCLASS()
 class UScenarioNodeNormal : public UEdGraphNode
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+	UScenarioNodeNormal();
 
 	//~ Begin UEdGraphNode Interface
-	//´´½¨Ò»¸öĞÂ½ÚµãµÄÊ±ºòµ÷ÓÃ£¬»áÔÚÀïÃæÉú³É¸Ã½ÚµãµÄInstance
+	
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+	virtual bool CanUserDeleteNode() const override { return true; };
+	virtual void DestroyNode() override ;
 
+	// called when this node is being renamed after a successful name validation
+	virtual void OnRenameNode(const FString& NewName) override;
 
+	/** åœ¨å›¾å½¢ç¼–è¾‘å™¨æˆ–å›¾å½¢é¢æ¿ä¸­åˆ›å»ºè¡¨ç¤ºæ­¤èŠ‚ç‚¹çš„å¯è§†å°éƒ¨ä»¶ã€‚å¦‚æœæ²¡æœ‰å®ç°ï¼Œå°†ä½¿ç”¨é»˜è®¤çš„èŠ‚ç‚¹å·¥å‚ã€‚
+		ä½†æˆ‘æœ‰ç‚¹æ‡’å¾—å†™èŠ‚ç‚¹å·¥å‚è¿˜è¦æ³¨å†Œäº†ï¼Œå°±é‡è½½è¿™ä¸ªå§~
+	*/
+	virtual TSharedPtr<SGraphNode> CreateVisualWidget() override;
+
+	// å–åçš„æ—¶å€™ç”¨æ¥éªŒè¯æ˜¯å¦å¯ä»¥å–ï¼Œæš‚æ—¶ä¸å¤„ç†
+	virtual TSharedPtr<class INameValidatorInterface> MakeNameValidator() const { return NULL; }
+	/**
+	* ç²˜è´´èŠ‚ç‚¹çš„æ—¶å€™è¿›è¡Œçš„æ“ä½œï¼Œæš‚æ—¶å…ˆæ‹œä¸ªæ—©å¹´å§
+	*/
+	virtual void PostPasteNode() { /*UE_LOG(LogTemp, Warning, TEXT(" Happy New Year"));*/ };
 	//~ End
 
-	/* ¸¸Àà·½·¨£¬¼Ì³Ğºó¿ÉÒÔÔÚÀïÃæÌí¼ÓĞÂ½Úµã */
+	/* çˆ¶ç±»æ–¹æ³•ï¼Œç»§æ‰¿åå¯ä»¥åœ¨é‡Œé¢æ·»åŠ æ–°èŠ‚ç‚¹ */
 	virtual void AllocateDefaultPins();
 
+	//è·å–OutPutPin
+	UEdGraphPin* GetOutPutPin();
+	//è·å–InPutPin
+	UEdGraphPin* GetInPutPin();
 
 public:
 
-	UPROPERTY(EditAnywhere, Category = DialogueGraphNode)
+	UPROPERTY(EditAnywhere, Category = "ScenarioGraphNode")
 	FString TestData;
 
+	UPROPERTY(EditAnywhere, Category = "ScenarioGraphNode")
+	FString NodeName;
+
+	static const int32 INPUT_PIN_INDEX;
+	static const int32 OUTPUT_PIN_INDEX;
 };
 
-/* ¼Ì³ĞSBorderµÄNodeÏÔÊ¾Àà */
+/* ç»§æ‰¿SBorderçš„Nodeæ˜¾ç¤ºç±» */
 class SScenarioNodeNormal : public SGraphNode
 {
 public:
@@ -44,13 +73,13 @@ public:
 
 	void Construct(const FArguments& InArgs , UEdGraphNode* InNode);
 
-	/*¸üĞÂNodeÒÑÆ¥ÅäData¸üĞÂ*/
+	/*æ›´æ–°Nodeå·²åŒ¹é…Dataæ›´æ–°*/
 	virtual void UpdateGraphNode();
 	
-	/*´´½¨Pin UI*/
+	/*åˆ›å»ºPin UI*/
 	virtual void CreatePinWidgets();
 
-	/* °ÑÒ»¸öPinÌí¼Óµ½NodeÉÏ£¬±ØĞëÊÇĞÂ´´½¨µÄPin */
+	/* æŠŠä¸€ä¸ªPinæ·»åŠ åˆ°Nodeä¸Šï¼Œå¿…é¡»æ˜¯æ–°åˆ›å»ºçš„Pin */
 	virtual void AddPin(const TSharedRef<SGraphPin>& PinToAdd);
 
 };

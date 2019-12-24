@@ -3,8 +3,6 @@
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 #include "EdGraph/EdGraph.h"
-#include "ScenarioEditor.h"
-#include "ScenarioGraphSchema.h"
 #include "ScenarioGraph.generated.h"
 
 class FScenarioEditor;

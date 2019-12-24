@@ -18,13 +18,19 @@ public:
 
 		RegisterAssetTypeAction( MakeShareable(new FAssetTypeActions_MyCustomAsset()));
 
+		GraphPinFactory = MakeShared<FScenarioPinFactory>();
+		FEdGraphUtilities::RegisterVisualPinFactory(GraphPinFactory);
 	};
 
 	virtual void ShutdownModule() override {
+
+		FEdGraphUtilities::UnregisterVisualPinFactory(GraphPinFactory);
+
 		MenuExtensibliltyManager.Reset();
 		MenuExtensibliltyManager.Reset();
 
 		UnregisterAssetTypeAction();
+
 	}
 
 	virtual TSharedPtr< FExtensibilityManager> GetMenuExtensibilityManager() override {

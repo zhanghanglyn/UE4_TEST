@@ -4,6 +4,7 @@
 #include "Toolkits/AssetEditorToolkit.h"
 #include "IAssetTools.h"
 #include "AssetTools/Private/AssetTools.h"
+#include "ScenarioFactories.h"
 #include "AssetToolsModule.h"
 #include "AssetTypeActions_MyCustomAsset.h"
 
@@ -31,5 +32,7 @@ public:
 		const EToolkitMode::Type Mode, const TSharedPtr< IToolkitHost>& InitToolkitHost,
 		UMyCustomAsset* CustomAsset) = 0;
 
+public:
+	TSharedPtr<FScenarioPinFactory> GraphPinFactory;
 };
 

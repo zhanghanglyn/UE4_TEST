@@ -7,11 +7,14 @@
 #include "ScenarioGraphEditorSummoner.h"
 #include "ScenarioGraph.h"
 #include "SWidget.h"
+#include "EdGraph/EdGraphNode.h"
+#include "ScenarioGraphSchema.h"
 #include "Editor/EditorStyle/Public/EditorStyle.h"
 #include "Slate/Public/Widgets/Docking/SDockTab.h"
 #include "Kismet/Public/BlueprintEditor.h"
 #include "Editor/UnrealEd/Public/Kismet2/BlueprintEditorUtils.h"
 #include "ScenarioApplicationMode.h"
+//#include "ScenarioNodeNormal.h"
 #include "Editor/PropertyEditor/Public/IDetailsView.h"
 #include "Editor/PropertyEditor/Public/PropertyEditorModule.h"
 #include "Kismet/Public/WorkflowOrientedApp/WorkflowTabManager.h"
@@ -108,5 +111,6 @@ private:
 	/* 属性Details */
 	TSharedPtr<class IDetailsView> DetailsView;
 
-
+	/* 当前Focus的Node */
+	class UEdGraphNode* CurFocusNode;
 };

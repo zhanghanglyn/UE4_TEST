@@ -49,12 +49,27 @@ const FPinConnectionResponse UScenarioGraphSchema::CanCreateConnection(const UEd
 /*链接两个引脚并通过中间节点 可以在此自定义中间节点，但是不写了*/
 bool UScenarioGraphSchema::CreateAutomaticConversionNodeAndConnections(UEdGraphPin* A, UEdGraphPin* B) const
 {
-
+	UE_LOG(LogTemp, Warning, TEXT(" $#### CreateAutomaticConversionNodeAndConnections"));
+	return false;
 }
 
 /* 链接两个引脚 */
 bool UScenarioGraphSchema::TryCreateConnection(UEdGraphPin* A, UEdGraphPin* B) const
 {
+	//因为其实只写了RightNodeBox，所以要判断下，响应点击的引脚应该都是OutPut
+	if (A->Direction == B->Direction)
+		if (UScenarioNodeNormal* Node = Cast<UScenarioNodeNormal>(B->GetOwningNode()))
+		{
+			if (A->Direction == EGPD_Input)
+			{
+				B = Node->GetOutPutPin();
+			}
+			else
+			{
+				B = Node->GetInPutPin();
+			}
+		}
+
 	const bool bModified = UEdGraphSchema::TryCreateConnection(A, B);
 
 	return bModified;

@@ -52,11 +52,22 @@ public class CustomAssetEditor : ModuleRules
                 //为了资产新添加的
                 "AssetRegistry",
                 "EditorWidgets",
-                "ContentBrowser",
+
                 "EditorStyle",
                 "EditorWidgets",
                 "Kismet",
-                "CoreUObject"
+
+                // graph stuff
+				"GraphEditor",
+                "ContentBrowser",
+
+                "BlueprintGraph",
+                "MessageLog",
+                "CoreUObject",
+
+                				// e.g. FPlatformApplicationMisc::ClipboardCopy
+				"ApplicationCore",
+                "PropertyEditor",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
