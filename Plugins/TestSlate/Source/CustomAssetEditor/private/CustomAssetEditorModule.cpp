@@ -20,11 +20,15 @@ public:
 
 		GraphPinFactory = MakeShared<FScenarioPinFactory>();
 		FEdGraphUtilities::RegisterVisualPinFactory(GraphPinFactory);
+		GraphNodeFactory = MakeShared<FScenarioNodeFactory>();
+		FEdGraphUtilities::RegisterVisualNodeFactory(GraphNodeFactory);
+
 	};
 
 	virtual void ShutdownModule() override {
 
 		FEdGraphUtilities::UnregisterVisualPinFactory(GraphPinFactory);
+		FEdGraphUtilities::UnregisterVisualNodeFactory(GraphNodeFactory);
 
 		MenuExtensibliltyManager.Reset();
 		MenuExtensibliltyManager.Reset();

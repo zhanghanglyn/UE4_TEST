@@ -34,5 +34,6 @@ public:
 
 public:
 	TSharedPtr<FScenarioPinFactory> GraphPinFactory;
+	TSharedPtr<FScenarioNodeFactory> GraphNodeFactory;
 };
 

@@ -31,7 +31,7 @@ public:
 	/** 在图形编辑器或图形面板中创建表示此节点的可视小部件。如果没有实现，将使用默认的节点工厂。
 		但我有点懒得写节点工厂还要注册了，就重载这个吧~
 	*/
-	virtual TSharedPtr<SGraphNode> CreateVisualWidget() override;
+	//virtual TSharedPtr<SGraphNode> CreateVisualWidget() override;
 
 	// 取名的时候用来验证是否可以取，暂时不处理
 	virtual TSharedPtr<class INameValidatorInterface> MakeNameValidator() const { return NULL; }

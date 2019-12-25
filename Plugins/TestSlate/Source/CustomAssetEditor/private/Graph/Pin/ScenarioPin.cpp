@@ -1,8 +1,12 @@
 #include "ScenarioPin.h"
+#include "Runtime/SlateCore/Public/Widgets/SBoxPanel.h"
+#include "Runtime/Slate/Public/Widgets/Text/SInlineEditableTextBlock.h"
 
 void SScenarioPin::Construct(const FArguments& InArgs, UEdGraphPin* InPin)
 {
 	this->SetCursor(EMouseCursor::Default);
+
+	bShowLabel = true;
 
 	GraphPinObj = InPin;
 	check(GraphPinObj != NULL);
@@ -21,12 +25,21 @@ void SScenarioPin::Construct(const FArguments& InArgs, UEdGraphPin* InPin)
 		.OnMouseButtonDown( this , &SScenarioPin::OnPinMouseDown)	//
 		.Cursor(this, &SScenarioPin::GetPinCursor)
 	);
-	//…Ë÷√OWENER
-	TSharedRef<UEdGraphNode> TempNode = MakeShareable(InPin->GetOwningNode());
 
-	//InPin->GetOuter()
-	//SetOwner();
-
+	/*SNew(SBorder)
+		.BorderImage(FEditorStyle::GetBrush("Graph.StateNode.Body"))
+		.Padding(0)
+		.BorderBackgroundColor(FLinearColor::Green)
+		[
+			SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+			.AutoHeight()
+			[
+			SNew(SInlineEditableTextBlock)
+			.Style(FEditorStyle::Get(), "Graph.StateNode.NodeTitleInlineEditableText")
+			.Text(FText::FromString("aafdafdafdaf"))
+			]
+		];*/
 }
 
 TSharedRef<SWidget> SScenarioPin::GetDefaultValueWidget()

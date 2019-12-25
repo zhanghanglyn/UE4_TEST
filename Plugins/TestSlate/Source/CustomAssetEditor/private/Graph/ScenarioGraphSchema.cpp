@@ -13,6 +13,10 @@
 
 #define LOCTEXT_NAMESPACE "UScenarioGraphSchema"
 
+//定义两个Pin的类型
+const FName UScenarioGraphSchema::PC_Normal(TEXT("Normal"));
+const FName UScenarioGraphSchema::PC_Root(TEXT("Root"));
+
 UScenarioGraphSchema::UScenarioGraphSchema(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -20,8 +24,11 @@ UScenarioGraphSchema::UScenarioGraphSchema(const FObjectInitializer& ObjectIniti
 
 void UScenarioGraphSchema::CreateDefaultNodesForGraph(UEdGraph& Graph) const
 {
-	FGraphNodeCreator<UScenarioNodeBase> NodeCreater(Graph);
-	UScenarioNodeBase* Nodebase = NodeCreater.CreateNode();
+	//FGraphNodeCreator<UScenarioNodeBase> NodeCreater(Graph);
+	//UScenarioNodeBase* Nodebase = NodeCreater.CreateNode();
+	//NodeCreater.Finalize();
+	FGraphNodeCreator<UScenarioNodeNormal> NodeCreater(Graph);
+	UScenarioNodeNormal* Nodebase = NodeCreater.CreateNode();
 	NodeCreater.Finalize();
 }
 

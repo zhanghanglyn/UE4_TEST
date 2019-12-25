@@ -46,7 +46,6 @@ void SScenarioNodeNormal::UpdateGraphNode()
 			.BorderBackgroundColor(FLinearColor::Gray)
 			[
 				SNew(SOverlay)
-
 				//PIN AREA,并且把生成的SVerticalBox付给RightNodeBox
 				+SOverlay::Slot()
 				.HAlign(HAlign_Fill)
@@ -66,7 +65,7 @@ void SScenarioNodeNormal::UpdateGraphNode()
 					.BorderBackgroundColor(TitleShadowColor)
 					.HAlign(HAlign_Center)
 					.VAlign(VAlign_Center)
-					.Visibility(EVisibility::SelfHitTestInvisible)  //
+					.Visibility(EVisibility::HitTestInvisible)//SelfHitTestInvisible)  //
 					[
 						SNew(SHorizontalBox)
 						+ SHorizontalBox::Slot()
@@ -79,7 +78,7 @@ void SScenarioNodeNormal::UpdateGraphNode()
 						]
 						//名字区域，可点击名字
 						+SHorizontalBox::Slot()
-						.Padding(FMargin(4.0f, 0.0f, 4.0f, 0.0f))
+						.Padding(FMargin(10.0f, 0.0f, 10.0f, 0.0f))
 						[
 							SNew(SVerticalBox)
 							+ SVerticalBox::Slot()
@@ -128,6 +127,8 @@ void SScenarioNodeNormal::CreatePinWidgets()
 /* 因为整圈都是我的RightNode~所以 Input和OutPut就都放在OutPut啦 */
 void SScenarioNodeNormal::AddPin(const TSharedRef<SGraphPin>& PinToAdd)
 {
+	PinToAdd->SetOwner(SharedThis(this));
+
 	RightNodeBox->AddSlot()
 		.AutoHeight()
 		.HAlign(HAlign_Right)
@@ -136,6 +137,33 @@ void SScenarioNodeNormal::AddPin(const TSharedRef<SGraphPin>& PinToAdd)
 		[
 			PinToAdd
 		];
+	/*RightNodeBox->AddSlot()
+		.AutoHeight()
+		.HAlign(HAlign_Right)
+		.VAlign(VAlign_Center)
+		.FillHeight(1.0f)
+		[
+			SNew(SBorder)
+			.BorderImage(FEditorStyle::GetBrush("Graph.StateNode.Body"))
+			.Padding(0)
+			.BorderBackgroundColor(FLinearColor::Gray)
+			[
+				SNew(SVerticalBox)
+				+ SVerticalBox::Slot()
+				.AutoHeight()
+		[
+			SAssignNew(InlineEditableText, SInlineEditableTextBlock)
+			.Style(FEditorStyle::Get(), "Graph.StateNode.NodeTitleInlineEditableText")
+			.Text(FText::FromString("aafdafdafdaf"))
+			.OnVerifyTextChanged(this, &SScenarioNodeNormal::OnVerifyNameTextChanged)
+			.OnTextCommitted(this, &SScenarioNodeNormal::OnNameTextCommited)
+			.IsReadOnly(this, &SScenarioNodeNormal::IsNameReadOnly)
+			.IsSelected(this, &SScenarioNodeNormal::IsSelectedExclusively)
+		]
+			]
+		];*/
+
+
 	OutputPins.Add(PinToAdd);   //放入所有OutPutPins列表中
 }
 
@@ -166,8 +194,8 @@ void UScenarioNodeNormal::DestroyNode()
 
 void UScenarioNodeNormal::AllocateDefaultPins()
 {
-	CreatePin(EEdGraphPinDirection::EGPD_Input, FName("TestPinIN"), TEXT("IN"));
-	CreatePin(EEdGraphPinDirection::EGPD_Output, FName("TestPinOut"), TEXT("OUT"));
+	CreatePin(EEdGraphPinDirection::EGPD_Input, TEXT("Normal"), TEXT("In"));
+	CreatePin(EEdGraphPinDirection::EGPD_Output, TEXT("Root"), TEXT("Out"));
 }
 
 void UScenarioNodeNormal::OnRenameNode(const FString& NewName)
@@ -192,7 +220,7 @@ UEdGraphPin* UScenarioNodeNormal::GetInPutPin()
 	return Pins[INPUT_PIN_INDEX];
 }
 
-TSharedPtr<SGraphNode> UScenarioNodeNormal::CreateVisualWidget()
+/*TSharedPtr<SGraphNode> UScenarioNodeNormal::CreateVisualWidget()
 {
 	return SNew(SScenarioNodeNormal,this);
-}
+}*/

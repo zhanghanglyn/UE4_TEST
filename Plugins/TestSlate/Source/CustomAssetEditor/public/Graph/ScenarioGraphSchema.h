@@ -47,4 +47,8 @@ public:
 	virtual bool CreateAutomaticConversionNodeAndConnections(UEdGraphPin* A, UEdGraphPin* B) const override;
 
 	virtual bool TryCreateConnection(UEdGraphPin* A, UEdGraphPin* B) const;
+
+public:
+	static const FName PC_Normal;
+	static const FName PC_Root;
 };

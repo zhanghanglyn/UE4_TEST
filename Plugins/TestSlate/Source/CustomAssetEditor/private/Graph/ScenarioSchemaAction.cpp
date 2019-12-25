@@ -35,6 +35,9 @@ UEdGraphNode* FScenarioSchemaAction::CreateNode(UEdGraph* ParentGraph, UEdGraphP
 	{
 		FGraphNodeCreator<UScenarioNodeNormal> NodeCreater(*ParentGraph);
 		ResultNode = NodeCreater.CreateNode(bSelectNewNode);
+		//ResultNode = NodeCreater.CreateUserInvokedNode(bSelectNewNode);
+		ResultNode->SetFlags(RF_Transactional);
+		//ResultNode->Rename(*(FString("Scenario")), ParentGraph);
 		NodeCreater.Finalize();
 	}
 	else
@@ -42,11 +45,12 @@ UEdGraphNode* FScenarioSchemaAction::CreateNode(UEdGraph* ParentGraph, UEdGraphP
 		ResultNode = DuplicateObject<UEdGraphNode>(InNodeTemplate, ParentGraph);
 	}
 		
-	ResultNode->SetFlags(RF_Transactional);
 	ResultNode->AutowireNewNode(FromPin);
 
 	ResultNode->NodePosX = Location.X;
 	ResultNode->NodePosY = Location.Y;
+
+	ParentGraph->NotifyGraphChanged();
 
 	return ResultNode;
 }
