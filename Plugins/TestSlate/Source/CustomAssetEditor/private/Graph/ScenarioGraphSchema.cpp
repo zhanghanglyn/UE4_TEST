@@ -2,6 +2,8 @@
 #include "UObject/MetaData.h"
 #include "UObject/UnrealType.h"
 #include "UObject/TextProperty.h"
+#include "Editor/GraphEditor/Public/GraphEditorActions.h"
+#include "Runtime/Slate/Public/Framework/Commands/GenericCommands.h"
 #if WITH_EDITOR
 #include "Misc/ConfigCacheIni.h"
 #include "UObject/UObjectHash.h"
@@ -40,6 +42,26 @@ void UScenarioGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 		);
 
 	ContextMenuBuilder.AddAction(NewSchemaAction);
+}
+
+//添加右键菜单的操作列表，意思是可以添加像：如果右点击到Pin上打开的菜单， 如果右点击到Node上打开的菜单等
+void UScenarioGraphSchema::GetContextMenuActions(const UEdGraph* CurrentGraph, const UEdGraphNode* InGraphNode,
+	const UEdGraphPin* InGraphPin, class FMenuBuilder* MenuBuilder, bool bIsDebugging) const
+{
+	check(CurrentGraph);
+
+	//如果右键点击到节点上
+	if (InGraphNode != nullptr)
+	{
+		MenuBuilder->BeginSection(FName("ScenarioNodeMenu"), LOCTEXT("NodeActionsMenuHeader", "Node Actions"));
+		{
+			MenuBuilder->AddMenuEntry(FGenericCommands::Get().Delete);
+			MenuBuilder->AddMenuEntry(FGraphEditorCommands::Get().ReconstructNodes);
+			MenuBuilder->AddMenuEntry(FGraphEditorCommands::Get().BreakNodeLinks);
+		}
+		MenuBuilder->EndSection();
+	}
+	Super::GetContextMenuActions(CurrentGraph, InGraphNode, InGraphPin, MenuBuilder, bIsDebugging);
 }
 
 /* 判断两个引脚是否可以链接 */
@@ -82,5 +104,25 @@ bool UScenarioGraphSchema::TryCreateConnection(UEdGraphPin* A, UEdGraphPin* B) c
 	return bModified;
 }
 
+void UScenarioGraphSchema::BreakNodeLinks(UEdGraphNode& TargetNode) const
+{
+	const FScopedTransaction Transaction(NSLOCTEXT("FSMAssetEditorNativeNames", "GraphEd_BreakNodeLinks", "Break Node Links"));
+
+	Super::BreakNodeLinks(TargetNode);
+}
+
+void UScenarioGraphSchema::BreakPinLinks(UEdGraphPin& TargetPin, bool bSendsNodeNotification) const
+{
+	const FScopedTransaction Transaction(NSLOCTEXT("FSMAssetEditorNativeNames", "GraphEd_BreakPinLinks", "Break Pin Links"));
+
+	Super::BreakPinLinks(TargetPin, bSendsNodeNotification);
+}
+
+void UScenarioGraphSchema::BreakSinglePinLink(UEdGraphPin* SourcePin, UEdGraphPin* TargetPin) const
+{
+	const FScopedTransaction Transaction(NSLOCTEXT("FSMAssetEditorNativeNames", "GraphEd_BreakSinglePinLink", "Break Pin Link"));
+
+	Super::BreakSinglePinLink(SourcePin, TargetPin);
+}
 
 #undef LOCTEXT_NAMESPACE

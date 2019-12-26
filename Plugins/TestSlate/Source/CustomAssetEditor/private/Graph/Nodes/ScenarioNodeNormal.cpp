@@ -65,7 +65,7 @@ void SScenarioNodeNormal::UpdateGraphNode()
 					.BorderBackgroundColor(TitleShadowColor)
 					.HAlign(HAlign_Center)
 					.VAlign(VAlign_Center)
-					.Visibility(EVisibility::HitTestInvisible)//SelfHitTestInvisible)  //
+					.Visibility(EVisibility::SelfHitTestInvisible)  //
 					[
 						SNew(SHorizontalBox)
 						+ SHorizontalBox::Slot()
@@ -78,7 +78,7 @@ void SScenarioNodeNormal::UpdateGraphNode()
 						]
 						//名字区域，可点击名字
 						+SHorizontalBox::Slot()
-						.Padding(FMargin(10.0f, 0.0f, 10.0f, 0.0f))
+						.Padding(FMargin(20.0f, 0.0f, 20.0f, 0.0f))
 						[
 							SNew(SVerticalBox)
 							+ SVerticalBox::Slot()
@@ -130,39 +130,12 @@ void SScenarioNodeNormal::AddPin(const TSharedRef<SGraphPin>& PinToAdd)
 	PinToAdd->SetOwner(SharedThis(this));
 
 	RightNodeBox->AddSlot()
-		.AutoHeight()
-		.HAlign(HAlign_Right)
-		.VAlign(VAlign_Center)
+		.HAlign(HAlign_Fill)
+		.VAlign(VAlign_Fill)
 		.FillHeight(1.0f)
 		[
 			PinToAdd
 		];
-	/*RightNodeBox->AddSlot()
-		.AutoHeight()
-		.HAlign(HAlign_Right)
-		.VAlign(VAlign_Center)
-		.FillHeight(1.0f)
-		[
-			SNew(SBorder)
-			.BorderImage(FEditorStyle::GetBrush("Graph.StateNode.Body"))
-			.Padding(0)
-			.BorderBackgroundColor(FLinearColor::Gray)
-			[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-				.AutoHeight()
-		[
-			SAssignNew(InlineEditableText, SInlineEditableTextBlock)
-			.Style(FEditorStyle::Get(), "Graph.StateNode.NodeTitleInlineEditableText")
-			.Text(FText::FromString("aafdafdafdaf"))
-			.OnVerifyTextChanged(this, &SScenarioNodeNormal::OnVerifyNameTextChanged)
-			.OnTextCommitted(this, &SScenarioNodeNormal::OnNameTextCommited)
-			.IsReadOnly(this, &SScenarioNodeNormal::IsNameReadOnly)
-			.IsSelected(this, &SScenarioNodeNormal::IsSelectedExclusively)
-		]
-			]
-		];*/
-
 
 	OutputPins.Add(PinToAdd);   //放入所有OutPutPins列表中
 }
@@ -220,7 +193,7 @@ UEdGraphPin* UScenarioNodeNormal::GetInPutPin()
 	return Pins[INPUT_PIN_INDEX];
 }
 
-/*TSharedPtr<SGraphNode> UScenarioNodeNormal::CreateVisualWidget()
+TSharedPtr<SGraphNode> UScenarioNodeNormal::CreateVisualWidget()
 {
 	return SNew(SScenarioNodeNormal,this);
-}*/
+}

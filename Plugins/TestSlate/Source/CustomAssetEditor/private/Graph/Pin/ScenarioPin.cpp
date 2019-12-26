@@ -24,22 +24,8 @@ void SScenarioPin::Construct(const FArguments& InArgs, UEdGraphPin* InPin)
 		.BorderBackgroundColor(this , &SScenarioPin::GetPinColor)
 		.OnMouseButtonDown( this , &SScenarioPin::OnPinMouseDown)	//
 		.Cursor(this, &SScenarioPin::GetPinCursor)
+		//.Padding(50.0f)
 	);
-
-	/*SNew(SBorder)
-		.BorderImage(FEditorStyle::GetBrush("Graph.StateNode.Body"))
-		.Padding(0)
-		.BorderBackgroundColor(FLinearColor::Green)
-		[
-			SNew(SVerticalBox)
-			+ SVerticalBox::Slot()
-			.AutoHeight()
-			[
-			SNew(SInlineEditableTextBlock)
-			.Style(FEditorStyle::Get(), "Graph.StateNode.NodeTitleInlineEditableText")
-			.Text(FText::FromString("aafdafdafdaf"))
-			]
-		];*/
 }
 
 TSharedRef<SWidget> SScenarioPin::GetDefaultValueWidget()

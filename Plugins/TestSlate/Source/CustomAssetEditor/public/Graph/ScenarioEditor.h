@@ -88,6 +88,16 @@ private:
 	void OnFinishedChangingProperties(const FPropertyChangedEvent& PropertyChangedEvent);
 
 
+	/*获取当前选中的Nodes*/
+	FGraphPanelSelectionSet GetSelectedNodes() const;
+	UEdGraphNode* GetFirstSelectNode() const;
+
+	/* 在Graph中注册的事件相关 */
+	void OnRenameNode();
+	bool CanRenameNodes() const;
+	void DeleteSelectedNodes();
+	bool CanDeleteNodes() const;
+
 public:
 	/* 当前正在编辑的资源，MyCustomAsset */
 	UMyCustomAsset* CustomAsset;
@@ -113,4 +123,8 @@ private:
 
 	/* 当前Focus的Node */
 	class UEdGraphNode* CurFocusNode;
+
+	/** Command list for the graph editor */
+	TSharedPtr<class FUICommandList> GraphEditorCommands;
+
 };

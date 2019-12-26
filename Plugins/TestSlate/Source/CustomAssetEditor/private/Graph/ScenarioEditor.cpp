@@ -1,4 +1,5 @@
 #include "ScenarioEditor.h"
+#include "Runtime/Slate/Public/Framework/Commands/GenericCommands.h"
 
 const FName FScenarioEditor::ToolkitFName(TEXT("CustomStoryEditor"));
 const FName FScenarioEditor::PropertiesTabId(TEXT("CustomAssetEditor_Story"));
@@ -208,13 +209,40 @@ TSharedPtr< SGraphEditor> FScenarioEditor::CreateGraphEditorWidgetNoDocument()
 	AppearanceInfo.CornerText = LOCTEXT("ScenarioCornerText_FSM","Scenario!");
 	AppearanceInfo.InstructionText = LOCTEXT("ScenarioCornerText_FSM", "Scenario~");
 
-
-
 	//创建一个点击事件
 	SGraphEditor::FGraphEditorEvents InEvents;
 	InEvents.OnSelectionChanged = SGraphEditor::FOnSelectionChanged::CreateSP(this, &FScenarioEditor::OnSelectedNodesChanged);
 
+	//CommandList相关
+	if (!GraphEditorCommands.IsValid())
+	{
+		GraphEditorCommands = MakeShareable(new FUICommandList);
+
+		GraphEditorCommands->MapAction(FGenericCommands::Get().Rename,
+			FExecuteAction::CreateSP(this, &FScenarioEditor::OnRenameNode),
+			FCanExecuteAction::CreateSP(this, &FScenarioEditor::CanRenameNodes)
+		);
+
+		/*GraphEditorCommands->MapAction(FGenericCommands::Get().SelectAll,
+			FExecuteAction::CreateSP(this, &FScenarioEditor::SelectAllNodes),
+			FCanExecuteAction::CreateSP(this, &FScenarioEditor::CanSelectAllNodes)
+		);*/
+
+		GraphEditorCommands->MapAction(FGenericCommands::Get().Delete,
+			FExecuteAction::CreateSP(this, &FScenarioEditor::DeleteSelectedNodes),
+			FCanExecuteAction::CreateSP(this, &FScenarioEditor::CanDeleteNodes)
+		);
+
+		//创建备注，标签
+		/*GraphEditorCommands->MapAction(FGenericCommands::Get().Create,
+			FExecuteAction::CreateSP(this, &FFSMAssetEditor::OnCreateComment)
+		);*/
+
+	}
+
 	return SNew(SGraphEditor)
+		.AdditionalCommands(GraphEditorCommands)
+		.IsEditable(true)
 		.Appearance(AppearanceInfo)
 		.GraphToEdit(MyGraph)
 		.GraphEvents(InEvents)
@@ -371,6 +399,21 @@ bool FScenarioEditor::IsPropertyEditable() const
 	return true;
 }
 
+FGraphPanelSelectionSet FScenarioEditor::GetSelectedNodes() const
+{
+	return GraphEditorView->GetSelectedNodes();
+}
+
+UEdGraphNode* FScenarioEditor::GetFirstSelectNode() const
+{
+	auto SelectedNodes = GraphEditorView->GetSelectedNodes();
+	if (SelectedNodes.Num() == 0)
+	{
+		return nullptr;
+	}
+	return Cast<UEdGraphNode>(SelectedNodes[FSetElementId::FromInteger(0)]);
+}
+
 /*修改了Detail属性后在此调用，进行Node更改*/
 void FScenarioEditor::OnFinishedChangingProperties(const FPropertyChangedEvent& PropertyChangedEvent)
 {
@@ -386,6 +429,51 @@ void FScenarioEditor::OnFinishedChangingProperties(const FPropertyChangedEvent& 
 
 }
 
+/* 在Graph中注册的事件相关 */
+void FScenarioEditor::OnRenameNode()
+{
+	//auto bVisible = GraphEditorView->IsNodeTitleVisible(GetFirstSelectedNode(), /*bRequestRename = */true);
+}
 
+bool FScenarioEditor::CanRenameNodes() const
+{
+	auto SelectedNodes = GetSelectedNodes();
+	if (SelectedNodes.Num() > 1) {
+		return false;
+	}
+
+	return true;
+	//return GetFirstSelectedNode()->bCanRenameNode;
+}
+
+void FScenarioEditor::DeleteSelectedNodes()
+{
+	//记录一次操作，可以c+z进行恢复
+	const FScopedTransaction Transaction(FGenericCommands::Get().Delete->GetDescription());
+
+	const FGraphPanelSelectionSet Selections = GetSelectedNodes();
+	for (FGraphPanelSelectionSet::TConstIterator Iter(Selections); Iter; ++Iter)
+	{
+		UEdGraphNode* CurNode = Cast<UEdGraphNode>(*Iter);
+		if (CurNode->CanUserDeleteNode())
+		{
+			FBlueprintEditorUtils::RemoveNode(nullptr, CurNode, true);
+		}
+	}
+}
+
+bool FScenarioEditor::CanDeleteNodes() const
+{
+	const FGraphPanelSelectionSet Selections = GetSelectedNodes();
+	for (FGraphPanelSelectionSet::TConstIterator Iter(Selections); Iter; ++Iter)
+	{
+		UEdGraphNode* CurNode = Cast<UEdGraphNode>(*Iter);
+		if (CurNode->CanUserDeleteNode())
+		{
+			return true;
+		}
+	}
+	return false;
+}
 
 #undef LOCTEXT_NAMESPACE
