@@ -4,6 +4,8 @@
 #include "CustomAssetEditor.h"
 #include "ScenarioEditor.h"
 
+#define LOCTEXT_NAMESPACE "CustomAssetEditorModule"
+
 //const FName CustomAssetEditorAppIdentifier = FName(TEXT("CustomAssetEditorApp")); //自定义资产编辑器应用程序标识符
 
 class FCustomAssetEditorModule : public ICustomAssetEditorModule
@@ -15,6 +17,10 @@ public:
 	virtual void StartupModule() override {
 		MenuExtensibliltyManager = MakeShareable(new FExtensibilityManager);
 		ToolBarExtensibilityManager = MakeShareable(new FExtensibilityManager);
+
+		//先注册一个自定义分类
+		IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
+		FAssetTypeActions_MyCustomAsset::AssetCategoryBit = AssetTools.RegisterAdvancedAssetCategory(FName("EventTree"), LOCTEXT("EventAssetCategory", "EventTree"));
 
 		RegisterAssetTypeAction( MakeShareable(new FAssetTypeActions_MyCustomAsset()));
 
@@ -110,3 +116,5 @@ TSharedRef<FScenarioEditor> FCustomAssetEditorModule::CreateCustomStoryEditor(co
 	return NewCustomAssetEditor;
 }
 #pragma optimize("",on)
+
+#undef LOCTEXT_NAMESPACE

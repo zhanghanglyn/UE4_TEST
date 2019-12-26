@@ -49,6 +49,12 @@ public:
 	//获取InPutPin
 	UEdGraphPin* GetInPutPin();
 
+	//设置此节点的小部件，因为DEPRECATED_NodeWidget 会在将来的版本中被废除，所以自己定义一个
+	void SetNodeWidget(class SScenarioNodeNormal* SNode);
+
+	//外部Detail变化时用来更新的函数
+	void OnDetailUpdate();
+
 public:
 
 	UPROPERTY(EditAnywhere, Category = "ScenarioGraphNode")
@@ -59,6 +65,11 @@ public:
 
 	static const int32 INPUT_PIN_INDEX;
 	static const int32 OUTPUT_PIN_INDEX;
+
+private:
+	//TSharedPtr< class SInlineEditableTextBlock> InlineEditableText;
+	//自身的小部件
+	class SScenarioNodeNormal* SNodeWidget;
 };
 
 /* 继承SBorder的Node显示类 */
@@ -81,5 +92,9 @@ public:
 
 	/* 把一个Pin添加到Node上，必须是新创建的Pin */
 	virtual void AddPin(const TSharedRef<SGraphPin>& PinToAdd);
+
+/*外部方法*/
+public:
+	void UpdateNodeNmae( FString NodeName );
 
 };

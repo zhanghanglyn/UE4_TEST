@@ -2,11 +2,16 @@
 #include "AssetTypeActions_MyCustomAsset.h"
 #include "MyCustomAsset.h"
 #include "CustomAssetEditorModule.h"
+
+
+//自定义一个资源分类
+EAssetTypeCategories::Type FAssetTypeActions_MyCustomAsset::AssetCategoryBit;
+
 #define LOCTEXT_NAMESPACE "AssetTypeActions_MyCustomAsset"
 
 FText FAssetTypeActions_MyCustomAsset::GetName() const
 {
-	return NSLOCTEXT("AssetTypeActions_MyCustomAsset", "AssetTypeActions_MyCustomAsset", "MyCustomAsset");
+	return NSLOCTEXT("AssetTypeActions_MyCustomAsset", "AssetTypeActions_MyCustomAsset", "NewEventTree");
 }
 
 FColor FAssetTypeActions_MyCustomAsset::GetTypeColor() const
@@ -21,7 +26,7 @@ UClass* FAssetTypeActions_MyCustomAsset::GetSupportedClass() const
 
 uint32 FAssetTypeActions_MyCustomAsset::GetCategories()
 {
-	return EAssetTypeCategories::Sounds;
+	return AssetCategoryBit;
 }
 
 void FAssetTypeActions_MyCustomAsset::OpenAssetEditor(

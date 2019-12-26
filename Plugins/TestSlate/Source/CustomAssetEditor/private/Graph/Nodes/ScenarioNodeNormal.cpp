@@ -16,6 +16,9 @@ void SScenarioNodeNormal::Construct(const FArguments& InArgs, UEdGraphNode* InNo
 	SetCursor(EMouseCursor::CardinalCross);
 
 	GraphNode = InNode;
+	UScenarioNodeNormal* NodeNormal = Cast<UScenarioNodeNormal>(InNode);
+	if(NodeNormal != nullptr)
+		NodeNormal->SetNodeWidget(this);
 
 	//更新节点
 	UpdateGraphNode();
@@ -140,6 +143,12 @@ void SScenarioNodeNormal::AddPin(const TSharedRef<SGraphPin>& PinToAdd)
 	OutputPins.Add(PinToAdd);   //放入所有OutPutPins列表中
 }
 
+/////////////外部方法相关
+void SScenarioNodeNormal::UpdateNodeNmae(FString NodeName)
+{
+	InlineEditableText->SetText(NodeName);
+}
+
 /************************************************************************/
 /*	                   UScenarioNodeNormal                               */
 /************************************************************************/
@@ -196,4 +205,15 @@ UEdGraphPin* UScenarioNodeNormal::GetInPutPin()
 TSharedPtr<SGraphNode> UScenarioNodeNormal::CreateVisualWidget()
 {
 	return SNew(SScenarioNodeNormal,this);
+}
+
+void UScenarioNodeNormal::SetNodeWidget(SScenarioNodeNormal* SNode)
+{
+	SNodeWidget = SNode;
+}
+ 
+//当Detail属性变化时更新 可能之后的很多操作都在这儿了
+void UScenarioNodeNormal::OnDetailUpdate()
+{
+	SNodeWidget->UpdateNodeNmae(NodeName);
 }

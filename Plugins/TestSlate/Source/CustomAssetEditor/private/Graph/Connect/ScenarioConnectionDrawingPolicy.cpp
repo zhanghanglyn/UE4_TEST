@@ -7,7 +7,7 @@ void FScenarioConnectionDrawingPolicy::DetermineWiringStyle(UEdGraphPin* OutputP
 {
 	Params.AssociatedPin2 = InputPin;
 	Params.AssociatedPin1 = OutputPin;
-	Params.WireThickness = 1.5f;
+	Params.WireThickness = 2;
 
 	Params.WireColor = GetTransitionColor(HoveredPins.Contains(OutputPin));
 
@@ -117,11 +117,8 @@ void FScenarioConnectionDrawingPolicy::DrawLineWithArrowImpl(const FVector2D & S
 	const FVector2D StartPoint = StartAnchorPoint + DirectionBias + LengthBias;
 	const FVector2D EndPoint = EndAnchorPoint + DirectionBias - LengthBias;
 
-	FConnectionParams TempParams = Params;
-	TempParams.WireThickness = 1.5f;
-
 	// Draw a line/spline
-	DrawConnection(WireLayerID, StartPoint, EndPoint, TempParams);
+	DrawConnection(WireLayerID, StartPoint, EndPoint, Params);
 
 	// Draw the arrow
 	const FVector2D ArrowDrawPos = EndPoint - ArrowRadius;

@@ -417,14 +417,17 @@ UEdGraphNode* FScenarioEditor::GetFirstSelectNode() const
 /*修改了Detail属性后在此调用，进行Node更改*/
 void FScenarioEditor::OnFinishedChangingProperties(const FPropertyChangedEvent& PropertyChangedEvent)
 {
+	GraphEditorView->GetCurrentGraph()->Modify();
+
 	UE_LOG(LogTemp, Warning, TEXT(" Now The DetailsView Update ! UpdateNode!"));
 	if (CurFocusNode)
 	{
-		//UScenarioNodeNormal* NodeNormal = Cast<UScenarioNodeNormal>(CurFocusNode);
-		//if (NodeNormal)   //理论上应该是存有所有数据的!
-		//{
-		//	NodeNormal
-		//}
+		CurFocusNode->Modify();
+		UScenarioNodeNormal* NodeNormal = Cast<UScenarioNodeNormal>(CurFocusNode);
+		if (NodeNormal)   
+		{
+			NodeNormal->OnDetailUpdate();
+		}
 	}
 
 }
@@ -450,6 +453,8 @@ void FScenarioEditor::DeleteSelectedNodes()
 {
 	//记录一次操作，可以c+z进行恢复
 	const FScopedTransaction Transaction(FGenericCommands::Get().Delete->GetDescription());
+
+	GraphEditorView->GetCurrentGraph()->Modify();
 
 	const FGraphPanelSelectionSet Selections = GetSelectedNodes();
 	for (FGraphPanelSelectionSet::TConstIterator Iter(Selections); Iter; ++Iter)

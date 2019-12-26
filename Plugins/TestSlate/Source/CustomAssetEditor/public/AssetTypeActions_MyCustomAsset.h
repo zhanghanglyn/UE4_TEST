@@ -16,4 +16,6 @@ public:
 	virtual void OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<class IToolkitHost> EditWithinLevelEditor = TSharedPtr<IToolkitHost>()) override;
 	
 	virtual uint32 GetCategories() override;
+
+	static EAssetTypeCategories::Type AssetCategoryBit;
 };
