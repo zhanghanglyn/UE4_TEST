@@ -6,6 +6,7 @@
 #include "AssetTools/Private/AssetTools.h"
 #include "ScenarioFactories.h"
 #include "AssetToolsModule.h"
+#include "ScenarioConnectionDrawingPolicy.h"
 #include "AssetTypeActions_MyCustomAsset.h"
 
 class ICustomAssetEditor;
@@ -35,5 +36,6 @@ public:
 public:
 	TSharedPtr<FScenarioPinFactory> GraphPinFactory;
 	TSharedPtr<FScenarioNodeFactory> GraphNodeFactory;
+	TSharedPtr<FScenarioConnectionFactory> GraphConnectFactory;
 };
 

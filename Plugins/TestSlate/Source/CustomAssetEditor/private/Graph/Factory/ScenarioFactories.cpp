@@ -2,6 +2,7 @@
 #include "ScenarioPin.h"
 #include "ScenarioGraphSchema.h"
 #include "ScenarioNodeNormal.h"
+#include "ScenarioConnectionDrawingPolicy.h"
 
 
 TSharedPtr<class SGraphNode> FScenarioNodeFactory::CreateNode(class UEdGraphNode* InNode) const
@@ -18,4 +19,14 @@ TSharedPtr<class SGraphPin> FScenarioPinFactory::CreatePin(class UEdGraphPin* Pi
 		return SNew(SScenarioPin, Pin);
 	
 	return nullptr;
+}
+
+FConnectionDrawingPolicy * FScenarioConnectionFactory::CreateConnectionPolicy(const UEdGraphSchema * Schema, int32 InBackLayerID,
+	int32 InFrontLayerID, float ZoomFactor, const FSlateRect & InClippingRect, FSlateWindowElementList & InDrawElements, UEdGraph * InGraphObj) const
+{
+	if (Schema->IsA(UScenarioGraphSchema::StaticClass())) {
+		return new FScenarioConnectionDrawingPolicy(InBackLayerID, InFrontLayerID, ZoomFactor, InClippingRect, InDrawElements, InGraphObj);
+	}
+	return nullptr;
+
 }

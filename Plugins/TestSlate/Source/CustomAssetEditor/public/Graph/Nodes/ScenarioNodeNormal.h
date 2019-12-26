@@ -55,7 +55,7 @@ public:
 	FString TestData;
 
 	UPROPERTY(EditAnywhere, Category = "ScenarioGraphNode")
-	FString NodeName;
+	FString NodeName = "NormalGraph";
 
 	static const int32 INPUT_PIN_INDEX;
 	static const int32 OUTPUT_PIN_INDEX;

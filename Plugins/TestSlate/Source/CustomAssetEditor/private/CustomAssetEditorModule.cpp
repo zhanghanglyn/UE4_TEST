@@ -22,6 +22,8 @@ public:
 		FEdGraphUtilities::RegisterVisualPinFactory(GraphPinFactory);
 		GraphNodeFactory = MakeShared<FScenarioNodeFactory>();
 		FEdGraphUtilities::RegisterVisualNodeFactory(GraphNodeFactory);
+		GraphConnectFactory = MakeShared<FScenarioConnectionFactory>();
+		FEdGraphUtilities::RegisterVisualPinConnectionFactory(GraphConnectFactory);
 
 	};
 
@@ -29,6 +31,7 @@ public:
 
 		FEdGraphUtilities::UnregisterVisualPinFactory(GraphPinFactory);
 		FEdGraphUtilities::UnregisterVisualNodeFactory(GraphNodeFactory);
+		FEdGraphUtilities::UnregisterVisualPinConnectionFactory(GraphConnectFactory);
 
 		MenuExtensibliltyManager.Reset();
 		MenuExtensibliltyManager.Reset();
