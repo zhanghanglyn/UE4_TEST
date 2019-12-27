@@ -11,7 +11,6 @@
 #include "ScenarioSchemaAction.h"
 #include "AssetData.h"
 #include "UObject/ObjectKey.h"
-#include "ScenarioNodeBase.h"
 #include "ScenarioNodeNormal.h"
 #include "ScenarioGraphSchema.generated.h"
 

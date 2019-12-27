@@ -49,18 +49,14 @@ public:
 	virtual void DoubleClickNodeCall();
 
 	//获取OutPutPin
-	UEdGraphPin* GetOutPutPin();
+	virtual UEdGraphPin* GetOutPutPin();
 	//获取InPutPin
-	UEdGraphPin* GetInPutPin();
+	virtual UEdGraphPin* GetInPutPin();
 
 	//外部Detail变化时用来更新的函数
-	void OnDetailUpdate();
+	virtual void OnDetailUpdate();
 
 public:
-
-	UPROPERTY(EditAnywhere, Category = "ScenarioGraphNode")
-	FString TestData;
-
 	UPROPERTY(EditAnywhere, Category = "ScenarioGraphNode")
 	FString NodeName = "NormalGraph";
 
@@ -71,13 +67,13 @@ public:
 	UPROPERTY()
 	class UEdGraph* InsideGraph;
 
-private:
+protected:
 	//TSharedPtr< class SInlineEditableTextBlock> InlineEditableText;
 	//自身的小部件
 	TSharedPtr<class SScenarioNodeNormal> SNodeWidgetShared;
 
-	//双击的Event事件委托
-	//FSingleNodeEvent DoubleClickEvent;
+	//是否可以双击打开Graph
+	bool bOpenGraph = true;
 };
 
 /* 继承SBorder的Node显示类 */
@@ -109,6 +105,6 @@ public:
 	void UpdateNodeNmae( FString NodeName );
 
 
-private:
+protected:
 	class UScenarioNodeNormal* OwnerGraphNode;
 };

@@ -2,15 +2,17 @@
 
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
-#include "Runtime/Engine/Classes/EdGraph/EdGraphNode.h"
-#include "ScenarioNodeBase.generated.h"
+#include "ScenarioNodeNormal.h"
+#include "RootNodes.generated.h"
 
 UCLASS()
-class UScenarioNodeBase : public UEdGraphNode
+class URootNodes : public UScenarioNodeNormal
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+
+	URootNodes();
 
 	//~ Begin UEdGraphNode Interface
 	//创建一个新节点的时候调用，会在里面生成该节点的Instance
@@ -21,5 +23,6 @@ public:
 	/* 父类方法，继承后可以在里面添加新节点 */
 	virtual void AllocateDefaultPins();
 
+	virtual UEdGraphPin* GetOutPutPin() override;
 
 };

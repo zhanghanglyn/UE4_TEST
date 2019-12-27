@@ -218,17 +218,16 @@ void UScenarioNodeNormal::DoubleClickNodeCall()
 	//(SNodeWidgetShared.Get())->UpdateNodeNmae("I HAVE BEEN DOUBLE");
 
 	//双击打开一个Tab
-	if (UScenarioGraph* Graph = Cast<UScenarioGraph>(GetGraph()))
+	if (bOpenGraph)
 	{
-		if (Graph->ScenarioEditor)
+		if (UScenarioGraph* Graph = Cast<UScenarioGraph>(GetGraph()))
 		{
-			Graph->ScenarioEditor->OpenInsideNodeGraphTab(this);
+			if (Graph->ScenarioEditor)
+				Graph->ScenarioEditor->OpenInsideNodeGraphTab(this);
 		}
 	}
+	
 		
-
-
-
 
 }
 

@@ -4,6 +4,7 @@
 #include "UObject/TextProperty.h"
 #include "Editor/GraphEditor/Public/GraphEditorActions.h"
 #include "Runtime/Slate/Public/Framework/Commands/GenericCommands.h"
+#include "RootNodes.h"
 #if WITH_EDITOR
 #include "Misc/ConfigCacheIni.h"
 #include "UObject/UObjectHash.h"
@@ -29,8 +30,8 @@ void UScenarioGraphSchema::CreateDefaultNodesForGraph(UEdGraph& Graph) const
 	//FGraphNodeCreator<UScenarioNodeBase> NodeCreater(Graph);
 	//UScenarioNodeBase* Nodebase = NodeCreater.CreateNode();
 	//NodeCreater.Finalize();
-	FGraphNodeCreator<UScenarioNodeNormal> NodeCreater(Graph);
-	UScenarioNodeNormal* Nodebase = NodeCreater.CreateNode();
+	FGraphNodeCreator<URootNodes> NodeCreater(Graph);
+	URootNodes* Nodebase = NodeCreater.CreateNode();
 	NodeCreater.Finalize();
 }
 

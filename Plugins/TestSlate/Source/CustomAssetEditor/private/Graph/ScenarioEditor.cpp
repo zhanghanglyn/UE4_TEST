@@ -566,7 +566,7 @@ void FScenarioEditor::OpenInsideNodeGraphTab(UScenarioNodeNormal* Node)
 		TSharedPtr<SGraphEditor> DialogEditor = CreateInsideNodeWidget(Node->InsideGraph);
 		//创建一个Tab
 		InsideNodeTab = SNew(SDockTab)
-			.Label(FText::FromString("TESTNodeInside"))
+			.Label(FText::FromString( "Inside : " + Node->NodeName))
 			.TabRole(ETabRole::DocumentTab)
 			.TabColorScale(GetTabColorScale())
 			[
