@@ -16,9 +16,7 @@ void SScenarioNodeNormal::Construct(const FArguments& InArgs, UEdGraphNode* InNo
 	SetCursor(EMouseCursor::CardinalCross);
 
 	GraphNode = InNode;
-	UScenarioNodeNormal* NodeNormal = Cast<UScenarioNodeNormal>(InNode);
-	if(NodeNormal != nullptr)
-		NodeNormal->SetNodeWidget(this);
+	OwnerGraphNode = Cast<UScenarioNodeNormal>(InNode);
 
 	//更新节点
 	UpdateGraphNode();
@@ -117,9 +115,8 @@ void SScenarioNodeNormal::UpdateGraphNode()
 /*  */
 void SScenarioNodeNormal::CreatePinWidgets()
 {
-	UScenarioNodeNormal* CurNode = CastChecked<UScenarioNodeNormal>(GraphNode);
 	
-	UEdGraphPin* CurPin = CurNode->GetOutPutPin();
+	UEdGraphPin* CurPin = OwnerGraphNode->GetOutPutPin();
 	TSharedPtr< SScenarioPin> NewPin = SNew(SScenarioPin, CurPin);
 	check(NewPin.IsValid());
 
@@ -143,10 +140,23 @@ void SScenarioNodeNormal::AddPin(const TSharedRef<SGraphPin>& PinToAdd)
 	OutputPins.Add(PinToAdd);   //放入所有OutPutPins列表中
 }
 
-/////////////外部方法相关
+//外部方法相关
 void SScenarioNodeNormal::UpdateNodeNmae(FString NodeName)
 {
 	InlineEditableText->SetText(NodeName);
+}
+
+FReply SScenarioNodeNormal::OnMouseButtonDoubleClick(const FGeometry& InMyGeometry, const FPointerEvent& InMouseEvent)
+{
+	//会调用自身UNode的双击方法！
+	OwnerGraphNode->DoubleClickNodeCall();
+
+	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+	{
+		OnDoubleClick.ExecuteIfBound(GraphNode);
+		return FReply::Handled();
+	}
+	return FReply::Unhandled();
 }
 
 /************************************************************************/
@@ -162,16 +172,6 @@ UScenarioNodeNormal::UScenarioNodeNormal()
 FText UScenarioNodeNormal::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	return FText::FromString(NodeName);
-}
-
-void UScenarioNodeNormal::DestroyNode()
-{
-	/*UEdGraph* ParentGraph = GetGraph();
-	check(ParentGraph);
-
-	// Remove the node - this will break all links. Will be GC'd after this.
-	ParentGraph->RemoveNode(this);*/
-	UEdGraphNode::DestroyNode();
 }
 
 void UScenarioNodeNormal::AllocateDefaultPins()
@@ -204,16 +204,33 @@ UEdGraphPin* UScenarioNodeNormal::GetInPutPin()
 
 TSharedPtr<SGraphNode> UScenarioNodeNormal::CreateVisualWidget()
 {
-	return SNew(SScenarioNodeNormal,this);
+	SAssignNew(SNodeWidgetShared, SScenarioNodeNormal, this);
+
+	return SNodeWidgetShared;//SAssignNew(SNodeWidgetShared,SScenarioNodeNormal,this);
 }
 
-void UScenarioNodeNormal::SetNodeWidget(SScenarioNodeNormal* SNode)
+//双击节点的调用函数
+void UScenarioNodeNormal::DoubleClickNodeCall()
 {
-	SNodeWidget = SNode;
+
+	(SNodeWidgetShared.Get())->UpdateNodeNmae("I HAVE BEEN DOUBLE");
+
+
+
+
+
+
 }
- 
+
 //当Detail属性变化时更新 可能之后的很多操作都在这儿了
 void UScenarioNodeNormal::OnDetailUpdate()
 {
-	SNodeWidget->UpdateNodeNmae(NodeName);
+	(SNodeWidgetShared.Get())->UpdateNodeNmae(NodeName);
+}
+
+/*删除节点的众多操作*/
+void UScenarioNodeNormal::DestroyNode()
+{
+
+	UEdGraphNode::DestroyNode();
 }

@@ -110,6 +110,8 @@ public:
 private:
 	/**	The tab ids for all the tabs used */
 	static const FName PropertiesTabId;
+	/**	用来显示双击后的节点Graph */
+	static const FName InSideNodeTabId;
 
 	static const FName ToolkitFName;
 	/* 创建一个Details的ID */

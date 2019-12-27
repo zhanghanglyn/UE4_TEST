@@ -44,13 +44,14 @@ public:
 	/* 父类方法，继承后可以在里面添加新节点 */
 	virtual void AllocateDefaultPins();
 
+	/* 自定义可继承Virtual事件 */
+	//双击Ndoe的事件
+	virtual void DoubleClickNodeCall();
+
 	//获取OutPutPin
 	UEdGraphPin* GetOutPutPin();
 	//获取InPutPin
 	UEdGraphPin* GetInPutPin();
-
-	//设置此节点的小部件，因为DEPRECATED_NodeWidget 会在将来的版本中被废除，所以自己定义一个
-	void SetNodeWidget(class SScenarioNodeNormal* SNode);
 
 	//外部Detail变化时用来更新的函数
 	void OnDetailUpdate();
@@ -69,7 +70,10 @@ public:
 private:
 	//TSharedPtr< class SInlineEditableTextBlock> InlineEditableText;
 	//自身的小部件
-	class SScenarioNodeNormal* SNodeWidget;
+	TSharedPtr<class SScenarioNodeNormal> SNodeWidgetShared;
+
+	//双击的Event事件委托
+	//FSingleNodeEvent DoubleClickEvent;
 };
 
 /* 继承SBorder的Node显示类 */
@@ -84,6 +88,9 @@ public:
 
 	void Construct(const FArguments& InArgs , UEdGraphNode* InNode);
 
+	//重写一个DoubleClick
+	virtual FReply OnMouseButtonDoubleClick(const FGeometry& InMyGeometry, const FPointerEvent& InMouseEvent) override;
+
 	/*更新Node已匹配Data更新*/
 	virtual void UpdateGraphNode();
 	
@@ -97,4 +104,7 @@ public:
 public:
 	void UpdateNodeNmae( FString NodeName );
 
+
+private:
+	class UScenarioNodeNormal* OwnerGraphNode;
 };

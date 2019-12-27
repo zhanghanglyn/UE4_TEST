@@ -3,6 +3,7 @@
 
 const FName FScenarioEditor::ToolkitFName(TEXT("CustomStoryEditor"));
 const FName FScenarioEditor::PropertiesTabId(TEXT("CustomAssetEditor_Story"));
+const FName FScenarioEditor::InSideNodeTabId(TEXT("CustomAssetEditor_Story"));
 const FName FScenarioEditor::DetailsFNameId(TEXT("ScenarioDetail_Story"));
 
 
@@ -174,6 +175,7 @@ void FScenarioEditor::InitScenarioEditor(const EToolkitMode::Type Mode, const TS
 				(
 					FTabManager::NewStack()
 					->AddTab(PropertiesTabId, ETabState::OpenedTab)
+					//->AddTab()
 				)
 				->Split(
 					FTabManager::NewStack()
