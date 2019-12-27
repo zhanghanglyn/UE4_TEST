@@ -173,13 +173,13 @@ void FScenarioEditor::InitScenarioEditor(const EToolkitMode::Type Mode, const TS
 				->Split
 				(
 					FTabManager::NewStack()
-					//->SetHideTabWell(true)
+					->SetHideTabWell(true)
 					->AddTab(PropertiesTabId, ETabState::OpenedTab)
 				)
 				->Split(
 					FTabManager::NewStack()
 					->SetSizeCoefficient(0.3f)
-					//->SetHideTabWell(true)
+					->SetHideTabWell(true)
 					->AddTab(DetailsFNameId, ETabState::OpenedTab)
 				)
 			)
