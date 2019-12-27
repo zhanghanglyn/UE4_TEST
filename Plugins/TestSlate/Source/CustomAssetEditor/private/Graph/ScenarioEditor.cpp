@@ -1,9 +1,8 @@
-#include "ScenarioEditor.h"
+ï»¿#include "ScenarioEditor.h"
 #include "Runtime/Slate/Public/Framework/Commands/GenericCommands.h"
 
 const FName FScenarioEditor::ToolkitFName(TEXT("CustomStoryEditor"));
 const FName FScenarioEditor::PropertiesTabId(TEXT("CustomAssetEditor_Story"));
-const FName FScenarioEditor::InSideNodeTabId(TEXT("CustomAssetEditor_Story"));
 const FName FScenarioEditor::DetailsFNameId(TEXT("ScenarioDetail_Story"));
 
 
@@ -41,7 +40,7 @@ FLinearColor FScenarioEditor::GetWorldCentricTabColorScale() const
 	return FColor::Red;
 }
 
-//ÉèÖÃCustomAsset
+//è®¾ç½®CustomAsset
 void FScenarioEditor::SetCustomAsset(UMyCustomAsset* InCustomAsset)
 {
 	CustomAsset = InCustomAsset;
@@ -49,31 +48,32 @@ void FScenarioEditor::SetCustomAsset(UMyCustomAsset* InCustomAsset)
 
 void FScenarioEditor::RegisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager)
 {
-	//DocumentManager->SetTabManager(InTabManager);  19.12.23 ÆÁ±Î
+	//DocumentManager->SetTabManager(InTabManager);  19.12.23 å±è”½
 	//FWorkflowCentricApplication::RegisterTabSpawners(InTabManager);
 
-	/* 19.12.23 ĞÂÌí¼Ó */
+	/* 19.12.23 æ–°æ·»åŠ  */
 	TabManager->AddLocalWorkspaceMenuCategory(LOCTEXT("WorkspaceMenu_FSMAssetEditor", "FSM Asset Editor"));
 	//const TSharedRef<FWorkspaceItem> WorkspaceMenuCategoryRef = WorkspaceMenuCategory.ToSharedRef();
 
 	FWorkflowCentricApplication::RegisterTabSpawners(InTabManager);
 
-	//ÔÚÕâÀï×¢²áÒ»¸ödetailsÊÔÊÔ
+	//åœ¨è¿™é‡Œæ³¨å†Œä¸€ä¸ªNodeGraph
 	InTabManager->RegisterTabSpawner(PropertiesTabId,
-		FOnSpawnTab::CreateSP(this, &FScenarioEditor::SpawnGraphEditorTab)) //×¢²áÒ»¸öµ±²úÉúTABÊ±´¥·¢µÄÎ¯ÍĞ
+		FOnSpawnTab::CreateSP(this, &FScenarioEditor::SpawnGraphEditorTab)) //æ³¨å†Œä¸€ä¸ªå½“äº§ç”ŸTABæ—¶è§¦å‘çš„å§”æ‰˜
 		.SetDisplayName(LOCTEXT("GraphCanvasTab", "Viewport"))
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
 		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "GraphEditor.EventGraph_16x"));
 
-	//³¢ÊÔÒ»ÏÂ×¢²á¶à¸ö£¬×¢²áÒ»¸öDetail
+	//å°è¯•ä¸€ä¸‹æ³¨å†Œå¤šä¸ªï¼Œæ³¨å†Œä¸€ä¸ªDetail
 	InTabManager->RegisterTabSpawner(DetailsFNameId,
-		FOnSpawnTab::CreateSP(this, &FScenarioEditor::SpawnPropertiesTab)) //×¢²áÒ»¸öµ±²úÉúTABÊ±´¥·¢µÄÎ¯ÍĞ
+		FOnSpawnTab::CreateSP(this, &FScenarioEditor::SpawnPropertiesTab)) //æ³¨å†Œä¸€ä¸ªå½“äº§ç”ŸTABæ—¶è§¦å‘çš„å§”æ‰˜
 		.SetDisplayName(LOCTEXT("PropertiesTab", "Details"))
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
 		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
 
-	//ÔÙ×¢²áÒ»¸ötoolbar
+	//å†æ³¨å†Œä¸€ä¸ªtoolbar
 	RegisterToolbarTab(InTabManager);
+
 }
 
 void FScenarioEditor::UnregisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager)
@@ -81,7 +81,6 @@ void FScenarioEditor::UnregisterTabSpawners(const TSharedRef<class FTabManager>&
 	FWorkflowCentricApplication::UnregisterTabSpawners(InTabManager);
 	InTabManager->UnregisterTabSpawner(PropertiesTabId);
 	InTabManager->UnregisterTabSpawner(DetailsFNameId);
-	
 }
 
 /*void FScenarioEditor::InitScenarioEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UMyCustomAsset* InCustomAsset)
@@ -131,7 +130,7 @@ void FScenarioEditor::UnregisterTabSpawners(const TSharedRef<class FTabManager>&
 				)
 			);
 
-		//ÎÒ¾õµÃ£¬Ö®Ç°¾ÍÊÇÈ±ÉÙÁËÕâÒ»²½£¡£¡
+		//æˆ‘è§‰å¾—ï¼Œä¹‹å‰å°±æ˜¯ç¼ºå°‘äº†è¿™ä¸€æ­¥ï¼ï¼
 		InitAssetEditor(Mode, InitToolkitHost, TEXT("ScenarioEditorTreeEditorApp"), DummyLayout,true,true, InCustomAsset);
 
 		CreateInternalWidgets();
@@ -154,14 +153,14 @@ void FScenarioEditor::InitScenarioEditor(const EToolkitMode::Type Mode, const TS
 	SetCustomAsset(InCustomAsset);
 
 	GraphEditorView = CreateGraphEditorWidgetNoDocument();
-	//´´½¨Details
+	//åˆ›å»ºDetails
 	CreateInternalWidgets();
 
-	//´´½¨UI
+	//åˆ›å»ºUI
 	TSharedRef<FTabManager::FLayout> DummyLayout = FTabManager::NewLayout("Standalone_ScenarioEditor_Layout_v1")
 		->AddArea(
 			FTabManager::NewPrimaryArea()->SetOrientation(Orient_Vertical)
-			/* ÕâÊÇ¸öToolbar µ«ÊÇ¾ÓÈ»Ã»ÏÔÊ¾Ä¬ÈÏµÄ */
+			/* è¿™æ˜¯ä¸ªToolbar ä½†æ˜¯å±…ç„¶æ²¡æ˜¾ç¤ºé»˜è®¤çš„ */
 			->Split(
 				FTabManager::NewStack()
 				->SetSizeCoefficient(0.1f)
@@ -174,12 +173,13 @@ void FScenarioEditor::InitScenarioEditor(const EToolkitMode::Type Mode, const TS
 				->Split
 				(
 					FTabManager::NewStack()
+					//->SetHideTabWell(true)
 					->AddTab(PropertiesTabId, ETabState::OpenedTab)
-					//->AddTab()
 				)
 				->Split(
 					FTabManager::NewStack()
 					->SetSizeCoefficient(0.3f)
+					//->SetHideTabWell(true)
 					->AddTab(DetailsFNameId, ETabState::OpenedTab)
 				)
 			)
@@ -188,10 +188,11 @@ void FScenarioEditor::InitScenarioEditor(const EToolkitMode::Type Mode, const TS
 	InitAssetEditor(Mode, InitToolkitHost, TEXT("ScenarioEditorTreeEditorApp"), DummyLayout, true, true, InCustomAsset);
 }
 
-/* ĞÂ²âÊÔ²»Ê¹ÓÃFDocumentTracker */
+/* æ–°æµ‹è¯•ä¸ä½¿ç”¨FDocumentTracker */
 TSharedPtr< SGraphEditor> FScenarioEditor::CreateGraphEditorWidgetNoDocument()
 {
-	//´´½¨Ò»¸öGraph
+
+	//åˆ›å»ºä¸€ä¸ªGraph
 	UScenarioGraph* MyGraph = Cast<UScenarioGraph>(CustomAsset->StoryGraph);
 	if (MyGraph == NULL)
 	{
@@ -199,23 +200,26 @@ TSharedPtr< SGraphEditor> FScenarioEditor::CreateGraphEditorWidgetNoDocument()
 		MyGraph = Cast<UScenarioGraph>(CustomAsset->StoryGraph);
 		MyGraph->bAllowDeletion = false;
 
-		//³õÊ¼»¯±à¼­Æ÷µÄGraph
+		//åˆå§‹åŒ–ç¼–è¾‘å™¨çš„Graph
 		const UScenarioGraphSchema* Schema = Cast<UScenarioGraphSchema>(MyGraph->GetSchema());
 		Schema->CreateDefaultNodesForGraph(*MyGraph);
 	}
 
-	/* ÒÔÏÂ¿ªÊ¼´´½¨GraphEditor */
+	//æŠŠè‡ªèº«èµ‹äºˆç»™Graphå˜é‡
+	MyGraph->ScenarioEditor = this;
 
-	// ×Ô¶¨ÒåGraphµÄÏÔÊ¾
+	/* ä»¥ä¸‹å¼€å§‹åˆ›å»ºGraphEditor */
+
+	// è‡ªå®šä¹‰Graphçš„æ˜¾ç¤º
 	FGraphAppearanceInfo AppearanceInfo;
 	AppearanceInfo.CornerText = LOCTEXT("ScenarioCornerText_FSM","Scenario!");
 	AppearanceInfo.InstructionText = LOCTEXT("ScenarioCornerText_FSM", "Scenario~");
 
-	//´´½¨Ò»¸öµã»÷ÊÂ¼ş
+	//åˆ›å»ºä¸€ä¸ªç‚¹å‡»äº‹ä»¶
 	SGraphEditor::FGraphEditorEvents InEvents;
 	InEvents.OnSelectionChanged = SGraphEditor::FOnSelectionChanged::CreateSP(this, &FScenarioEditor::OnSelectedNodesChanged);
 
-	//CommandListÏà¹Ø
+	//CommandListç›¸å…³
 	if (!GraphEditorCommands.IsValid())
 	{
 		GraphEditorCommands = MakeShareable(new FUICommandList);
@@ -235,7 +239,7 @@ TSharedPtr< SGraphEditor> FScenarioEditor::CreateGraphEditorWidgetNoDocument()
 			FCanExecuteAction::CreateSP(this, &FScenarioEditor::CanDeleteNodes)
 		);
 
-		//´´½¨±¸×¢£¬±êÇ©
+		//åˆ›å»ºå¤‡æ³¨ï¼Œæ ‡ç­¾
 		/*GraphEditorCommands->MapAction(FGenericCommands::Get().Create,
 			FExecuteAction::CreateSP(this, &FFSMAssetEditor::OnCreateComment)
 		);*/
@@ -251,12 +255,12 @@ TSharedPtr< SGraphEditor> FScenarioEditor::CreateGraphEditorWidgetNoDocument()
 	;
 }
 
-/* ´´½¨GraphEditor! */
+/* åˆ›å»ºGraphEditor! */
 /*TSharedRef<SGraphEditor> FScenarioEditor::CreateGraphEditorWidget(UEdGraph* InGraph)
 {
 	check(InGraph != NULL);
 	
-	//´´½¨Ò»¸öµã»÷ÊÂ¼ş
+	//åˆ›å»ºä¸€ä¸ªç‚¹å‡»äº‹ä»¶
 	SGraphEditor::FGraphEditorEvents InEvents;
 	InEvents.OnSelectionChanged = SGraphEditor::FOnSelectionChanged::CreateSP(this, &FScenarioEditor::OnSelectedNodesChanged);
 
@@ -285,7 +289,7 @@ TSharedPtr< SGraphEditor> FScenarioEditor::CreateGraphEditorWidgetNoDocument()
 
 }*/
 
-/* ÔÚ´Ë´´½¨GraphTab */
+/* åœ¨æ­¤åˆ›å»ºGraphTab */
 TSharedRef<SDockTab> FScenarioEditor::SpawnGraphEditorTab(const FSpawnTabArgs& Args)
 {
 	check(Args.GetTabId() == PropertiesTabId);
@@ -294,6 +298,7 @@ TSharedRef<SDockTab> FScenarioEditor::SpawnGraphEditorTab(const FSpawnTabArgs& A
 		[
 			GraphEditorView.ToSharedRef()
 		];
+
 }
 
 TSharedRef<SDockTab> FScenarioEditor::SpawnPropertiesTab(const FSpawnTabArgs& Args)
@@ -310,7 +315,7 @@ TSharedRef<SDockTab> FScenarioEditor::SpawnPropertiesTab(const FSpawnTabArgs& Ar
 		];
 }
 
-/* ¼ÓÔØ»òÕßÖØĞÂ´´½¨Ò»¸öGraph */
+/* åŠ è½½æˆ–è€…é‡æ–°åˆ›å»ºä¸€ä¸ªGraph */
 /*void FScenarioEditor::RestoreStoryGraph()
 {
 	UScenarioGraph* MyGraph = Cast<UScenarioGraph>(CustomAsset->StoryGraph);
@@ -320,13 +325,13 @@ TSharedRef<SDockTab> FScenarioEditor::SpawnPropertiesTab(const FSpawnTabArgs& Ar
 		CustomAsset->StoryGraph = FBlueprintEditorUtils::CreateNewGraph(CustomAsset, TEXT("MyScenario Tree"), UScenarioGraph::StaticClass(), UScenarioGraphSchema::StaticClass());
 		MyGraph = Cast<UScenarioGraph>(CustomAsset->StoryGraph);
 		
-		//³õÊ¼»¯±à¼­Æ÷µÄGraph
+		//åˆå§‹åŒ–ç¼–è¾‘å™¨çš„Graph
 		const UScenarioGraphSchema* Schema = Cast<UScenarioGraphSchema>(MyGraph->GetSchema());
 		Schema->CreateDefaultNodesForGraph(*MyGraph);
 
 	}
 
-	//°ÑMyGraph ×ö³ÉÒ»¸öĞÂµÄÓĞĞ§¸ºÔØ°ü×°,Ê¹ÓÃOpenDocument´´½¨ÁËÒ»¸öĞÂµÄTAB£¡
+	//æŠŠMyGraph åšæˆä¸€ä¸ªæ–°çš„æœ‰æ•ˆè´Ÿè½½åŒ…è£…,ä½¿ç”¨OpenDocumentåˆ›å»ºäº†ä¸€ä¸ªæ–°çš„TABï¼
 	TSharedRef<FTabPayload_UObject> Payload = FTabPayload_UObject::Make(MyGraph);
 	TSharedPtr<SDockTab> DocumentTab = DocumentManager->OpenDocument(Payload, bNewGraph ? FDocumentTracker::OpenNewDocument : FDocumentTracker::RestorePreviousDocument);
 }*/
@@ -336,18 +341,18 @@ void FScenarioEditor::RegisterToolbarTab(const TSharedRef<class FTabManager>& In
 	FAssetEditorToolkit::RegisterTabSpawners(InTabManager);
 }
 
-/* ÔÚ´Ë´´½¨DetailsµÈÄÚ²¿µÄWidget */
+/* åœ¨æ­¤åˆ›å»ºDetailsç­‰å†…éƒ¨çš„Widget */
 void FScenarioEditor::CreateInternalWidgets()
 {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	FDetailsViewArgs DetailsViewArgs(false, false, true, FDetailsViewArgs::ObjectsUseNameArea, false);
 	//DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
 	DetailsViewArgs.NotifyHook = this;
-	//´´½¨DetailsView
+	//åˆ›å»ºDetailsView
 	DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 	DetailsView->SetObject( NULL );
 	DetailsView->SetIsPropertyEditingEnabledDelegate(FIsPropertyEditingEnabled::CreateSP(this, &FScenarioEditor::IsPropertyEditable));
-	//ÉèÖÃ¸ÄNodeÃûNodeÏÔÊ¾Ö®ÀàµÄ£¿
+	//è®¾ç½®æ”¹NodeåNodeæ˜¾ç¤ºä¹‹ç±»çš„ï¼Ÿ
 	DetailsView->OnFinishedChangingProperties().AddSP(this, &FScenarioEditor::OnFinishedChangingProperties);
 }
 
@@ -371,10 +376,10 @@ UMyCustomAsset* FScenarioEditor::GetCustomAsset() const
 	return CustomAsset;
 }
 
-//ÔÚÑ¡ÔñITEM¸Ä±äÊ±µ÷ÓÃ
+//åœ¨é€‰æ‹©ITEMæ”¹å˜æ—¶è°ƒç”¨
 void FScenarioEditor::OnSelectedNodesChanged(const TSet<class UObject *>& NewSelection)
 {
-	//ÔÚÕâÀïÌí¼Óµã»÷ItemÊ±¶ÔDetailsViewµÄ¸Ä±ä , Ä¿Ç°Ö»Ğ´¶ÔÒ»¸öNodeµÄ²Ù×÷
+	//åœ¨è¿™é‡Œæ·»åŠ ç‚¹å‡»Itemæ—¶å¯¹DetailsViewçš„æ”¹å˜ , ç›®å‰åªå†™å¯¹ä¸€ä¸ªNodeçš„æ“ä½œ
 	int32 SelectionNodeNum = NewSelection.Num();
 
 	if (DetailsView.IsValid() == true)
@@ -416,7 +421,7 @@ UEdGraphNode* FScenarioEditor::GetFirstSelectNode() const
 	return Cast<UEdGraphNode>(SelectedNodes[FSetElementId::FromInteger(0)]);
 }
 
-/*ĞŞ¸ÄÁËDetailÊôĞÔºóÔÚ´Ëµ÷ÓÃ£¬½øĞĞNode¸ü¸Ä*/
+/*ä¿®æ”¹äº†Detailå±æ€§ååœ¨æ­¤è°ƒç”¨ï¼Œè¿›è¡ŒNodeæ›´æ”¹*/
 void FScenarioEditor::OnFinishedChangingProperties(const FPropertyChangedEvent& PropertyChangedEvent)
 {
 	GraphEditorView->GetCurrentGraph()->Modify();
@@ -434,7 +439,7 @@ void FScenarioEditor::OnFinishedChangingProperties(const FPropertyChangedEvent& 
 
 }
 
-/* ÔÚGraphÖĞ×¢²áµÄÊÂ¼şÏà¹Ø */
+/* åœ¨Graphä¸­æ³¨å†Œçš„äº‹ä»¶ç›¸å…³ */
 void FScenarioEditor::OnRenameNode()
 {
 	//auto bVisible = GraphEditorView->IsNodeTitleVisible(GetFirstSelectedNode(), /*bRequestRename = */true);
@@ -453,7 +458,7 @@ bool FScenarioEditor::CanRenameNodes() const
 
 void FScenarioEditor::DeleteSelectedNodes()
 {
-	//¼ÇÂ¼Ò»´Î²Ù×÷£¬¿ÉÒÔc+z½øĞĞ»Ö¸´
+	//è®°å½•ä¸€æ¬¡æ“ä½œï¼Œå¯ä»¥c+zè¿›è¡Œæ¢å¤
 	const FScopedTransaction Transaction(FGenericCommands::Get().Delete->GetDescription());
 
 	GraphEditorView->GetCurrentGraph()->Modify();
@@ -481,6 +486,103 @@ bool FScenarioEditor::CanDeleteNodes() const
 		}
 	}
 	return false;
+}
+
+/************************************************************************/
+/*                      æ˜¾ç¤ºåŒå‡»åçš„è¯¦æƒ…çš„ç•Œé¢					  	    */
+/************************************************************************/
+TSharedPtr<SGraphEditor> FScenarioEditor::CreateInsideNodeWidget(UEdGraph* Graph)
+{
+	// è‡ªå®šä¹‰Graphçš„æ˜¾ç¤º
+	FGraphAppearanceInfo AppearanceInfo;
+	AppearanceInfo.CornerText = LOCTEXT("ScenarioCornerText", "NodeDetail");
+	AppearanceInfo.InstructionText = LOCTEXT("ScenarioCornerText", "NodeDetail");
+
+	//åˆ›å»ºä¸€ä¸ªç‚¹å‡»äº‹ä»¶
+	SGraphEditor::FGraphEditorEvents InEvents;
+	InEvents.OnSelectionChanged = SGraphEditor::FOnSelectionChanged::CreateSP(this, &FScenarioEditor::OnSelectedNodesChanged);
+
+	//CommandListç›¸å…³
+	if (!GraphEditorCommands.IsValid())
+	{
+		GraphEditorCommands = MakeShareable(new FUICommandList);
+
+		GraphEditorCommands->MapAction(FGenericCommands::Get().Rename,
+			FExecuteAction::CreateSP(this, &FScenarioEditor::OnRenameNode),
+			FCanExecuteAction::CreateSP(this, &FScenarioEditor::CanRenameNodes)
+		);
+
+		GraphEditorCommands->MapAction(FGenericCommands::Get().Delete,
+			FExecuteAction::CreateSP(this, &FScenarioEditor::DeleteSelectedNodes),
+			FCanExecuteAction::CreateSP(this, &FScenarioEditor::CanDeleteNodes)
+		);
+		//åˆ›å»ºå¤‡æ³¨ï¼Œæ ‡ç­¾
+		/*GraphEditorCommands->MapAction(FGenericCommands::Get().Create,
+			FExecuteAction::CreateSP(this, &FFSMAssetEditor::OnCreateComment)
+		);*/
+	}
+	return SNew(SGraphEditor)
+		.AdditionalCommands(GraphEditorCommands)
+		.IsEditable(true)
+		.Appearance(AppearanceInfo)
+		.GraphToEdit(Graph)
+		.GraphEvents(InEvents)
+		;
+}
+
+//æµ‹è¯•2 å†é‡æ–°æ‰“å¼€ä¸€ä¸ªTabå†åŸå§‹çª—å£ä¸Š
+void FScenarioEditor::OpenInsideNodeGraphTab(UScenarioNodeNormal* Node)
+{
+	//åˆ›å»ºä¸€ä¸ªGraph
+	if (Node->InsideGraph == NULL)
+	{
+		UEdGraph* CreateGraph = FBlueprintEditorUtils::CreateNewGraph(Node, TEXT("Inside Node"), UScenarioGraph::StaticClass(), UScenarioGraphSchema::StaticClass());
+		Node->InsideGraph = Cast<UScenarioGraph>(CreateGraph);
+		Node->InsideGraph->bAllowDeletion = true;
+
+		//åˆå§‹åŒ–ç¼–è¾‘å™¨çš„Graph
+		//const UScenarioGraphSchema* Schema = Cast<UScenarioGraphSchema>(NodeGraph->GetSchema());
+		//Schema->CreateDefaultNodesForGraph(*MyGraph);
+	}
+
+	//åˆ¤æ–­ä¸‹ï¼Œå¦‚æœå·²ç»æ‰“å¼€è¿‡ï¼Œåˆ™ä¸éœ€è¦æ‰“å¼€ï¼Œfocusåˆ°Tabä¸Šå³å¯
+	int TabNum = -1;
+
+	for (int i = 0; i < DialogTabs.Num(); i++)
+	{
+		SGraphEditor& rGraphEditor = (SGraphEditor&)DialogTabs[i]->GetContent().Get();
+		if (rGraphEditor.GetCurrentGraph() == Node->InsideGraph)
+		{
+			TabNum = i;
+			break;
+		}
+	}
+	//åˆ›å»ºä¸€ä¸ªTab
+	TSharedPtr<SDockTab> InsideNodeTab;
+
+	//ä¹‹ååº”è¯¥è¦æ ¹æ®èŠ‚ç‚¹ç±»å‹æ¥åˆ›å»ºè‡ªå®šä¹‰çš„Graph
+	if (TabNum == -1)
+	{
+		TSharedPtr<SGraphEditor> DialogEditor = CreateInsideNodeWidget(Node->InsideGraph);
+		//åˆ›å»ºä¸€ä¸ªTab
+		InsideNodeTab = SNew(SDockTab)
+			.Label(FText::FromString("TESTNodeInside"))
+			.TabRole(ETabRole::DocumentTab)
+			.TabColorScale(GetTabColorScale())
+			[
+				DialogEditor.ToSharedRef()
+			];
+
+		DialogTabs.Add(InsideNodeTab);
+	}
+	else
+	{
+		InsideNodeTab = DialogTabs[TabNum];
+		InsideNodeTab->RequestCloseTab();
+	}
+	
+	TabManager->InsertNewDocumentTab(PropertiesTabId, FTabManager::ESearchPreference::Type::PreferLiveTab, InsideNodeTab.ToSharedRef());
+	TabManager->DrawAttention(InsideNodeTab.ToSharedRef());
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -2,6 +2,8 @@
 #include "Runtime/SlateCore/Public/Widgets/SBoxPanel.h"
 #include "ScenarioGraph.h"
 #include "ScenarioPin.h"
+#include "ScenarioGraph.h"
+#include "ScenarioEditor.h"
 #include "Runtime/Slate/Public/Widgets/Text/SInlineEditableTextBlock.h"
 
 const int32 UScenarioNodeNormal::INPUT_PIN_INDEX = 0;
@@ -213,9 +215,17 @@ TSharedPtr<SGraphNode> UScenarioNodeNormal::CreateVisualWidget()
 void UScenarioNodeNormal::DoubleClickNodeCall()
 {
 
-	(SNodeWidgetShared.Get())->UpdateNodeNmae("I HAVE BEEN DOUBLE");
+	//(SNodeWidgetShared.Get())->UpdateNodeNmae("I HAVE BEEN DOUBLE");
 
-
+	//双击打开一个Tab
+	if (UScenarioGraph* Graph = Cast<UScenarioGraph>(GetGraph()))
+	{
+		if (Graph->ScenarioEditor)
+		{
+			Graph->ScenarioEditor->OpenInsideNodeGraphTab(this);
+		}
+	}
+		
 
 
 

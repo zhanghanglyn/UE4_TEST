@@ -38,7 +38,7 @@ void UScenarioGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 {
 	
 	TSharedPtr<FScenarioSchemaAction> NewSchemaAction = TSharedPtr<FScenarioSchemaAction>(
-		new FScenarioSchemaAction(LOCTEXT("CustomStoryCategory", "Custom"), LOCTEXT("AutoArrange", "Auto Arrange"), FText::GetEmpty(), 0, nullptr)
+		new FScenarioSchemaAction(LOCTEXT("CustomStoryCategory", "Custom"), LOCTEXT("Nodes", "Normal Nodes"), FText::GetEmpty(), 0, nullptr)
 		);
 
 	ContextMenuBuilder.AddAction(NewSchemaAction);

@@ -67,6 +67,10 @@ public:
 	static const int32 INPUT_PIN_INDEX;
 	static const int32 OUTPUT_PIN_INDEX;
 
+	//添加一个自己的Graph
+	UPROPERTY()
+	class UEdGraph* InsideGraph;
+
 private:
 	//TSharedPtr< class SInlineEditableTextBlock> InlineEditableText;
 	//自身的小部件

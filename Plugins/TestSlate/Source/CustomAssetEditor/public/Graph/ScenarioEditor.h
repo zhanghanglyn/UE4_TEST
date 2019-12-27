@@ -69,6 +69,12 @@ public:
 	/* 在TabManaget中注册的，产生Tab的委托函数 */
 	TSharedRef<SDockTab> SpawnPropertiesTab(const FSpawnTabArgs& Args);
 
+	void OpenInsideNodeGraphTab(UScenarioNodeNormal* Node);
+
+protected:
+	//初始化完InsideNode后，初始化一个InsideView
+	TSharedPtr<class SGraphEditor> CreateInsideNodeWidget(UEdGraph* Graph);
+
 private:
 	//在选择ITEM改变时调用
 	virtual void OnSelectedNodesChanged(const TSet<class UObject*>& NewSelection);
@@ -107,11 +113,12 @@ public:
 	/* 19.12.23 新测试使用，创建的GraphEditor */
 	TSharedPtr< SGraphEditor> GraphEditorView;
 
+	/* 用来显示双击打开的详情的Graph */
+	TSharedPtr< SGraphEditor> NodeInsideView;
+
 private:
 	/**	The tab ids for all the tabs used */
 	static const FName PropertiesTabId;
-	/**	用来显示双击后的节点Graph */
-	static const FName InSideNodeTabId;
 
 	static const FName ToolkitFName;
 	/* 创建一个Details的ID */
@@ -129,4 +136,6 @@ private:
 	/** Command list for the graph editor */
 	TSharedPtr<class FUICommandList> GraphEditorCommands;
 
+	//存储一个额外打开的SDockTabList
+	TArray<TSharedPtr<SDockTab>> DialogTabs;
 };
