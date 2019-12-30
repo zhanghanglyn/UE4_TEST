@@ -1,4 +1,5 @@
 ﻿#include "ScenarioGraphSchema.h"
+#include "ScenarioGraph.h"
 #include "UObject/MetaData.h"
 #include "UObject/UnrealType.h"
 #include "UObject/TextProperty.h"
@@ -19,8 +20,8 @@
 #define LOCTEXT_NAMESPACE "UScenarioGraphSchema"
 
 //定义两个Pin的类型
-const FName UScenarioGraphSchema::PC_Normal(TEXT("Normal"));
-const FName UScenarioGraphSchema::PC_Root(TEXT("Root"));
+//const FName UScenarioGraphSchema::PC_Normal(TEXT("Normal"));
+//const FName UScenarioGraphSchema::PC_Root(TEXT("Root"));
 
 UScenarioGraphSchema::UScenarioGraphSchema(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -35,19 +36,24 @@ void UScenarioGraphSchema::CreateDefaultNodesForGraph(UEdGraph& Graph) const
 	FGraphNodeCreator<URootNodes> NodeCreater(Graph);
 	URootNodes* Nodebase = NodeCreater.CreateNode();
 	NodeCreater.Finalize();
+
+	//设置RootNode
+	UScenarioGraph* ScenarioGraph = Cast<UScenarioGraph>(&Graph);
+	if (ScenarioGraph)
+		ScenarioGraph->SetRootNode(Nodebase);
 }
 
 void UScenarioGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
 	
 	TSharedPtr<FScenarioSchemaAction> NewSchemaAction = TSharedPtr<FScenarioSchemaAction>(
-		new FScenarioSchemaAction(LOCTEXT("CustomStoryCategory", "Custom"), LOCTEXT("Nodes", "Normal Nodes"), FText::GetEmpty(), 0, nullptr, FScenarioNodeUtil::NodeCategoryNormal)
+		new FScenarioSchemaAction(LOCTEXT("CustomStoryCategory", "EventNode"), LOCTEXT("Nodes", "Normal Nodes"), FText::GetEmpty(), 0, nullptr, FScenarioNodeUtil::NodeCategoryNormal)
 		);
 
 	ContextMenuBuilder.AddAction(NewSchemaAction);
 
 	TSharedPtr<FEndSchemaAction> EndAction = TSharedPtr<FEndSchemaAction>(
-		new FEndSchemaAction(LOCTEXT("CustomStoryCategory", "Custom"), LOCTEXT("EndNodes", "End Nodes"), FText::GetEmpty(), 0, nullptr , FScenarioNodeUtil::NodeCategoryEnd)
+		new FEndSchemaAction(LOCTEXT("EventCategory", "StandNode"), LOCTEXT("EndNodes", "End Nodes"), FText::GetEmpty(), 1, nullptr , FScenarioNodeUtil::NodeCategoryEnd)
 		);
 
 	ContextMenuBuilder.AddAction(EndAction);

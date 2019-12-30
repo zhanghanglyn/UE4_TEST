@@ -22,6 +22,7 @@ struct FScenarioNodeUtil
 
 struct FScenarioPinUtil
 {
+	static const FName SubPinCategoryNormal;	//普通节点的SubPin，暂时只用这一个，用来进行PinFactory的创建
 	static const FName SubPinCategoryRoot;		//Root和End是特殊不能单独连接的
 	static const FName SubPinCategoryEnd;		//Root和End是特殊不能单独连接的
 

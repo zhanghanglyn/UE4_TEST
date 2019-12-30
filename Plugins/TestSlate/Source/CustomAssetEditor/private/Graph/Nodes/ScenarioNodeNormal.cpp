@@ -1,4 +1,4 @@
-#include "ScenarioNodeNormal.h"
+ï»¿#include "ScenarioNodeNormal.h"
 #include "Runtime/SlateCore/Public/Widgets/SBoxPanel.h"
 #include "ScenarioGraph.h"
 #include "ScenarioPin.h"
@@ -13,7 +13,7 @@ const int32 UScenarioNodeNormal::OUTPUT_PIN_INDEX = 1;
 /************************************************************************/
 void SScenarioNodeNormal::Construct(const FArguments& InArgs, UEdGraphNode* InNode)
 {
-	//ÉèÖÃÊó±êHoverµÄÊ±ºòµÄÏÔÊ¾
+	//è®¾ç½®é¼ æ ‡Hoverçš„æ—¶å€™çš„æ˜¾ç¤º
 	SetCursor(EMouseCursor::CardinalCross);
 
 	GraphNode = InNode;
@@ -21,7 +21,7 @@ void SScenarioNodeNormal::Construct(const FArguments& InArgs, UEdGraphNode* InNo
 
 	NodeBgColor = InArgs._NodeBgColor;
 
-	//¸üĞÂ½Úµã
+	//æ›´æ–°èŠ‚ç‚¹
 	UpdateGraphNode();
 }
 
@@ -50,15 +50,15 @@ void SScenarioNodeNormal::UpdateGraphNode()
 			.BorderBackgroundColor(NodeBgColor.Get()) //FLinearColor::Gray)
 			[
 				SNew(SOverlay)
-				//PIN AREA,²¢ÇÒ°ÑÉú³ÉµÄSVerticalBox¸¶¸øRightNodeBox
+				//PIN AREA,å¹¶ä¸”æŠŠç”Ÿæˆçš„SVerticalBoxä»˜ç»™RightNodeBox
 				+SOverlay::Slot()
 				.HAlign(HAlign_Fill)
 				.VAlign(VAlign_Fill)
 				[
-					SAssignNew(RightNodeBox, SVerticalBox)  //ÕûÈ¦£¡¶¼ÊÇÎÒµÄRightNodeBox
+					SAssignNew(RightNodeBox, SVerticalBox)  //æ•´åœˆï¼éƒ½æ˜¯æˆ‘çš„RightNodeBox
 				]
 
-				//Ãû×ÖÇøÓò
+				//åå­—åŒºåŸŸ
 				+ SOverlay::Slot()
 				.HAlign(HAlign_Center)
 				.VAlign(VAlign_Center)
@@ -77,16 +77,33 @@ void SScenarioNodeNormal::UpdateGraphNode()
 						[
 							// POPUP ERROR MESSAGE
 							SAssignNew(ErrorText, SErrorText)
-							.BackgroundColor(this, &SScenarioNodeNormal::GetErrorColor)	//ÓĞ´íÎóµÄÊ±ºò»áÈ¥È¡ÑÕÉ«
+							.BackgroundColor(this, &SScenarioNodeNormal::GetErrorColor)	//æœ‰é”™è¯¯çš„æ—¶å€™ä¼šå»å–é¢œè‰²
 							.ToolTipText(this, &SScenarioNodeNormal::GetErrorMsgToolTip)
 						]
-						//Ãû×ÖÇøÓò£¬¿Éµã»÷Ãû×Ö
+						//åå­—åŒºåŸŸï¼Œå¯ç‚¹å‡»åå­—
 						+SHorizontalBox::Slot()
 						.Padding(FMargin(20.0f, 0.0f, 20.0f, 0.0f))
 						[
 							SNew(SVerticalBox)
 							+ SVerticalBox::Slot()
+							.Padding(10,2,10,2)
 							.AutoHeight()
+							.HAlign(HAlign_Center)
+							[
+								SNew(SBorder)
+								.BorderImage(FEditorStyle::GetBrush("Graph.StateNode.ColorSpill"))
+								.BorderBackgroundColor(FLinearColor::Black)
+								.HAlign(HAlign_Center)
+								.VAlign(VAlign_Center)
+								[
+									SNew(STextBlock)
+									.Text(FText::FromString(TEXT("èŠ‚ç‚¹ç±»å‹")))
+								]
+							]
+							+ SVerticalBox::Slot()
+							.AutoHeight()
+							.HAlign(HAlign_Center)
+							.VAlign(VAlign_Center)
 							[
 								SAssignNew(InlineEditableText, SInlineEditableTextBlock)
 								.Style(FEditorStyle::Get(), "Graph.StateNode.NodeTitleInlineEditableText")
@@ -98,8 +115,11 @@ void SScenarioNodeNormal::UpdateGraphNode()
 							]
 							+ SVerticalBox::Slot()
 							.AutoHeight()
+							.HAlign(HAlign_Center)
+							.VAlign(VAlign_Center)
 							[
 								NodeTitle.ToSharedRef()
+								
 							]
 						]
 					]
@@ -108,7 +128,7 @@ void SScenarioNodeNormal::UpdateGraphNode()
 			]
 		];
 
-	//½«±©Â¶³öÀ´µÄWidget´æÆğÀ´
+	//å°†æš´éœ²å‡ºæ¥çš„Widgetå­˜èµ·æ¥
 	ErrorReporting = ErrorText;
 	ErrorReporting->SetError(ErrorMsg);
 
@@ -129,7 +149,7 @@ void SScenarioNodeNormal::CreatePinWidgets()
 	}
 }
 
-/* ÒòÎªÕûÈ¦¶¼ÊÇÎÒµÄRightNode~ËùÒÔ InputºÍOutPut¾Í¶¼·ÅÔÚOutPutÀ² */
+/* å› ä¸ºæ•´åœˆéƒ½æ˜¯æˆ‘çš„RightNode~æ‰€ä»¥ Inputå’ŒOutPutå°±éƒ½æ”¾åœ¨OutPutå•¦ */
 void SScenarioNodeNormal::AddPin(const TSharedRef<SGraphPin>& PinToAdd)
 {
 	PinToAdd->SetOwner(SharedThis(this));
@@ -142,10 +162,10 @@ void SScenarioNodeNormal::AddPin(const TSharedRef<SGraphPin>& PinToAdd)
 			PinToAdd
 		];
 
-	OutputPins.Add(PinToAdd);   //·ÅÈëËùÓĞOutPutPinsÁĞ±íÖĞ
+	OutputPins.Add(PinToAdd);   //æ”¾å…¥æ‰€æœ‰OutPutPinsåˆ—è¡¨ä¸­
 }
 
-//Íâ²¿·½·¨Ïà¹Ø
+//å¤–éƒ¨æ–¹æ³•ç›¸å…³
 void SScenarioNodeNormal::UpdateNodeNmae(FString NodeName)
 {
 	InlineEditableText->SetText(NodeName);
@@ -153,7 +173,7 @@ void SScenarioNodeNormal::UpdateNodeNmae(FString NodeName)
 
 FReply SScenarioNodeNormal::OnMouseButtonDoubleClick(const FGeometry& InMyGeometry, const FPointerEvent& InMouseEvent)
 {
-	//»áµ÷ÓÃ×ÔÉíUNodeµÄË«»÷·½·¨£¡
+	//ä¼šè°ƒç”¨è‡ªèº«UNodeçš„åŒå‡»æ–¹æ³•ï¼
 	OwnerGraphNode->DoubleClickNodeCall();
 
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
@@ -173,7 +193,7 @@ UScenarioNodeNormal::UScenarioNodeNormal()
 
 }
 
-//´ÓDetailÖĞÈ¡Ãû×ÖÒ²¿ÉÒÔ£¡
+//ä»Detailä¸­å–åå­—ä¹Ÿå¯ä»¥ï¼
 FText UScenarioNodeNormal::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	return FText::FromString(NodeName);
@@ -181,7 +201,7 @@ FText UScenarioNodeNormal::GetNodeTitle(ENodeTitleType::Type TitleType) const
 
 void UScenarioNodeNormal::AllocateDefaultPins()
 {
-	CreatePin(EEdGraphPinDirection::EGPD_Input, FScenarioPinUtil::PinCategoryNormal, TEXT("In"));
+	CreatePin(EEdGraphPinDirection::EGPD_Input, FScenarioPinUtil::PinCategoryMulti, TEXT("In"));
 	CreatePin(EEdGraphPinDirection::EGPD_Output, FScenarioPinUtil::PinCategoryMulti, TEXT("Out"));
 }
 
@@ -189,7 +209,7 @@ void UScenarioNodeNormal::OnRenameNode(const FString& NewName)
 {
 	NodeName = NodeName;
 
-	//ÔÙ¸üĞÂÒ»ÏÂ½Úµã,µ÷ÓÃÏÂEDGraphµÄModify();
+	//å†æ›´æ–°ä¸€ä¸‹èŠ‚ç‚¹,è°ƒç”¨ä¸‹EDGraphçš„Modify();
 	UScenarioGraph* CurGraph = Cast< UScenarioGraph >(GetGraph());
 	if (CurGraph != nullptr)
 	{
@@ -215,13 +235,13 @@ TSharedPtr<SGraphNode> UScenarioNodeNormal::CreateVisualWidget()
 	return SNodeWidgetShared;//SAssignNew(SNodeWidgetShared,SScenarioNodeNormal,this);
 }
 
-//Ë«»÷½ÚµãµÄµ÷ÓÃº¯Êı
+//åŒå‡»èŠ‚ç‚¹çš„è°ƒç”¨å‡½æ•°
 void UScenarioNodeNormal::DoubleClickNodeCall()
 {
 
 	//(SNodeWidgetShared.Get())->UpdateNodeNmae("I HAVE BEEN DOUBLE");
 
-	//Ë«»÷´ò¿ªÒ»¸öTab
+	//åŒå‡»æ‰“å¼€ä¸€ä¸ªTab
 	if (bOpenGraph)
 	{
 		if (UScenarioGraph* Graph = Cast<UScenarioGraph>(GetGraph()))
@@ -235,13 +255,13 @@ void UScenarioNodeNormal::DoubleClickNodeCall()
 
 }
 
-//µ±DetailÊôĞÔ±ä»¯Ê±¸üĞÂ ¿ÉÄÜÖ®ºóµÄºÜ¶à²Ù×÷¶¼ÔÚÕâ¶ùÁË
+//å½“Detailå±æ€§å˜åŒ–æ—¶æ›´æ–° å¯èƒ½ä¹‹åçš„å¾ˆå¤šæ“ä½œéƒ½åœ¨è¿™å„¿äº†
 void UScenarioNodeNormal::OnDetailUpdate()
 {
 	(SNodeWidgetShared.Get())->UpdateNodeNmae(NodeName);
 }
 
-/*É¾³ı½ÚµãµÄÖÚ¶à²Ù×÷*/
+/*åˆ é™¤èŠ‚ç‚¹çš„ä¼—å¤šæ“ä½œ*/
 void UScenarioNodeNormal::DestroyNode()
 {
 

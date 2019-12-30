@@ -81,8 +81,10 @@ public:
 	 */
 	virtual void BreakSinglePinLink(UEdGraphPin* SourcePin, UEdGraphPin* TargetPin) const override;
 
+protected:
 
 public:
-	static const FName PC_Normal;
-	static const FName PC_Root;
+	//static const FName PC_Normal;
+	//static const FName PC_Root;
+
 };

@@ -19,7 +19,7 @@ public:
 
 
 	/** Info about the graphs we last edited */
-	UPROPERTY()
-	TArray<FEditedDocumentInfo> LastEditedDocuments;
+	//UPROPERTY()
+	//TArray<FEditedDocumentInfo> LastEditedDocuments;
 
 };

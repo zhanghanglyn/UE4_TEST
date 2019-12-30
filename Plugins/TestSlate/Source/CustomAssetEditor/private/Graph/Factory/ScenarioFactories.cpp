@@ -18,7 +18,7 @@ TSharedPtr<class SGraphNode> FScenarioNodeFactory::CreateNode(class UEdGraphNode
 
 TSharedPtr<class SGraphPin> FScenarioPinFactory::CreatePin(class UEdGraphPin* Pin) const
 {
-	if (Pin->PinType.PinCategory == UScenarioGraphSchema::PC_Normal)
+	if (Pin->PinType.PinCategory == "PC_Normal")
 		return SNew(SScenarioPin, Pin);
 	
 	return nullptr;
