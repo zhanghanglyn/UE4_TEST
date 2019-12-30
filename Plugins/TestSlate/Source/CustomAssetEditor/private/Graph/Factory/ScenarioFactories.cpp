@@ -2,6 +2,7 @@
 #include "ScenarioPin.h"
 #include "ScenarioGraphSchema.h"
 #include "ScenarioNodeNormal.h"
+#include "EndNodes.h"
 #include "ScenarioConnectionDrawingPolicy.h"
 
 
@@ -9,6 +10,8 @@ TSharedPtr<class SGraphNode> FScenarioNodeFactory::CreateNode(class UEdGraphNode
 {
 	if ( auto CurNode = Cast< UScenarioNodeNormal >(InNode) )
 		return SNew(SScenarioNodeNormal, CurNode);
+	else if(auto EndNode = Cast< UEndNodes >(InNode))
+		return SNew(SScenarioEndNode, EndNode);
 
 	return nullptr;
 }

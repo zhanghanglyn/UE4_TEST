@@ -5,6 +5,8 @@
 #include "Editor/GraphEditor/Public/GraphEditorActions.h"
 #include "Runtime/Slate/Public/Framework/Commands/GenericCommands.h"
 #include "RootNodes.h"
+#include "EditTabsUtil.h"
+#include "End_SchemaAction.h"
 #if WITH_EDITOR
 #include "Misc/ConfigCacheIni.h"
 #include "UObject/UObjectHash.h"
@@ -39,10 +41,16 @@ void UScenarioGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 {
 	
 	TSharedPtr<FScenarioSchemaAction> NewSchemaAction = TSharedPtr<FScenarioSchemaAction>(
-		new FScenarioSchemaAction(LOCTEXT("CustomStoryCategory", "Custom"), LOCTEXT("Nodes", "Normal Nodes"), FText::GetEmpty(), 0, nullptr)
+		new FScenarioSchemaAction(LOCTEXT("CustomStoryCategory", "Custom"), LOCTEXT("Nodes", "Normal Nodes"), FText::GetEmpty(), 0, nullptr, FScenarioNodeUtil::NodeCategoryNormal)
 		);
 
 	ContextMenuBuilder.AddAction(NewSchemaAction);
+
+	TSharedPtr<FEndSchemaAction> EndAction = TSharedPtr<FEndSchemaAction>(
+		new FEndSchemaAction(LOCTEXT("CustomStoryCategory", "Custom"), LOCTEXT("EndNodes", "End Nodes"), FText::GetEmpty(), 0, nullptr , FScenarioNodeUtil::NodeCategoryEnd)
+		);
+
+	ContextMenuBuilder.AddAction(EndAction);
 }
 
 //添加右键菜单的操作列表，意思是可以添加像：如果右点击到Pin上打开的菜单， 如果右点击到Node上打开的菜单等
@@ -70,9 +78,27 @@ const FPinConnectionResponse UScenarioGraphSchema::CanCreateConnection(const UEd
 {
 	if(A->GetOwningNode() == B->GetOwningNode())
 		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("试试中文，这是同一个节点！"));
-
-	else
+	//if(A->PinType.PinSubCategory == FScenarioPinUtil::SubPinCategoryRoot && B->PinType.PinSubCategory == FScenarioPinUtil::SubPinCategoryEnd)
+	//	return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_DISALLOW, TEXT("不允许"));
+	//else if (B->PinType.PinSubCategory == FScenarioPinUtil::SubPinCategoryRoot && A->PinType.PinSubCategory == FScenarioPinUtil::SubPinCategoryEnd)
+	//	return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_DISALLOW, TEXT("引脚不允许连接"));
+	//如果A是允许多个的节点，B是允许一个的节点
+	else if( A->PinType.PinCategory == FScenarioPinUtil::PinCategoryMulti && B->PinType.PinCategory == FScenarioPinUtil::PinCategoryNormal )
+		return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_BREAK_OTHERS_B, TEXT(""));
+	//如果A是允许一个的节点，B是允许多个的节点
+	else if (A->PinType.PinCategory == FScenarioPinUtil::PinCategoryNormal && B->PinType.PinCategory == FScenarioPinUtil::PinCategoryMulti)
+		return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_BREAK_OTHERS_A, TEXT(""));
+	//如果AB都是单个节点
+	else if (A->PinType.PinCategory == FScenarioPinUtil::PinCategoryNormal && B->PinType.PinCategory == FScenarioPinUtil::PinCategoryNormal)
 		return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_BREAK_OTHERS_AB, TEXT(""));
+	//如果AB都是多个节点
+	else if (A->PinType.PinCategory == FScenarioPinUtil::PinCategoryMulti && B->PinType.PinCategory == FScenarioPinUtil::PinCategoryMulti)
+		return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_MAKE, TEXT(""));
+	//如果不允许连接
+	else if (A->PinType.PinCategory == FScenarioPinUtil::PinCategoryNotAllow || B->PinType.PinCategory == FScenarioPinUtil::PinCategoryNotAllow)
+		return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_DISALLOW, TEXT("引脚不允许连接"));
+	else
+		return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_DISALLOW, TEXT("节点啥也不是！"));
 
 }
 

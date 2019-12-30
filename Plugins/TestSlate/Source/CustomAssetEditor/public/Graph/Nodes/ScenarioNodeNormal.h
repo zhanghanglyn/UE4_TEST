@@ -2,7 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
+#include "EditTabsUtil.h"
 #include "Runtime/Engine/Classes/EdGraph/EdGraphNode.h"
+#include "Runtime/SlateCore/Public/Styling/SlateColor.h"
 #include "Editor/GraphEditor/Public/SGraphNode.h"
 
 //#include "ScenarioPin.h"
@@ -57,6 +59,10 @@ public:
 	virtual void OnDetailUpdate();
 
 public:
+
+	//所有Node都有的一个类型
+	FName NodeCategory = FScenarioNodeUtil::NodeCategoryNormal;
+
 	UPROPERTY(EditAnywhere, Category = "ScenarioGraphNode")
 	FString NodeName = "NormalGraph";
 
@@ -81,9 +87,10 @@ class SScenarioNodeNormal : public SGraphNode
 {
 public:
 	SLATE_BEGIN_ARGS(SScenarioNodeNormal)
+		: _NodeBgColor(FLinearColor::Gray)
 	{
-
 	}
+	SLATE_ATTRIBUTE(FSlateColor, NodeBgColor)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs , UEdGraphNode* InNode);
@@ -102,9 +109,13 @@ public:
 
 /*外部方法*/
 public:
-	void UpdateNodeNmae( FString NodeName );
-
+	virtual void UpdateNodeNmae( FString NodeName );
 
 protected:
 	class UScenarioNodeNormal* OwnerGraphNode;
+
+
+//slate显示相关参数
+protected:
+	TAttribute<FSlateColor> NodeBgColor;
 };

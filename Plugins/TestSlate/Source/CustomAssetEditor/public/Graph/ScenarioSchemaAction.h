@@ -5,6 +5,7 @@
 #include "Runtime/Engine/Classes/EdGraph/EdGraph.h"
 #include "CoreUObject/Public/UObject/UObjectGlobals.h"
 #include "Runtime/Engine/Classes/EdGraph/EdGraphSchema.h"
+#include "EditTabsUtil.h"
 #include "ScenarioSchemaAction.generated.h"
 
 USTRUCT()
@@ -17,10 +18,10 @@ struct FScenarioSchemaAction : public FEdGraphSchemaAction
 	class UEdGraphNode* NodeTemplate;
 
 	FScenarioSchemaAction() : FEdGraphSchemaAction() {}
-	FScenarioSchemaAction(FText InNodeCategory, FText InMenuDesc, FText InToolTip, const int32 InGrouping , UEdGraphNode* NodeTemplate)
+	FScenarioSchemaAction(FText InNodeCategory, FText InMenuDesc, FText InToolTip, const int32 InGrouping , UEdGraphNode* NodeTemplate , FName CategoryUtil)
 		: FEdGraphSchemaAction(InNodeCategory , InMenuDesc , InToolTip , InGrouping) , NodeTemplate(nullptr)
 	{
-
+		NodeCategoryUtil = CategoryUtil;
 	};
 
 	//两种performAction,一种有引脚过来的，一种没有
@@ -29,4 +30,6 @@ struct FScenarioSchemaAction : public FEdGraphSchemaAction
 
 	UEdGraphNode* CreateNode(UEdGraph* ParentGraph , UEdGraphPin* FromPin, const FVector2D Location, class UEdGraphNode* InNodeTemplate, bool bSelectNewNode);
 
+protected:
+	FName NodeCategoryUtil;
 };

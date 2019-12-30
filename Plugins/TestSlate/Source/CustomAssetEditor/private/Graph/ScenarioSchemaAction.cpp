@@ -10,7 +10,7 @@ UEdGraphNode* FScenarioSchemaAction::PerformAction(class UEdGraph* ParentGraph, 
 
 #if WITH_EDITOR
 	// If there is a template, we actually use it
-	if (NodeTemplate != nullptr)
+	//if (NodeTemplate != nullptr)
 	{
 		const FScopedTransaction Transaction(LOCTEXT("AddNode", "Add Node"));
 		ParentGraph->Modify();
@@ -33,9 +33,32 @@ UEdGraphNode* FScenarioSchemaAction::CreateNode(UEdGraph* ParentGraph, UEdGraphP
 	UEdGraphNode* ResultNode;
 	if (InNodeTemplate == nullptr)
 	{
+		//根据不同类型创建
+		/*{
+			if(NodeCategoryUtil == FScenarioNodeUtil::NodeCategoryEnd)
+			{
+				FGraphNodeCreator<UScenarioNodeNormal> NodeCreater(*ParentGraph);
+				ResultNode = NodeCreater.CreateNode(bSelectNewNode);
+				ResultNode->SetFlags(RF_Transactional);
+				NodeCreater.Finalize();
+			}
+			else if (NodeCategoryUtil == FScenarioNodeUtil::NodeCategoryNormal)
+			{
+				FGraphNodeCreator<UEndNodes> NodeCreater(*ParentGraph);
+				ResultNode = NodeCreater.CreateNode(bSelectNewNode);
+				ResultNode->SetFlags(RF_Transactional);
+				NodeCreater.Finalize();
+			}
+			else
+			{
+				FGraphNodeCreator<UScenarioNodeNormal> NodeCreater(*ParentGraph);
+				ResultNode = NodeCreater.CreateNode(bSelectNewNode);
+				ResultNode->SetFlags(RF_Transactional);
+				NodeCreater.Finalize();
+			}
+		}*/
 		FGraphNodeCreator<UScenarioNodeNormal> NodeCreater(*ParentGraph);
 		ResultNode = NodeCreater.CreateNode(bSelectNewNode);
-		//ResultNode = NodeCreater.CreateUserInvokedNode(bSelectNewNode);
 		ResultNode->SetFlags(RF_Transactional);
 		//ResultNode->Rename(*(FString("Scenario")), ParentGraph);
 		NodeCreater.Finalize();

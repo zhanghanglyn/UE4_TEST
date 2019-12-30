@@ -17,7 +17,7 @@ public:
 	//~ Begin UEdGraphNode Interface
 	//创建一个新节点的时候调用，会在里面生成该节点的Instance
 
-
+	virtual TSharedPtr<SGraphNode> CreateVisualWidget() override;
 	//~ End
 
 	/* 父类方法，继承后可以在里面添加新节点 */

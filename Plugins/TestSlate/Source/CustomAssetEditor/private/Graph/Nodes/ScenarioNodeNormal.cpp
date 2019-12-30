@@ -2,7 +2,6 @@
 #include "Runtime/SlateCore/Public/Widgets/SBoxPanel.h"
 #include "ScenarioGraph.h"
 #include "ScenarioPin.h"
-#include "ScenarioGraph.h"
 #include "ScenarioEditor.h"
 #include "Runtime/Slate/Public/Widgets/Text/SInlineEditableTextBlock.h"
 
@@ -19,6 +18,8 @@ void SScenarioNodeNormal::Construct(const FArguments& InArgs, UEdGraphNode* InNo
 
 	GraphNode = InNode;
 	OwnerGraphNode = Cast<UScenarioNodeNormal>(InNode);
+
+	NodeBgColor = InArgs._NodeBgColor;
 
 	//更新节点
 	UpdateGraphNode();
@@ -46,7 +47,7 @@ void SScenarioNodeNormal::UpdateGraphNode()
 			.BorderImage(FEditorStyle::GetBrush("Graph.StateNode.Body"))
 			.Padding(0)
 			//.BorderBackgroundColor(this, &SGraphNodeAnimState::GetBorderBackgroundColor)
-			.BorderBackgroundColor(FLinearColor::Gray)
+			.BorderBackgroundColor(NodeBgColor.Get()) //FLinearColor::Gray)
 			[
 				SNew(SOverlay)
 				//PIN AREA,并且把生成的SVerticalBox付给RightNodeBox
@@ -119,11 +120,13 @@ void SScenarioNodeNormal::CreatePinWidgets()
 {
 	
 	UEdGraphPin* CurPin = OwnerGraphNode->GetOutPutPin();
-	TSharedPtr< SScenarioPin> NewPin = SNew(SScenarioPin, CurPin);
-	check(NewPin.IsValid());
+	if (CurPin)
+	{
+		TSharedPtr< SScenarioPin> NewPin = SNew(SScenarioPin, CurPin);
+		check(NewPin.IsValid());
 
-	this->AddPin(NewPin.ToSharedRef());
-
+		this->AddPin(NewPin.ToSharedRef());
+	}
 }
 
 /* 因为整圈都是我的RightNode~所以 Input和OutPut就都放在OutPut啦 */
@@ -178,8 +181,8 @@ FText UScenarioNodeNormal::GetNodeTitle(ENodeTitleType::Type TitleType) const
 
 void UScenarioNodeNormal::AllocateDefaultPins()
 {
-	CreatePin(EEdGraphPinDirection::EGPD_Input, TEXT("Normal"), TEXT("In"));
-	CreatePin(EEdGraphPinDirection::EGPD_Output, TEXT("Root"), TEXT("Out"));
+	CreatePin(EEdGraphPinDirection::EGPD_Input, FScenarioPinUtil::PinCategoryNormal, TEXT("In"));
+	CreatePin(EEdGraphPinDirection::EGPD_Output, FScenarioPinUtil::PinCategoryMulti, TEXT("Out"));
 }
 
 void UScenarioNodeNormal::OnRenameNode(const FString& NewName)
@@ -198,11 +201,12 @@ UEdGraphPin* UScenarioNodeNormal::GetOutPutPin()
 {
 	return Pins[OUTPUT_PIN_INDEX];
 }
-
+#pragma optimize("",off)
 UEdGraphPin* UScenarioNodeNormal::GetInPutPin()
 {
 	return Pins[INPUT_PIN_INDEX];
 }
+#pragma optimize("",on)
 
 TSharedPtr<SGraphNode> UScenarioNodeNormal::CreateVisualWidget()
 {
