@@ -58,6 +58,15 @@ public:
 	//外部Detail变化时用来更新的函数
 	virtual void OnDetailUpdate();
 
+	//获取OutPin连接的所有Pin
+	TArray<UEdGraphPin*> GetAllOutPinLinked();
+
+	//获取OutPin链接的所有Node
+	TArray<UEdGraphNode*> GetAllOutNodeLinked();
+
+	/* 获取该Node的接入Nodes*/
+	TArray<UEdGraphNode*> GetAllInputNodeLinked();
+
 public:
 
 	//所有Node都有的一个类型
@@ -88,9 +97,13 @@ class SScenarioNodeNormal : public SGraphNode
 public:
 	SLATE_BEGIN_ARGS(SScenarioNodeNormal)
 		: _NodeBgColor(FLinearColor::Gray)
+		, _CategoryTEXT(FText::FromString(L"标准节点"))
+		, _BUseCategoryTitle(true)
 	{
 	}
 	SLATE_ATTRIBUTE(FSlateColor, NodeBgColor)
+	SLATE_ATTRIBUTE(FText, CategoryTEXT)
+	SLATE_ATTRIBUTE(bool , BUseCategoryTitle)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs , UEdGraphNode* InNode);
@@ -118,4 +131,13 @@ protected:
 //slate显示相关参数
 protected:
 	TAttribute<FSlateColor> NodeBgColor;
+
+	//该节点啊类型的名字
+	FText NodeTitleName;// = FText::FromString("标准节点");
+
+	//节点上面的类型title控件
+	TSharedPtr<class SVerticalBox> CategoryTitleCtl;
+
+	//是否需要类型Title
+	bool BNeedCategoryTitle;
 };

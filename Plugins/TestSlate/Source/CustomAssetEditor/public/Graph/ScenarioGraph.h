@@ -22,5 +22,5 @@ public:
 	FScenarioEditor* ScenarioEditor;
 
 	UPROPERTY()
-	const class URootNodes* RootNode;
+	class URootNodes* RootNode;
 };

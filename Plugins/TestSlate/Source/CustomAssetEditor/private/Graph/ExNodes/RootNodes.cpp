@@ -15,7 +15,8 @@ void URootNodes::AllocateDefaultPins()
 
 TSharedPtr<SGraphNode> URootNodes::CreateVisualWidget()
 {
-	SAssignNew(SNodeWidgetShared, SScenarioNodeNormal, this).NodeBgColor(FLinearColor::Green);
+	SAssignNew(SNodeWidgetShared, SScenarioNodeNormal, this).NodeBgColor(FLinearColor::Green)
+		.CategoryTEXT(FText::FromString("")).BUseCategoryTitle(false);
 
 	return SNodeWidgetShared;//SAssignNew(SNodeWidgetShared,SScenarioNodeNormal,this);
 }

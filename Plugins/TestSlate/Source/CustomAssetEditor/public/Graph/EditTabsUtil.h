@@ -18,6 +18,10 @@ struct FScenarioNodeUtil
 	static const FName NodeCategoryNormal;
 	static const FName NodeCategoryRoot;
 	static const FName NodeCategoryEnd;
+
+	/* 具体节点相关 */
+	static const FName NodeCategoryAction;	   //最普通的事件节点
+	static const FName NodeCategoryAssembly;   //装配节点
 };
 
 struct FScenarioPinUtil

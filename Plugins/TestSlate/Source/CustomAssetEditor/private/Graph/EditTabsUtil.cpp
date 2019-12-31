@@ -5,9 +5,12 @@ const FName FScenarioEditorTabsUtil::SearchID(TEXT("ScenarioEditor_Search"));
 
 const FName FScenarioEditorTabsUtil::GraphEditorID(TEXT("Document"));
 
+/* 节点相关 */
 const FName FScenarioNodeUtil::NodeCategoryNormal(TEXT("NormalBase"));
 const FName FScenarioNodeUtil::NodeCategoryRoot(TEXT("NormalRoot"));
 const FName FScenarioNodeUtil::NodeCategoryEnd(TEXT("NormalEND"));
+const FName FScenarioNodeUtil::NodeCategoryAssembly(TEXT("NodeAssembly"));
+const FName FScenarioNodeUtil::NodeCategoryAction(TEXT("NodeAction"));
 
 //PIN相关
 const FName FScenarioPinUtil::SubPinCategoryRoot(TEXT("SubRoot"));

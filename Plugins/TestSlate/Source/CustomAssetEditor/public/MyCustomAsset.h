@@ -10,7 +10,7 @@ class UMyCustomAsset : public UObject
 public:
 	UMyCustomAsset() {};
 	
-	/** Graph for Behavior Tree */
+	/** Graph for Tree */
 	UPROPERTY()
 	class UEdGraph* StoryGraph;
 

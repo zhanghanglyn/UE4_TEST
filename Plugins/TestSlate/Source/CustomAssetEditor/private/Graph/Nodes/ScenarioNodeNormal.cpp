@@ -8,6 +8,8 @@
 const int32 UScenarioNodeNormal::INPUT_PIN_INDEX = 0;
 const int32 UScenarioNodeNormal::OUTPUT_PIN_INDEX = 1;
 
+#define LOCTEXT_NAMESPACE "ScenarioNodeNormal"
+
 /************************************************************************/
 /*	                   SScenarioNodeNormal                               */
 /************************************************************************/
@@ -20,6 +22,8 @@ void SScenarioNodeNormal::Construct(const FArguments& InArgs, UEdGraphNode* InNo
 	OwnerGraphNode = Cast<UScenarioNodeNormal>(InNode);
 
 	NodeBgColor = InArgs._NodeBgColor;
+	NodeTitleName = InArgs._CategoryTEXT.Get();
+	BNeedCategoryTitle = InArgs._BUseCategoryTitle.Get();
 
 	//更新节点
 	UpdateGraphNode();
@@ -84,8 +88,9 @@ void SScenarioNodeNormal::UpdateGraphNode()
 						+SHorizontalBox::Slot()
 						.Padding(FMargin(20.0f, 0.0f, 20.0f, 0.0f))
 						[
-							SNew(SVerticalBox)
-							+ SVerticalBox::Slot()
+							//加一个类型标题
+							SAssignNew(CategoryTitleCtl, SVerticalBox)
+							/*+ SVerticalBox::Slot()
 							.Padding(10,2,10,2)
 							.AutoHeight()
 							.HAlign(HAlign_Center)
@@ -97,9 +102,9 @@ void SScenarioNodeNormal::UpdateGraphNode()
 								.VAlign(VAlign_Center)
 								[
 									SNew(STextBlock)
-									.Text(FText::FromString(TEXT("节点类型")))
+									.Text( NodeTitleName)
 								]
-							]
+							]*/
 							+ SVerticalBox::Slot()
 							.AutoHeight()
 							.HAlign(HAlign_Center)
@@ -127,12 +132,32 @@ void SScenarioNodeNormal::UpdateGraphNode()
 
 			]
 		];
+	if (BNeedCategoryTitle)
+	{
+		CategoryTitleCtl->AddSlot()
+			.Padding(10, 2, 10, 2)
+			.AutoHeight()
+			.HAlign(HAlign_Center)
+			[
+				SNew(SBorder)
+				.BorderImage(FEditorStyle::GetBrush("Graph.StateNode.ColorSpill"))
+			.BorderBackgroundColor(FLinearColor::Black)
+			.HAlign(HAlign_Center)
+			.VAlign(VAlign_Center)
+			[
+				SNew(STextBlock)
+				.Text(NodeTitleName)
+			]
+			];
+	}
+
 
 	//将暴露出来的Widget存起来
 	ErrorReporting = ErrorText;
 	ErrorReporting->SetError(ErrorMsg);
 
 	CreatePinWidgets();
+
 }
 
 /*  */
@@ -267,3 +292,66 @@ void UScenarioNodeNormal::DestroyNode()
 
 	UEdGraphNode::DestroyNode();
 }
+
+/* 获取OutPin连接的所有Pin */
+TArray<UEdGraphPin*> UScenarioNodeNormal::GetAllOutPinLinked()
+{
+	TArray<UEdGraphPin*> NoneArray;
+
+	UEdGraphPin* OutPin = GetOutPutPin();
+	if (OutPin)
+		return OutPin->LinkedTo;
+
+	return NoneArray;
+}
+
+/* 获取该Node OutpUT链接的所有Node */
+TArray<UEdGraphNode*> UScenarioNodeNormal::GetAllOutNodeLinked()
+{
+	TArray<UEdGraphNode*> OutNode;
+
+	UEdGraphPin* OutPin = GetInPutPin();
+	if (OutPin)
+	{
+		TArray<UEdGraphPin*> OutPins = OutPin->LinkedTo;
+		if (OutPins.Num() > 0)
+		{
+			for (TArray<UEdGraphPin*>::TConstIterator iter = OutPins.CreateConstIterator(); iter; ++iter)
+			{
+				if (UEdGraphPin* CurPin = *iter)
+				{
+					OutNode.Add(CurPin->GetOwningNode());
+				}
+			}
+		}
+	}
+	return OutNode;
+
+}
+
+
+/* 获取该Node Input的所有Node */
+TArray<UEdGraphNode*> UScenarioNodeNormal::GetAllInputNodeLinked()
+{
+	TArray<UEdGraphNode*> InputNode;
+
+	UEdGraphPin* InputPin = GetInPutPin();
+	if (InputPin)
+	{
+		TArray<UEdGraphPin*> InputPins = InputPin->LinkedTo;
+		if (InputPins.Num() > 0)
+		{
+			for (TArray<UEdGraphPin*>::TConstIterator iter = InputPins.CreateConstIterator(); iter ; ++iter)
+			{
+				if (UEdGraphPin* CurPin = *iter)
+				{
+					InputNode.Add(CurPin->GetOwningNode());
+				}
+			}
+		}
+	}
+
+	return InputNode;
+}
+
+#undef LOCTEXT_NAMESPACE

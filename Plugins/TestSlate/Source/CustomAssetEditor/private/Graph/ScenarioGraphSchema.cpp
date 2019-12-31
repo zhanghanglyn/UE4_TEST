@@ -8,6 +8,7 @@
 #include "RootNodes.h"
 #include "EditTabsUtil.h"
 #include "End_SchemaAction.h"
+#include "Action_SchemaAction.h"
 #if WITH_EDITOR
 #include "Misc/ConfigCacheIni.h"
 #include "UObject/UObjectHash.h"
@@ -45,18 +46,24 @@ void UScenarioGraphSchema::CreateDefaultNodesForGraph(UEdGraph& Graph) const
 
 void UScenarioGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
-	
+	TSharedPtr<FEndSchemaAction> EndAction = TSharedPtr<FEndSchemaAction>(
+		new FEndSchemaAction(LOCTEXT("EventCategory", "StandNode"), LOCTEXT("EndNodes", "End Nodes"), FText::GetEmpty(), 1, nullptr, FScenarioNodeUtil::NodeCategoryEnd)
+		);
+
+	ContextMenuBuilder.AddAction(EndAction);
+
 	TSharedPtr<FScenarioSchemaAction> NewSchemaAction = TSharedPtr<FScenarioSchemaAction>(
 		new FScenarioSchemaAction(LOCTEXT("CustomStoryCategory", "EventNode"), LOCTEXT("Nodes", "Normal Nodes"), FText::GetEmpty(), 0, nullptr, FScenarioNodeUtil::NodeCategoryNormal)
 		);
 
 	ContextMenuBuilder.AddAction(NewSchemaAction);
 
-	TSharedPtr<FEndSchemaAction> EndAction = TSharedPtr<FEndSchemaAction>(
-		new FEndSchemaAction(LOCTEXT("EventCategory", "StandNode"), LOCTEXT("EndNodes", "End Nodes"), FText::GetEmpty(), 1, nullptr , FScenarioNodeUtil::NodeCategoryEnd)
+	//添加互动节点
+	TSharedPtr<FActionSchemaAction> ActionSchemaAction = TSharedPtr<FActionSchemaAction>(
+		new FActionSchemaAction(LOCTEXT("CustomStoryCategory", "EventNode"), LOCTEXT("ActionNodes", "Action Nodes"), FText::GetEmpty(), 0, nullptr, FScenarioNodeUtil::NodeCategoryAction)
 		);
 
-	ContextMenuBuilder.AddAction(EndAction);
+	ContextMenuBuilder.AddAction(ActionSchemaAction);
 }
 
 //添加右键菜单的操作列表，意思是可以添加像：如果右点击到Pin上打开的菜单， 如果右点击到Node上打开的菜单等
