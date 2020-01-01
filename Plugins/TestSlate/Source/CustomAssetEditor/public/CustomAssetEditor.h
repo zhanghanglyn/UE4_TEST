@@ -13,10 +13,10 @@ class FCustomAssetEditor : public ICustomAssetEditor
 {
 
 	// This function creates tab spawners on editor initialization
-	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
+	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager) override;
 
 	// This function unregisters tab spawners on editor initialization
-	virtual void UnregisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
+	virtual void UnregisterTabSpawners(const TSharedRef<FTabManager>& InTabManager) override;
 public:
 	/*
 		编辑制定资产对象

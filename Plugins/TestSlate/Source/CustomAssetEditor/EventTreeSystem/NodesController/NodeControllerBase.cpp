@@ -16,3 +16,8 @@ void UNodeControllerBase::ComponentsFinishCallBack(FName Paramm)
 {
 	ControllerFinish();
 }
+
+void UNodeControllerBase::Clear()
+{
+	CurNode = nullptr;
+}

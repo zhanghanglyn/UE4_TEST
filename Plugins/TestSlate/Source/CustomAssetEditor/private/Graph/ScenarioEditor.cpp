@@ -402,7 +402,7 @@ void FScenarioEditor::OnSelectedNodesChanged(const TSet<class UObject *>& NewSel
 
 bool FScenarioEditor::IsPropertyEditable() const
 {
-	UE_LOG(LogTemp, Warning, TEXT(" IsPropertyEditable"));
+	//UE_LOG(LogTemp, Warning, TEXT(" IsPropertyEditable"));
 	return true;
 }
 

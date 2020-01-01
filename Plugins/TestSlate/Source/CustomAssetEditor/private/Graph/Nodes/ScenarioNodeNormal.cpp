@@ -310,7 +310,7 @@ TArray<UEdGraphNode*> UScenarioNodeNormal::GetAllOutNodeLinked()
 {
 	TArray<UEdGraphNode*> OutNode;
 
-	UEdGraphPin* OutPin = GetInPutPin();
+	UEdGraphPin* OutPin = GetOutPutPin();
 	if (OutPin)
 	{
 		TArray<UEdGraphPin*> OutPins = OutPin->LinkedTo;

@@ -2,6 +2,7 @@
 #include "MyCustomAsset.h"
 #include "Runtime/Engine/Classes/EdGraph/EdGraphNode.h"
 #include "RootNodes.h"
+#include "EndNodes.h"
 #include "ScenarioGraph.h"
 
 bool UEventTreeMgr::GetTreeAsset(FString Path)
@@ -39,6 +40,21 @@ void UEventTreeMgr::CreateController(TArray<UEdGraphNode *> LinkNodes)
 	}
 }
 
+//检测是否是End节点！暂时认为，只有一个End
+bool UEventTreeMgr::CheckEndNodes(TArray<class UEdGraphNode *> LinkNodes)
+{
+	for (TArray<UEdGraphNode *>::TConstIterator Iter = LinkNodes.CreateConstIterator(); Iter; ++Iter)
+	{
+		//如果是End节点，就结束了
+		if (UEndNodes* EndNode = Cast<UEndNodes>(*Iter))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 /*
 	startRun的流程应该是，为该节点装配节点控制器，通过判断控制器的完成状态来进行下一节点的切换
 */
@@ -54,22 +70,36 @@ void UEventTreeMgr::StartRun()
 
 /* 收到本次节点已完成后，获取当前节点的接下去的节点，重复环节。
 */
+#pragma optimize("",off)
 void UEventTreeMgr::PlayNext()
 {
-	//test
-	Finish();
+	TArray<UEdGraphNode*> LinkNodes = CurNode->GetAllOutNodeLinked();
+
+	//判断是否是结束节点
+	if (CheckEndNodes(LinkNodes))
+	{
+		Finish();
+		return;
+	}
+		
+
+	if (LinkNodes.Num() > 0)
+		CreateController(LinkNodes);
 }
 
-/* 收到一个Controller返回后，检测是否所有Controller状态均为已完成，如果不是则继续等待
+/* 收到一个Controller返回后，检测是否所有Controller状态均为已完成，如果不是则继续等待,其实一个节点应该只有一个Controller，所以，true的时候就Break就好了
 */
 void UEventTreeMgr::ControllerOverCallBack(FName ControllerCategory)
 {
-	bool bFinishAll = true;
+	bool bFinishAll = false;
+
 	for (TArray<UNodeControllerBase*>::TConstIterator iter = NodeControllers.CreateConstIterator();iter;++iter)
 	{
-		if ((*iter)->BControlOver == false)
+		if ((*iter)->BControlOver == true)
 		{
-			bFinishAll = false;
+			bFinishAll = true;
+			CurNode = (*iter)->CurNode;
+			(*iter)->Clear();
 			break;
 		}
 	}
@@ -77,6 +107,7 @@ void UEventTreeMgr::ControllerOverCallBack(FName ControllerCategory)
 	if (bFinishAll == true)
 		PlayNext();
 }
+#pragma optimize("",on)
 
 void UEventTreeMgr::Finish()
 {

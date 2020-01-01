@@ -15,32 +15,32 @@ const FName CustomAssetEditorAppIdentifier = FName(TEXT("CustomAssetEditorApp"))
 const FName FCustomAssetEditor::ToolkitFName(TEXT("CustomAssetEditor"));
 const FName FCustomAssetEditor::PropertiesTabId(TEXT("CustomAssetEditor_Properties"));
 
-void FCustomAssetEditor::RegisterTabSpawners(const TSharedRef<FTabManager>& TabManager)
+void FCustomAssetEditor::RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
 {
 	/*
 	//The workspace menu category of this toolkit  继承自FAssetEditorToolkit中的BaseToolkit
 	TSharedPtr<FWorkspaceItem> WorkspaceMenuCategory;
 	*/
-	WorkspaceMenuCategory = TabManager->AddLocalWorkspaceMenuCategory(LOCTEXT("WorkspaceMenu_CustomAssetEditor", "Custom Asset Editor"));
+	WorkspaceMenuCategory = InTabManager->AddLocalWorkspaceMenuCategory(LOCTEXT("WorkspaceMenu_CustomAssetEditor", "Custom Asset Editor"));
 
-	FAssetEditorToolkit::RegisterTabSpawners(TabManager);
+	FAssetEditorToolkit::RegisterTabSpawners(InTabManager);
 
 	// Register the properties tab spawner within our tab manager
 	// We provide the function with the identiefier for this tab and a shared pointer to the
 	// SpawnPropertiesTab function within this editor class
 	// Additionaly, we provide a name to be displayed, a category and the tab icon
-	TabManager->RegisterTabSpawner(PropertiesTabId,
+	InTabManager->RegisterTabSpawner(PropertiesTabId,
 		FOnSpawnTab::CreateSP(this, &FCustomAssetEditor::SpawnPropertiesTab)) //注册一个当产生TAB时触发的委托
 		.SetDisplayName(LOCTEXT("PropertiesTab", "Details"))
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
 		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
 }
 
-void FCustomAssetEditor::UnregisterTabSpawners(const TSharedRef<FTabManager>& TabManager)
+void FCustomAssetEditor::UnregisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
 {
-	FAssetEditorToolkit::UnregisterTabSpawners(TabManager);
+	FAssetEditorToolkit::UnregisterTabSpawners(InTabManager);
 
-	TabManager->UnregisterTabSpawner(PropertiesTabId);
+	InTabManager->UnregisterTabSpawner(PropertiesTabId);
 }
 
 TSharedRef<SDockTab> FCustomAssetEditor::SpawnPropertiesTab(const FSpawnTabArgs& Args)

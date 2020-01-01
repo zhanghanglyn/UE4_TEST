@@ -42,6 +42,9 @@ protected:
 	//从Array中查找所有的链接节点，并且为其生成控制器，将控制器注册到本次节点事件中
 	void CreateController(TArray<class UEdGraphNode*> LinkNodes);
 
+	//判断是否有END节点
+	bool CheckEndNodes(TArray<class UEdGraphNode*> LinkNodes);
+
 protected:
 	//Asset资源
 	UPROPERTY()
@@ -53,7 +56,7 @@ protected:
 
 	/* 当前走到的节点 */
 	UPROPERTY()
-	class UEdGraphNode* CurNode;
+	class UScenarioNodeNormal* CurNode;
 
 	UPROPERTY()
 	class URootNodes* RootNode;

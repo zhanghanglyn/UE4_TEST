@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "EditTabsUtil.h"
 #include "CustomAssetEditor/EventTreeSystem/ActiveComponent/EventComponentBase.h"
+#include "ScenarioNodeNormal.h"
 #include "NodeControllerBase.generated.h"
 
 /*节点事件控制器的基类，在循环每一个Node的时候，会为Node装配一个控制器，即用即删*/
@@ -21,7 +22,7 @@ public:
 	};
 
 	//根据节点参数进行组件的装配
-	virtual void InitController(class UEdGraphNode* InNode) { 
+	virtual void InitController(UScenarioNodeNormal* InNode) {
 		CurNode = InNode;
 		Init();
 	};
@@ -34,6 +35,8 @@ public:
 
 	//根据数据进行控制器的初始化
 	virtual void Init();
+	//清理自身
+	virtual void Clear();
 protected:
 
 
@@ -44,7 +47,7 @@ public:
 	bool BControlOver = false;
 	//当前Mgr绑定的Node
 	UPROPERTY()
-	class UEdGraphNode* CurNode;
+	UScenarioNodeNormal* CurNode;
 
 protected:
 
