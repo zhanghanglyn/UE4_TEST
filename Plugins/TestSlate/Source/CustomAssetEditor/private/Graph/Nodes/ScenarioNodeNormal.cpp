@@ -73,7 +73,7 @@ void SScenarioNodeNormal::UpdateGraphNode()
 					.BorderBackgroundColor(TitleShadowColor)
 					.HAlign(HAlign_Center)
 					.VAlign(VAlign_Center)
-					.Visibility(EVisibility::SelfHitTestInvisible)  //
+					//.Visibility(EVisibility::SelfHitTestInvisible)  //
 					[
 						SNew(SHorizontalBox)
 						+ SHorizontalBox::Slot()

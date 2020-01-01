@@ -35,7 +35,7 @@ void UEventTreeMgr::CreateController(TArray<UEdGraphNode *> LinkNodes)
 		UNodeControllerBase* TempController = FNodeControllerMgr::CreateController(GraphNode);
 		//绑定播放完毕回调
 		TempController->OverDelegate.BindUObject(this, &UEventTreeMgr::ControllerOverCallBack);
-		NodeControllers.Add(FNodeControllerMgr::CreateController(GraphNode));
+		NodeControllers.Add(TempController);
 	}
 }
 
@@ -80,6 +80,7 @@ void UEventTreeMgr::ControllerOverCallBack(FName ControllerCategory)
 
 void UEventTreeMgr::Finish()
 {
+	UE_LOG(LogTemp, Warning, TEXT("本次事件播放结束~"));
 	Clear();
 }
 

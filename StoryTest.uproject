@@ -14,5 +14,11 @@
         "CoreUObject"
       ]
     }
+  ],
+  "Plugins": [
+    {
+      "Name": "TestSlate",
+      "Enabled": true
+    }
   ]
 }

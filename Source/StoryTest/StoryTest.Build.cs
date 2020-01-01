@@ -8,7 +8,10 @@ public class StoryTest : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay" , "LevelSequence", "MovieScene" , "UMG" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" , "RenderCore", "RHI"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine",
+            "InputCore", "HeadMountedDisplay" , "LevelSequence", "MovieScene" ,
+            "UMG",
+            "CustomAssetEditor" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" , "RenderCore", "RHI", "CustomAssetEditor" });
     }
 }

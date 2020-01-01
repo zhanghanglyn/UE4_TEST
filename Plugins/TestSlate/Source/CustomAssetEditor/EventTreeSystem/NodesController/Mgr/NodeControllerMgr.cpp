@@ -1,14 +1,15 @@
 ﻿#include "NodeControllerMgr.h"
-#include "ActionNodeController.h"
+#include "CustomAssetEditor/EventTreeSystem/NodesController/ActionNodeController.h"
 
 UNodeControllerBase* FNodeControllerMgr::CreateController(UScenarioNodeNormal* Node)
 {
 	//如果是个Action节点
-	if (GraphNode->NodeCategory == FScenarioNodeUtil::NodeCategoryAction)
+	if (Node->NodeCategory == FScenarioNodeUtil::NodeCategoryAction)
 	{
 		//test 先创建Base的controller
-		UNodeControllerBase* NodeController = NewObject< UNodeControllerBase>();
-		NodeController->CurNode = Node;
+		UActionNodeController* NodeController = NewObject< UActionNodeController>();
+		//NodeController->CurNode = Node;
+		NodeController->InitController(Node);
 
 		return NodeController;
 	}

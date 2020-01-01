@@ -41,3 +41,10 @@ struct FControllerCategoryUtil
 	static const FName ControllerBase;		//基础控制器
 	static const FName ControllerAction;	//Action动作控制器
 };
+
+//互动组件类型
+struct FEventComponentCategoryUtil
+{
+	static const FName ComponentBase;		//基础组件
+	static const FName ComponentShowUI;		//测试显示UI的Component
+};

@@ -1,11 +1,13 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
+#include "Components/ActorComponent.h"
+#include "EditTabsUtil.h"
 #include "EventComponentBase.generated.h"
 
 /* 事件Component的基类 */
 UCLASS(ClassGroup = (EventTreeComponent) , meta = (BlueprintSpawnableComponent))
-class UEventComponentBase : public USceneComponent
+class CUSTOMASSETEDITOR_API UEventComponentBase : public USceneComponent
 {
 	GENERATED_BODY()
 
@@ -15,23 +17,29 @@ public:
 	ComponentFinishOverDelegate OverDelegate;
 
 public:
-	UEventComponentBase() {
-
-	};
+	//UEventComponentBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	//
+	//};
+	UEventComponentBase() {};
 
 	/* 基类函数，回调自身等 */
 	//自身播放完毕后回调结束
-	virtual void FinishCallBack() {
-		OverDelegate.ExecuteIfBound(FName(""));
-	};
+	virtual void FinishCallBack();
+
 	//把自身清除
-	virtual void Clear() {};
+	virtual void Clear() {
+		OverDelegate.Unbind();
+	};
 
-	/* 基类函数，回调自身等 */
+	/*END 基类函数，回调自身等 */
 
 
-	//暂时写作Action，后续接入其余模块就只改动Action：该Component进行的操作等  
-	void Action() {};
+	//Action为外部调用函数
+	virtual void StartAction() { };
 
+public:
+	FName CoCategory = FEventComponentCategoryUtil::ComponentBase;
+
+protected:
 
 };

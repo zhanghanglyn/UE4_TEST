@@ -156,6 +156,10 @@ protected:
 	//选项的三个回调函数
 	void SelectOneCall(SelectParam param);
 
+protected:
+	//测试函数，点击发射一条射线如果是设置了互动Component的物体，则调用其Action
+	UFUNCTION(BlueprintCallable)
+	void CheckActiveObjAction();
 
 //内部处理数据函数等
 protected:

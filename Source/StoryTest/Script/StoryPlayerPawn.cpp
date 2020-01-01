@@ -2,6 +2,9 @@
 
 
 #include "StoryPlayerPawn.h"
+#include "CustomAssetEditor/EventTreeSystem/ActiveComponent/EventComponentBase.h"
+#include "CustomAssetEditor/EventTreeSystem/EventTreeTestObject.h"
+#include "CustomAssetEditor/EventTreeSystem/ActiveComponent/Mgr/ActiveComponentMgr.h"
 
 // Sets default values
 AStoryPlayerPawn::AStoryPlayerPawn()
@@ -92,7 +95,7 @@ void AStoryPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	check(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AStoryPlayerPawn::Click);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AStoryPlayerPawn::CheckActiveObjAction);
 	//绑定视角移动
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	//PlayerInputComponent->BindAxis("TurnRate", this, &AStoryPlayerPawn::TurnRate)
@@ -655,4 +658,45 @@ void AStoryPlayerPawn::TestFuncThree()
 	
 	
 }
+#pragma optimize("",off)
+void AStoryPlayerPawn::CheckActiveObjAction()
+{
+	APlayerCameraManager* tempCameraManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+	FVector startPos = tempCameraManager->GetCameraLocation();
+	FVector forward = tempCameraManager->GetActorForwardVector();
+	FVector endPos = startPos + forward * 100000;
 
+
+	TArray<FHitResult> temp_HitResult;
+	//添加射线参数
+	FCollisionQueryParams cqq(FName(TEXT("Combattrace")), true, NULL);
+	cqq.bTraceComplex = true;
+	cqq.bReturnPhysicalMaterial = false;
+	cqq.AddIgnoredActor(this);
+
+	GetWorld()->LineTraceMultiByObjectType(temp_HitResult, startPos, endPos, ECC_PhysicsBody, cqq);
+	DrawDebugLine(this->GetWorld(), startPos, endPos, FColor::Red, true, 15000.0f);
+
+	//如果有撞到东西
+	if (temp_HitResult.Num() > 0)
+	{
+		for (int i = 0; i < temp_HitResult.Num(); i++)
+		{
+			AActor* TempActor = temp_HitResult[i].GetActor();
+			TArray<USceneComponent*> ComponentList = TempActor->GetRootComponent()->GetAttachChildren();
+			//TArray<UActorComponent*> ComponentList = TempActor->GetComponentsByClass(UEventComponentBase::StaticClass());
+			for (TArray<USceneComponent*>::TConstIterator iter = ComponentList.CreateConstIterator(); iter; ++iter)
+			{
+				//AEventTreeTestObject* aa = NewObject< AEventTreeTestObject>();
+				UEventComponentBase* CurComponent = Cast<UEventComponentBase>(*iter);
+				if (CurComponent)
+				{
+					//FActiveComponentMgr::RunAction(CurComponent);
+					CurComponent->StartAction();
+				}
+			}
+
+		}
+	}
+}
+#pragma optimize("",on)

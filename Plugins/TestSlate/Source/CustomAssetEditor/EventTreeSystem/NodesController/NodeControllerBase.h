@@ -32,20 +32,21 @@ public:
 	//向Mgr发送本次节点已完成
 	virtual void ControllerFinish();
 
-protected:
 	//根据数据进行控制器的初始化
-	void Init();
+	virtual void Init();
+protected:
+
 
 public:
 	//自身的Controller类型
 	FName ControllerCategory = FControllerCategoryUtil::ControllerBase;
 	//本次互动是否完成
 	bool BControlOver = false;
-
-protected:
 	//当前Mgr绑定的Node
 	UPROPERTY()
 	class UEdGraphNode* CurNode;
+
+protected:
 
 	//根据Node数据创建的Components
 	UPROPERTY()

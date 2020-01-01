@@ -23,7 +23,7 @@ public:
 public:
 	//互动物品
 	UPROPERTY(EditAnywhere, Category = "互动组件")
-	AActor* ActiveOjb;
+	TSoftObjectPtr <AActor> ActiveOjb;
 
 	UPROPERTY(EditAnywhere, Category = "互动组件")
 	TSubclassOf < UEventComponentBase> ActiveComponent;

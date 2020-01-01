@@ -20,9 +20,9 @@ void FScenarioConnectionDrawingPolicy::DetermineWiringStyle(UEdGraphPin* OutputP
 }
 
 //会在里面调用DrawSplineWithArrow
-void FScenarioConnectionDrawingPolicy::Draw(TMap<TSharedRef<SWidget>, FArrangedWidget>& PinGeometries, FArrangedChildren& ArrangedNodes)
+void FScenarioConnectionDrawingPolicy::Draw(TMap<TSharedRef<SWidget>, FArrangedWidget>& InPinGeometries, FArrangedChildren& ArrangedNodes)
 {
-	FConnectionDrawingPolicy::Draw(PinGeometries, ArrangedNodes);
+	FConnectionDrawingPolicy::Draw(InPinGeometries, ArrangedNodes);
 }
 
 //将图形转换计算出开始点和结束点并且赋予重载函数 , 两个参数分别是pin的Geometry

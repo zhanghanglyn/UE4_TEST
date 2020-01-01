@@ -23,4 +23,7 @@ const FName FScenarioPinUtil::PinCategoryMulti(TEXT("NormalMulti"));
 const FName FControllerCategoryUtil::ControllerBase(TEXT("ControllerBase"));
 const FName FControllerCategoryUtil::ControllerAction(TEXT("ControllerAction"));
 
+//互动组件相关
+const FName FEventComponentCategoryUtil::ComponentBase(TEXT("ComponentBase"));
+const FName FEventComponentCategoryUtil::ComponentShowUI(TEXT("ComponentShowUI"));
 
