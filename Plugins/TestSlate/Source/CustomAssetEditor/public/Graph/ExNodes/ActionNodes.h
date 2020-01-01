@@ -1,8 +1,9 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 #include "ScenarioNodeNormal.h"
+#include "CustomAssetEditor/EventTreeSystem/ActiveComponent/EventComponentBase.h"
 #include "ActionNodes.generated.h"
 
 UCLASS()
@@ -15,8 +16,15 @@ public:
 	UActionNodes();
 
 	//~ Begin UEdGraphNode Interface
-	//´´½¨Ò»¸öĞÂ½ÚµãµÄÊ±ºòµ÷ÓÃ£¬»áÔÚÀïÃæÉú³É¸Ã½ÚµãµÄInstance
+	//åˆ›å»ºä¸€ä¸ªæ–°èŠ‚ç‚¹çš„æ—¶å€™è°ƒç”¨ï¼Œä¼šåœ¨é‡Œé¢ç”Ÿæˆè¯¥èŠ‚ç‚¹çš„Instance
 	virtual TSharedPtr<SGraphNode> CreateVisualWidget() override;
 	//~ End
 
+public:
+	//äº’åŠ¨ç‰©å“
+	UPROPERTY(EditAnywhere, Category = "äº’åŠ¨ç»„ä»¶")
+	AActor* ActiveOjb;
+
+	UPROPERTY(EditAnywhere, Category = "äº’åŠ¨ç»„ä»¶")
+	TSubclassOf < UEventComponentBase> ActiveComponent;
 };

@@ -34,3 +34,10 @@ struct FScenarioPinUtil
 	static const FName PinCategoryNormal;	//普通Pin，只允许一个链接
 	static const FName PinCategoryMulti;	//允许链接多个Pin
 };
+
+//控制器类型
+struct FControllerCategoryUtil
+{
+	static const FName ControllerBase;		//基础控制器
+	static const FName ControllerAction;	//Action动作控制器
+};

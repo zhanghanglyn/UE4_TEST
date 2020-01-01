@@ -19,4 +19,8 @@ const FName FScenarioPinUtil::PinCategoryNotAllow(TEXT("NotAllowPin"));
 const FName FScenarioPinUtil::PinCategoryNormal(TEXT("NormalBase"));
 const FName FScenarioPinUtil::PinCategoryMulti(TEXT("NormalMulti"));
 
+//¿ØÖÆÆ÷Ïà¹Ø
+const FName FControllerCategoryUtil::ControllerBase(TEXT("ControllerBase"));
+const FName FControllerCategoryUtil::ControllerAction(TEXT("ControllerAction"));
+
 

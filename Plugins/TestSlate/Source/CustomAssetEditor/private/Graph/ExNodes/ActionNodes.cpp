@@ -9,7 +9,7 @@ UActionNodes::UActionNodes()
 
 TSharedPtr<SGraphNode> UActionNodes::CreateVisualWidget()
 {
-	SAssignNew(SNodeWidgetShared, SScenarioNodeNormal, this).NodeBgColor(FLinearColor(133,202,183))
+	SAssignNew(SNodeWidgetShared, SScenarioNodeNormal, this).NodeBgColor(FLinearColor::FromSRGBColor(FColor(78, 151, 131)))
 		.CategoryTEXT(FText::FromString(L"互动节点"));
 
 	return SNodeWidgetShared;
