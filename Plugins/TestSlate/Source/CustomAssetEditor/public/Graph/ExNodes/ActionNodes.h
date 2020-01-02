@@ -4,6 +4,8 @@
 #include "UObject/ObjectMacros.h"
 #include "ScenarioNodeNormal.h"
 #include "CustomAssetEditor/EventTreeSystem/ActiveComponent/EventComponentBase.h"
+#include "CustomAssetEditor/EventTreeSystem/ActiveComponent/Data/ComponentNodeDataBase.h"
+#include "CustomAssetEditor/EventTreeSystem/ActiveComponent/Mgr/ActiveComponentMgr.h"
 #include "ActionNodes.generated.h"
 
 UCLASS()
@@ -20,6 +22,7 @@ public:
 	virtual TSharedPtr<SGraphNode> CreateVisualWidget() override;
 	//~ End
 
+	virtual void OnDetailUpdate(const FPropertyChangedEvent& PropertyChangedEvent) override;
 public:
 	//互动物品
 	UPROPERTY(EditAnywhere, Category = "互动组件")
@@ -27,4 +30,11 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "互动组件")
 	TSubclassOf < UEventComponentBase> ActiveComponent;
+
+	//因为所有的TSubclassOf都是一样的，想当于是一个模板类型，所以！！！！试下用单独的数据来存放
+	UPROPERTY()
+	UComponentNodeDataBase* DataBase;
+
+public:
+	static const FName ComponentPropertyName;
 };

@@ -56,7 +56,7 @@ public:
 	virtual UEdGraphPin* GetInPutPin();
 
 	//外部Detail变化时用来更新的函数
-	virtual void OnDetailUpdate();
+	virtual void OnDetailUpdate(const FPropertyChangedEvent& PropertyChangedEvent);
 
 	//获取OutPin连接的所有Pin
 	TArray<UEdGraphPin*> GetAllOutPinLinked();

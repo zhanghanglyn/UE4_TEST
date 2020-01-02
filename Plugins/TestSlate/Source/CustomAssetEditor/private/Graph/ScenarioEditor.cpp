@@ -1,10 +1,12 @@
 ﻿#include "ScenarioEditor.h"
+#include "ActionNodes.h"
+#include "CustomAssetEditor/EventTreeSystem/ActiveComponent/Data/NodeDataShowUI.h"
 #include "Runtime/Slate/Public/Framework/Commands/GenericCommands.h"
 
 const FName FScenarioEditor::ToolkitFName(TEXT("CustomStoryEditor"));
 const FName FScenarioEditor::PropertiesTabId(TEXT("CustomAssetEditor_Story"));
 const FName FScenarioEditor::DetailsFNameId(TEXT("ScenarioDetail_Story"));
-
+const FName FScenarioEditor::ParamDetailsId(TEXT("ParamDetailsId"));
 
 const FName FScenarioEditor::ScenarioMode(TEXT("Scenario"));
 
@@ -71,6 +73,14 @@ void FScenarioEditor::RegisterTabSpawners(const TSharedRef<class FTabManager>& I
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
 		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
 
+	//再注册一个参数用ID
+	InTabManager->RegisterTabSpawner(ParamDetailsId,
+		FOnSpawnTab::CreateSP(this, &FScenarioEditor::SpawnParamDetailTab)) //注册一个当产生TAB时触发的委托
+		.SetDisplayName(LOCTEXT("PropertiesParamTab", "ParamDetails"))
+		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
+		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
+	
+
 	//再注册一个toolbar
 	RegisterToolbarTab(InTabManager);
 
@@ -81,6 +91,7 @@ void FScenarioEditor::UnregisterTabSpawners(const TSharedRef<class FTabManager>&
 	FWorkflowCentricApplication::UnregisterTabSpawners(InTabManager);
 	InTabManager->UnregisterTabSpawner(PropertiesTabId);
 	InTabManager->UnregisterTabSpawner(DetailsFNameId);
+	InTabManager->UnregisterTabSpawner(ParamDetailsId);
 }
 
 /*void FScenarioEditor::InitScenarioEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UMyCustomAsset* InCustomAsset)
@@ -155,6 +166,8 @@ void FScenarioEditor::InitScenarioEditor(const EToolkitMode::Type Mode, const TS
 	GraphEditorView = CreateGraphEditorWidgetNoDocument();
 	//创建Details
 	CreateInternalWidgets();
+	/* 创建Param Detail */
+	CreateParamWidgets();
 
 	//创建UI
 	TSharedRef<FTabManager::FLayout> DummyLayout = FTabManager::NewLayout("Standalone_ScenarioEditor_Layout_v1")
@@ -177,10 +190,23 @@ void FScenarioEditor::InitScenarioEditor(const EToolkitMode::Type Mode, const TS
 					->AddTab(PropertiesTabId, ETabState::OpenedTab)
 				)
 				->Split(
-					FTabManager::NewStack()
+					/*FTabManager::NewStack()
 					->SetSizeCoefficient(0.3f)
 					->SetHideTabWell(true)
-					->AddTab(DetailsFNameId, ETabState::OpenedTab)
+					->AddTab(DetailsFNameId, ETabState::OpenedTab)*/
+					FTabManager::NewSplitter()->SetOrientation(Orient_Vertical)
+					->Split(
+						FTabManager::NewStack()
+						->SetSizeCoefficient(0.6f)
+						->SetHideTabWell(false)
+						->AddTab(DetailsFNameId, ETabState::OpenedTab)
+					)
+					->Split(
+						FTabManager::NewStack()
+						->SetSizeCoefficient(0.4f)
+						->SetHideTabWell(false)
+						->AddTab(ParamDetailsId, ETabState::OpenedTab)
+					)
 				)
 			)
 		);
@@ -315,6 +341,20 @@ TSharedRef<SDockTab> FScenarioEditor::SpawnPropertiesTab(const FSpawnTabArgs& Ar
 		];
 }
 
+TSharedRef<SDockTab> FScenarioEditor::SpawnParamDetailTab(const FSpawnTabArgs& Args)
+{
+	check(Args.GetTabId() == ParamDetailsId);
+
+	return SNew(SDockTab)
+		.Icon(FEditorStyle::GetBrush("GenericEditor.Tabs.Properties"))
+		.Label(LOCTEXT("GenericParamDetailsTitle", "ParamDetails"))
+		.TabColorScale(GetTabColorScale())
+		[
+			// Provide the details view as this tab its content
+			ParamDetailsView.ToSharedRef()
+		];
+}
+
 /* 加载或者重新创建一个Graph */
 /*void FScenarioEditor::RestoreStoryGraph()
 {
@@ -345,15 +385,28 @@ void FScenarioEditor::RegisterToolbarTab(const TSharedRef<class FTabManager>& In
 void FScenarioEditor::CreateInternalWidgets()
 {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
-	FDetailsViewArgs DetailsViewArgs(false, false, true, FDetailsViewArgs::ObjectsUseNameArea, false);
+	FDetailsViewArgs DetailsViewArgs(false, false, false, FDetailsViewArgs::ObjectsUseNameArea, false);
 	//DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
 	DetailsViewArgs.NotifyHook = this;
 	//创建DetailsView
 	DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
-	DetailsView->SetObject( NULL );
+	DetailsView->SetObject(CustomAsset);
 	DetailsView->SetIsPropertyEditingEnabledDelegate(FIsPropertyEditingEnabled::CreateSP(this, &FScenarioEditor::IsPropertyEditable));
 	//设置改Node名Node显示之类的？
 	DetailsView->OnFinishedChangingProperties().AddSP(this, &FScenarioEditor::OnFinishedChangingProperties);
+}
+
+void FScenarioEditor::CreateParamWidgets()
+{
+	FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
+	FDetailsViewArgs DetailsViewArgs(false, false, false, FDetailsViewArgs::ObjectsUseNameArea, false);
+	DetailsViewArgs.NotifyHook = this;
+	//创建DetailsView
+	ParamDetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
+	ParamDetailsView->SetObject(NULL);
+	ParamDetailsView->SetIsPropertyEditingEnabledDelegate(FIsPropertyEditingEnabled::CreateSP(this, &FScenarioEditor::IsPropertyEditable));
+	//设置改Node名Node显示之类的？
+	ParamDetailsView->OnFinishedChangingProperties().AddSP(this, &FScenarioEditor::OnFinishedChangingParams);
 }
 
 FText FScenarioEditor::GetLocalizedMode(FName InMode)
@@ -390,11 +443,13 @@ void FScenarioEditor::OnSelectedNodesChanged(const TSet<class UObject *>& NewSel
 			{
 				DetailsView->SetObject(Object);
 				CurFocusNode = Cast<UEdGraphNode>(Object);
+				//根据当前的Node数据，更新Params
+				UpdateParamDetailWhenNodeFocus(CurFocusNode);
 			}
 		}
 		else
 		{
-			DetailsView->SetObject(NULL);
+			DetailsView->SetObject(CustomAsset);
 		}
 		
 	}	
@@ -421,7 +476,9 @@ UEdGraphNode* FScenarioEditor::GetFirstSelectNode() const
 	return Cast<UEdGraphNode>(SelectedNodes[FSetElementId::FromInteger(0)]);
 }
 
-/*修改了Detail属性后在此调用，进行Node更改*/
+/*  修改了Detail属性后在此调用，进行Node更改
+	20.1.2尝试获取修改的Property，对应不同的Property有不同的操作
+*/
 void FScenarioEditor::OnFinishedChangingProperties(const FPropertyChangedEvent& PropertyChangedEvent)
 {
 	GraphEditorView->GetCurrentGraph()->Modify();
@@ -433,9 +490,34 @@ void FScenarioEditor::OnFinishedChangingProperties(const FPropertyChangedEvent& 
 		UScenarioNodeNormal* NodeNormal = Cast<UScenarioNodeNormal>(CurFocusNode);
 		if (NodeNormal)   
 		{
-			NodeNormal->OnDetailUpdate();
+			NodeNormal->OnDetailUpdate(PropertyChangedEvent);
+			//也同步更新一下底下的数据
+			UpdateParamDetailWhenNodeFocus(CurFocusNode);
 		}
 	}
+}
+
+/* 
+当修改了FocusNode时，更新一下ParamDetail,为Detail设置可修改参数
+*/
+void FScenarioEditor::UpdateParamDetailWhenNodeFocus( UEdGraphNode* FocusNode)
+{
+	UScenarioNodeNormal* Node = Cast<UScenarioNodeNormal>(FocusNode);
+	//如果是Action节点，则设置为Component的参数
+	if (Node->NodeCategory == FScenarioNodeUtil::NodeCategoryAction)
+	{
+		UActionNodes* ActionNode = Cast<UActionNodes>(Node);
+		ParamDetailsView->SetObject( ActionNode->DataBase);
+	}
+	else
+	{
+		ParamDetailsView->SetObject(NULL);
+	}
+}
+
+/* 修改了Param属性后在此调用 */
+void FScenarioEditor::OnFinishedChangingParams(const FPropertyChangedEvent& PropertyChangedEvent)
+{
 
 }
 

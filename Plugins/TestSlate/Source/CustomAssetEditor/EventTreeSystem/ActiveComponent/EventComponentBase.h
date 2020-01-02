@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
 #include "Components/ActorComponent.h"
+#include "CustomAssetEditor/EventTreeSystem/ActiveComponent/Data/ComponentNodeDataBase.h"
 #include "EditTabsUtil.h"
 #include "EventComponentBase.generated.h"
 
@@ -33,6 +34,8 @@ public:
 
 	/*END 基类函数，回调自身等 */
 
+	//Data是由外部的Obj进行保存的
+	virtual void SetData(UComponentNodeDataBase* Data) {};
 
 	//Action为外部调用函数
 	virtual void StartAction() { };

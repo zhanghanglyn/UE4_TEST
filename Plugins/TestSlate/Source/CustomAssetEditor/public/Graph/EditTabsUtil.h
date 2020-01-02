@@ -48,3 +48,10 @@ struct FEventComponentCategoryUtil
 	static const FName ComponentBase;		//基础组件
 	static const FName ComponentShowUI;		//测试显示UI的Component
 };
+
+//互动组件对应Data类型
+struct FComponentDataCategoryUtil
+{
+	static const FName DataCategoryBase;	//基础Data类
+	static const FName DataCategoryShowUI;	//测试显示UI的ComponentData类
+};

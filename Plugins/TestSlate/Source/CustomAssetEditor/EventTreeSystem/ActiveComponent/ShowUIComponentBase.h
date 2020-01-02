@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "EventComponentBase.h"
+#include "CustomAssetEditor/EventTreeSystem/ActiveComponent/Data/NodeDataShowUI.h"
 #include "ShowUIComponentBase.generated.h"
 
 /* 事件Component的基类 */
@@ -14,5 +15,8 @@ public:
 
 	virtual void StartAction() override;
 
+	virtual void SetData(UComponentNodeDataBase* Data) override;
 public:
+	UPROPERTY()
+	FString ShowName = "Test!!!!";
 };

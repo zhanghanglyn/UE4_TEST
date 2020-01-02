@@ -281,7 +281,7 @@ void UScenarioNodeNormal::DoubleClickNodeCall()
 }
 
 //当Detail属性变化时更新 可能之后的很多操作都在这儿了
-void UScenarioNodeNormal::OnDetailUpdate()
+void UScenarioNodeNormal::OnDetailUpdate(const FPropertyChangedEvent& PropertyChangedEvent)
 {
 	(SNodeWidgetShared.Get())->UpdateNodeNmae(NodeName);
 }

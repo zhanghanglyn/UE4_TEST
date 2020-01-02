@@ -9,30 +9,24 @@ void UActionNodeController::Init()
 {
 	check(CurNode);
 
-	//测试类型
-	UActionNodes* TESTNode = Cast<UActionNodes>(CurNode);
-	if (TESTNode)
+	UActionNodes* CurActionNode = Cast<UActionNodes>(CurNode);
+	if (CurActionNode)
 	{
+
 		//根据类型创建并初始化组件，但是其实我也并不关心他是什么类型，能调用回调就可以了
-		if (TESTNode->ActiveComponent && TESTNode->ActiveComponent->IsValidLowLevelFast())
+		if (CurActionNode->ActiveComponent && CurActionNode->ActiveComponent->IsValidLowLevelFast())
 		{
-			/*auto FreshObject = NewObject<UEventComponentBase>(TESTNode->ActiveOjb.Get(), TESTNode->ActiveComponent->GetFName(), RF_NoFlags, TESTNode->ActiveComponent->GetDefaultObject());
-			//TESTNode->ActiveComponent* FreshObject = NewObject<TESTNode->ActiveComponent>();
-			FreshObject->OverDelegate.BindUObject(this, &UNodeControllerBase::ComponentsFinishCallBack);
-
-			//注册组件
-			FreshObject->RegisterComponent();
-			FreshObject->AttachToComponent(TESTNode->ActiveOjb->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);*/
-
 			//如果是ShowUI组件
-			if (TESTNode->ActiveComponent->StaticClass() == UShowUIComponentBase::StaticClass() || TESTNode->ActiveComponent->GetFName() == UShowUIComponentBase::StaticClass()->GetFName())
+			if (CurActionNode->ActiveComponent->StaticClass() == UShowUIComponentBase::StaticClass() || CurActionNode->ActiveComponent->GetFName() == UShowUIComponentBase::StaticClass()->GetFName())
 			{
-				UShowUIComponentBase* FreshObject = NewObject<UShowUIComponentBase>(TESTNode->ActiveOjb.Get());
+				UShowUIComponentBase* FreshObject = NewObject<UShowUIComponentBase>(CurActionNode->ActiveOjb.Get());
 				FreshObject->OverDelegate.BindUObject(this, &UNodeControllerBase::ComponentsFinishCallBack);
 
 				//注册组件
 				FreshObject->RegisterComponent();
-				FreshObject->AttachToComponent(TESTNode->ActiveOjb->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+				FreshObject->AttachToComponent(CurActionNode->ActiveOjb->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+				//根据Node上面的数据，设置Component
+				FreshObject->SetData(CurActionNode->DataBase);
 			}
 			else
 			{

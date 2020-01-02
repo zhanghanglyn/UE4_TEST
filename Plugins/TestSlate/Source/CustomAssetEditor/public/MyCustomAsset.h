@@ -14,7 +14,7 @@ public:
 	UPROPERTY()
 	class UEdGraph* StoryGraph;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = MyCustomAsset)
+	UPROPERTY(EditAnywhere, Category = "TreeAsset")
 	FString Description;
 
 

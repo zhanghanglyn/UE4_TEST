@@ -1,10 +1,16 @@
 ﻿#include "ActionNodes.h"
 
+
+const FName UActionNodes::ComponentPropertyName = "ActiveComponent";
+
 UActionNodes::UActionNodes()
 {
 	NodeName = "Action";
 	bOpenGraph = false;
 	NodeCategory = FScenarioNodeUtil::NodeCategoryAction;
+
+	//if (DataBase == nullptr)
+	//	DataBase = NewObject<UComponentNodeDataBase>();
 }
 
 TSharedPtr<SGraphNode> UActionNodes::CreateVisualWidget()
@@ -13,4 +19,24 @@ TSharedPtr<SGraphNode> UActionNodes::CreateVisualWidget()
 		.CategoryTEXT(FText::FromString(L"互动节点"));
 
 	return SNodeWidgetShared;
+}
+
+/*
+	如果更新的是选择的组件，则会重新生成DataBase数据,确保类型对应！
+*/
+void UActionNodes::OnDetailUpdate(const FPropertyChangedEvent& PropertyChangedEvent)
+{
+	FName aaa = PropertyChangedEvent.GetPropertyName();
+
+	if (PropertyChangedEvent.GetPropertyName() == UActionNodes::ComponentPropertyName)
+	{
+		//如果是ShowUI类型，则对应生成  
+		if (FActiveComponentMgr::GetEventComponentCategory(ActiveComponent) == FEventComponentCategoryUtil::ComponentShowUI)
+		{
+			DataBase = nullptr;
+			DataBase = FActiveComponentMgr::CreateComponentNodeData(ActiveComponent);
+		}
+	}
+
+	(SNodeWidgetShared.Get())->UpdateNodeNmae(NodeName);
 }

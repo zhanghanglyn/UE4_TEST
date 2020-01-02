@@ -69,6 +69,9 @@ public:
 	/* 在TabManaget中注册的，产生Tab的委托函数 */
 	TSharedRef<SDockTab> SpawnPropertiesTab(const FSpawnTabArgs& Args);
 
+	/* 创建一个详情参数Tab */
+	TSharedRef<SDockTab> SpawnParamDetailTab(const FSpawnTabArgs& Args);
+
 	void OpenInsideNodeGraphTab(UScenarioNodeNormal* Node);
 
 protected:
@@ -93,6 +96,12 @@ private:
 	/*当发生属性变化时的更新*/
 	void OnFinishedChangingProperties(const FPropertyChangedEvent& PropertyChangedEvent);
 
+	/* 创建Param detail */
+	void CreateParamWidgets();
+	/*当发生属性变化时的更新*/
+	void OnFinishedChangingParams(const FPropertyChangedEvent& PropertyChangedEvent);
+	/* 当重新选择节点的时候，根据节点类型以及数据更新ParamDetails */
+	void UpdateParamDetailWhenNodeFocus( class UEdGraphNode* FocusNode );
 
 	/*获取当前选中的Nodes*/
 	FGraphPanelSelectionSet GetSelectedNodes() const;
@@ -123,12 +132,16 @@ private:
 	static const FName ToolkitFName;
 	/* 创建一个Details的ID */
 	static const FName DetailsFNameId;
+	/* 创建参数Details */
+	static const FName ParamDetailsId;
 
 	TSharedPtr<FDocumentTracker> DocumentManager;
 	TWeakPtr<FDocumentTabFactory> GraphEditorTabFactoryPtr;
 
 	/* 属性Details */
 	TSharedPtr<class IDetailsView> DetailsView;
+	/* 属性详细参数Details */
+	TSharedPtr<class IDetailsView> ParamDetailsView;
 
 	/* 当前Focus的Node */
 	class UEdGraphNode* CurFocusNode;
