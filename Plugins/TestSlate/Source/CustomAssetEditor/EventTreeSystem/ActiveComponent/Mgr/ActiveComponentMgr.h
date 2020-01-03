@@ -20,8 +20,8 @@ public:
 	static FName GetEventComponentCategory(UEventComponentBase* RunComponent);
 
 	/* 根据传入的Component生成一个对应的Data数据 */
-	static UComponentNodeDataBase* CreateComponentNodeData(TSubclassOf <UEventComponentBase> RunComponent);
-	static UComponentNodeDataBase* CreateComponentNodeData(UEventComponentBase* RunComponent);
+	static UComponentNodeDataBase* CreateComponentNodeData(TSubclassOf <UEventComponentBase> RunComponent ,UObject* Outer);
+	static UComponentNodeDataBase* CreateComponentNodeData(UEventComponentBase* RunComponent, UObject* Outer);
 
 protected:
 

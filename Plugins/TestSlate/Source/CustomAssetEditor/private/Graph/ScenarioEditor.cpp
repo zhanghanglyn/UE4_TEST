@@ -450,6 +450,7 @@ void FScenarioEditor::OnSelectedNodesChanged(const TSet<class UObject *>& NewSel
 		else
 		{
 			DetailsView->SetObject(CustomAsset);
+			ParamDetailsView->SetObject(NULL);
 		}
 		
 	}	
@@ -493,6 +494,7 @@ void FScenarioEditor::OnFinishedChangingProperties(const FPropertyChangedEvent& 
 			NodeNormal->OnDetailUpdate(PropertyChangedEvent);
 			//也同步更新一下底下的数据
 			UpdateParamDetailWhenNodeFocus(CurFocusNode);
+
 		}
 	}
 }

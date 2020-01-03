@@ -689,7 +689,7 @@ void AStoryPlayerPawn::CheckActiveObjAction()
 			{
 				//AEventTreeTestObject* aa = NewObject< AEventTreeTestObject>();
 				UEventComponentBase* CurComponent = Cast<UEventComponentBase>(*iter);
-				if (CurComponent)
+				if (CurComponent && CurComponent->IsActive())
 				{
 					//FActiveComponentMgr::RunAction(CurComponent);
 					CurComponent->StartAction();

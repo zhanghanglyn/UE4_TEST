@@ -20,4 +20,6 @@ void UNodeControllerBase::ComponentsFinishCallBack(FName Paramm)
 void UNodeControllerBase::Clear()
 {
 	CurNode = nullptr;
+	ComponentBase = nullptr;
+	ComponentNodeActor = nullptr;
 }

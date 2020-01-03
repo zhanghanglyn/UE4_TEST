@@ -20,4 +20,7 @@ public:
 	//一定有一个对应的类型
 	UPROPERTY()
 	FName DataCatogary = FComponentDataCategoryUtil::DataCategoryBase;
+
+	//UPROPERTY(EditAnywhere, Category = "父类测试用属性")
+	//FString TTTTTTT;
 };

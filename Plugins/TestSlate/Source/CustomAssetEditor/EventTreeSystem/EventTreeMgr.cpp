@@ -27,7 +27,8 @@ bool UEventTreeMgr::GetTreeAsset(FString Path)
 //从Array中查找所有的链接节点，并且为其生成控制器，将控制器注册到本次节点事件中
 void UEventTreeMgr::CreateController(TArray<UEdGraphNode *> LinkNodes)
 {
-	NodeControllers.Empty();
+	//NodeControllers.Empty();
+	Clear();
 
 	for (TArray<UEdGraphNode *>::TConstIterator Iter = LinkNodes.CreateConstIterator(); Iter; ++Iter)
 	{
@@ -105,7 +106,10 @@ void UEventTreeMgr::ControllerOverCallBack(FName ControllerCategory)
 	}
 
 	if (bFinishAll == true)
+	{
 		PlayNext();
+	}
+		
 }
 #pragma optimize("",on)
 
@@ -114,9 +118,16 @@ void UEventTreeMgr::Finish()
 	UE_LOG(LogTemp, Warning, TEXT("本次事件播放结束~"));
 	Clear();
 }
-
+#pragma optimize("",off)
 /*清空需要清空的数据等*/
 void UEventTreeMgr::Clear()
 {
+	//遍历所有Component然后清除
+	for (TArray<UNodeControllerBase*>::TConstIterator iter = NodeControllers.CreateConstIterator(); iter; ++iter)
+	{
+		(*iter)->Clear();
+	}
+
 	NodeControllers.Empty();
 }
+#pragma optimize("",on)

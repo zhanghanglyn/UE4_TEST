@@ -14,7 +14,8 @@ public:
 
 	virtual void Init() override;
 
-
+	virtual void Clear() override;
+protected:
 
 
 };

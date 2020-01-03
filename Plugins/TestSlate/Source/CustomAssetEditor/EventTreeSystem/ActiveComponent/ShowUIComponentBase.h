@@ -17,6 +17,6 @@ public:
 
 	virtual void SetData(UComponentNodeDataBase* Data) override;
 public:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category = "测试测试")
 	FString ShowName = "Test!!!!";
 };

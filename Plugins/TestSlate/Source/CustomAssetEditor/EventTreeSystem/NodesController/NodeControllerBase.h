@@ -54,4 +54,8 @@ protected:
 	//根据Node数据创建的Components
 	UPROPERTY()
 	UEventComponentBase* ComponentBase;
+
+	//存放Components上的Actor
+	UPROPERTY()
+	AActor* ComponentNodeActor;
 };

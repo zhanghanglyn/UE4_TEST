@@ -48,20 +48,20 @@ FName FActiveComponentMgr::GetEventComponentCategory(TSubclassOf< UEventComponen
 }
 
 /**/
-UComponentNodeDataBase* FActiveComponentMgr::CreateComponentNodeData(TSubclassOf <UEventComponentBase> RunComponent)
+UComponentNodeDataBase* FActiveComponentMgr::CreateComponentNodeData(TSubclassOf <UEventComponentBase> RunComponent, UObject* Outer)
 {
 	if (GetEventComponentCategory(RunComponent) == FEventComponentCategoryUtil::ComponentShowUI)
 	{
-		return NewObject<UNodeDataShowUI>();
+		return NewObject<UNodeDataShowUI>(Outer);
 	}
 
 	return nullptr;
 }
-UComponentNodeDataBase* FActiveComponentMgr::CreateComponentNodeData(UEventComponentBase* RunComponent)
+UComponentNodeDataBase* FActiveComponentMgr::CreateComponentNodeData(UEventComponentBase* RunComponent, UObject* Outer)
 {
 	if (GetEventComponentCategory(RunComponent) == FEventComponentCategoryUtil::ComponentShowUI)
 	{
-		return NewObject<UNodeDataShowUI>();
+		return NewObject<UNodeDataShowUI>(Outer);
 	}
 
 	return nullptr;

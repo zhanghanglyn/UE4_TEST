@@ -24,8 +24,8 @@ const FName FControllerCategoryUtil::ControllerBase(TEXT("ControllerBase"));
 const FName FControllerCategoryUtil::ControllerAction(TEXT("ControllerAction"));
 
 //互动组件相关
-const FName FEventComponentCategoryUtil::ComponentBase(TEXT("ComponentBase"));
-const FName FEventComponentCategoryUtil::ComponentShowUI(TEXT("ComponentShowUI"));
+const FName FEventComponentCategoryUtil::ComponentBase(TEXT("UEventComponentBase"));
+const FName FEventComponentCategoryUtil::ComponentShowUI(TEXT("UShowUIComponentBase"));
 
 //互动组件对应Data相关
 const FName FComponentDataCategoryUtil::DataCategoryBase(TEXT("DataCategoryBase"));

@@ -11,6 +11,8 @@ UActionNodes::UActionNodes()
 
 	//if (DataBase == nullptr)
 	//	DataBase = NewObject<UComponentNodeDataBase>();
+	if (ActiveComponent)
+		CurComponentName = FActiveComponentMgr::GetEventComponentCategory(ActiveComponent);
 }
 
 TSharedPtr<SGraphNode> UActionNodes::CreateVisualWidget()
@@ -26,17 +28,18 @@ TSharedPtr<SGraphNode> UActionNodes::CreateVisualWidget()
 */
 void UActionNodes::OnDetailUpdate(const FPropertyChangedEvent& PropertyChangedEvent)
 {
-	FName aaa = PropertyChangedEvent.GetPropertyName();
-
-	if (PropertyChangedEvent.GetPropertyName() == UActionNodes::ComponentPropertyName)
+	FName ChangeEventComponentName = FActiveComponentMgr::GetEventComponentCategory(ActiveComponent);
+	if (PropertyChangedEvent.GetPropertyName() == UActionNodes::ComponentPropertyName && !ChangeEventComponentName.IsEqual(CurComponentName))
 	{
 		//如果是ShowUI类型，则对应生成  
 		if (FActiveComponentMgr::GetEventComponentCategory(ActiveComponent) == FEventComponentCategoryUtil::ComponentShowUI)
 		{
 			DataBase = nullptr;
-			DataBase = FActiveComponentMgr::CreateComponentNodeData(ActiveComponent);
+			DataBase = FActiveComponentMgr::CreateComponentNodeData(ActiveComponent , this);
 		}
 	}
+
+	CurComponentName = ChangeEventComponentName;
 
 	(SNodeWidgetShared.Get())->UpdateNodeNmae(NodeName);
 }

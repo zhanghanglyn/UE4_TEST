@@ -34,7 +34,7 @@ public:
 
 	/*END 基类函数，回调自身等 */
 
-	//Data是由外部的Obj进行保存的
+	//Data是由外部的Obj进行保存的,SetData还应该进行本Component的初始化
 	virtual void SetData(UComponentNodeDataBase* Data) {};
 
 	//Action为外部调用函数
