@@ -9,6 +9,7 @@
 #include "EditTabsUtil.h"
 #include "End_SchemaAction.h"
 #include "Action_SchemaAction.h"
+#include "ConditionConversionNodeBase.h"
 #if WITH_EDITOR
 #include "Misc/ConfigCacheIni.h"
 #include "UObject/UObjectHash.h"
@@ -52,15 +53,15 @@ void UScenarioGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 
 	ContextMenuBuilder.AddAction(EndAction);
 
-	TSharedPtr<FScenarioSchemaAction> NewSchemaAction = TSharedPtr<FScenarioSchemaAction>(
+	/*TSharedPtr<FScenarioSchemaAction> NewSchemaAction = TSharedPtr<FScenarioSchemaAction>(
 		new FScenarioSchemaAction(LOCTEXT("CustomStoryCategory", "EventNode"), LOCTEXT("Nodes", "Normal Nodes"), FText::GetEmpty(), 0, nullptr, FScenarioNodeUtil::NodeCategoryNormal)
 		);
 
-	ContextMenuBuilder.AddAction(NewSchemaAction);
+	ContextMenuBuilder.AddAction(NewSchemaAction);*/
 
 	//添加互动节点
 	TSharedPtr<FActionSchemaAction> ActionSchemaAction = TSharedPtr<FActionSchemaAction>(
-		new FActionSchemaAction(LOCTEXT("CustomStoryCategory", "EventNode"), LOCTEXT("ActionNodes", "Action Nodes"), FText::GetEmpty(), 0, nullptr, FScenarioNodeUtil::NodeCategoryAction)
+		new FActionSchemaAction(LOCTEXT("CustomStoryCategory", "事件节点"), LOCTEXT("ActionNodes", "行为组件节点"), FText::GetEmpty(), 0, nullptr, FScenarioNodeUtil::NodeCategoryAction)
 		);
 
 	ContextMenuBuilder.AddAction(ActionSchemaAction);
@@ -103,10 +104,12 @@ const FPinConnectionResponse UScenarioGraphSchema::CanCreateConnection(const UEd
 		return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_BREAK_OTHERS_A, TEXT(""));
 	//如果AB都是单个节点
 	else if (A->PinType.PinCategory == FScenarioPinUtil::PinCategoryNormal && B->PinType.PinCategory == FScenarioPinUtil::PinCategoryNormal)
-		return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_BREAK_OTHERS_AB, TEXT(""));
+		return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_BREAK_OTHERS_AB , TEXT(""));
 	//如果AB都是多个节点
 	else if (A->PinType.PinCategory == FScenarioPinUtil::PinCategoryMulti && B->PinType.PinCategory == FScenarioPinUtil::PinCategoryMulti)
-		return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_MAKE, TEXT(""));
+		//return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_MAKE, TEXT(""));
+		return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_MAKE_WITH_CONVERSION_NODE, TEXT("创建带有条件的连接"));
+
 	//如果不允许连接
 	else if (A->PinType.PinCategory == FScenarioPinUtil::PinCategoryNotAllow || B->PinType.PinCategory == FScenarioPinUtil::PinCategoryNotAllow)
 		return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_DISALLOW, TEXT("引脚不允许连接"));
@@ -115,10 +118,36 @@ const FPinConnectionResponse UScenarioGraphSchema::CanCreateConnection(const UEd
 
 }
 
-/*链接两个引脚并通过中间节点 可以在此自定义中间节点，但是不写了*/
+/*链接两个引脚并通过中间节点 可以在此自定义中间节点*/
 bool UScenarioGraphSchema::CreateAutomaticConversionNodeAndConnections(UEdGraphPin* A, UEdGraphPin* B) const
 {
-	UE_LOG(LogTemp, Warning, TEXT(" $#### CreateAutomaticConversionNodeAndConnections"));
+	//UE_LOG(LogTemp, Warning, TEXT(" $#### CreateAutomaticConversionNodeAndConnections"));
+	UScenarioNodeNormal* NodeA = Cast<UScenarioNodeNormal>(A->GetOwningNode());
+	UScenarioNodeNormal* NodeB = Cast<UScenarioNodeNormal>(B->GetOwningNode());
+
+	FName TransName("NewCondition");
+
+	if ((NodeA != NULL) && (NodeB != NULL) && (NodeA->GetOutPutPin() != NULL) && (NodeB->GetInPutPin() != NULL))
+		//&& (NodeA->GetInPutPin() != NULL) && (NodeA->GetOutPutPin() != NULL)
+		//&& (NodeB->GetInPutPin() != NULL) && (NodeB->GetOutPutPin() != NULL))
+	{
+		//先创建一个中间节点，再将其连接
+		UConditionConversionNodeBase* ConversionNode = FEdGraphSchemaAction_NewNode::SpawnNodeFromTemplate<UConditionConversionNodeBase>( NodeA->GetGraph(),
+			NewObject<UConditionConversionNodeBase>(), FVector2D(0.0f, 0.0f) ,false);
+		if (ConversionNode != nullptr)
+		{
+			if (A->Direction == EGPD_Output)
+			{
+				return ConversionNode->CreateConnections(NodeA, NodeB, TransName);
+			}
+			else
+			{
+				return ConversionNode->CreateConnections(NodeB, NodeA, TransName);
+			}
+
+		}
+	}
+
 	return false;
 }
 

@@ -2,6 +2,7 @@
 #include "ActionNodes.h"
 #include "CustomAssetEditor/EventTreeSystem/ActiveComponent/Data/NodeDataShowUI.h"
 #include "Runtime/Slate/Public/Framework/Commands/GenericCommands.h"
+#include "ConditionConversionNodeBase.h"
 
 const FName FScenarioEditor::ToolkitFName(TEXT("CustomStoryEditor"));
 const FName FScenarioEditor::PropertiesTabId(TEXT("CustomAssetEditor_Story"));
@@ -488,14 +489,24 @@ void FScenarioEditor::OnFinishedChangingProperties(const FPropertyChangedEvent& 
 	if (CurFocusNode)
 	{
 		CurFocusNode->Modify();
-		UScenarioNodeNormal* NodeNormal = Cast<UScenarioNodeNormal>(CurFocusNode);
-		if (NodeNormal)   
-		{
-			NodeNormal->OnDetailUpdate(PropertyChangedEvent);
-			//也同步更新一下底下的数据
-			UpdateParamDetailWhenNodeFocus(CurFocusNode);
 
+		//如果是更新连接节点
+		if (UConditionConversionNodeBase* TransNode = Cast<UConditionConversionNodeBase>(CurFocusNode))
+		{
+			TransNode->OnDetailUpdate(PropertyChangedEvent);
 		}
+		else
+		{
+			UScenarioNodeNormal* NodeNormal = Cast<UScenarioNodeNormal>(CurFocusNode);
+			if (NodeNormal)
+			{
+				NodeNormal->OnDetailUpdate(PropertyChangedEvent);
+				//也同步更新一下底下的数据
+				UpdateParamDetailWhenNodeFocus(CurFocusNode);
+
+			}
+		}
+		
 	}
 }
 
@@ -505,15 +516,18 @@ void FScenarioEditor::OnFinishedChangingProperties(const FPropertyChangedEvent& 
 void FScenarioEditor::UpdateParamDetailWhenNodeFocus( UEdGraphNode* FocusNode)
 {
 	UScenarioNodeNormal* Node = Cast<UScenarioNodeNormal>(FocusNode);
-	//如果是Action节点，则设置为Component的参数
-	if (Node->NodeCategory == FScenarioNodeUtil::NodeCategoryAction)
+	if (Node != nullptr)
 	{
-		UActionNodes* ActionNode = Cast<UActionNodes>(Node);
-		ParamDetailsView->SetObject( ActionNode->DataBase);
-	}
-	else
-	{
-		ParamDetailsView->SetObject(NULL);
+		//如果是Action节点，则设置为Component的参数
+		if (Node->NodeCategory == FScenarioNodeUtil::NodeCategoryAction)
+		{
+			UActionNodes* ActionNode = Cast<UActionNodes>(Node);
+			ParamDetailsView->SetObject(ActionNode->DataBase);
+		}
+		else
+		{
+			ParamDetailsView->SetObject(NULL);
+		}
 	}
 }
 

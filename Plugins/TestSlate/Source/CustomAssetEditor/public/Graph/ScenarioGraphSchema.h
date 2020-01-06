@@ -54,7 +54,7 @@ public:
 	virtual void GetContextMenuActions(const UEdGraph* CurrentGraph, const UEdGraphNode* InGraphNode, const UEdGraphPin* InGraphPin, class FMenuBuilder* MenuBuilder, bool bIsDebugging) const override;
 
 
-	/*链接两个引脚并通过中间节点 可以在此自定义中间节点，但是不写了*/
+	/*链接两个引脚并通过中间节点 可以在此自定义中间节点*/
 	virtual bool CreateAutomaticConversionNodeAndConnections(UEdGraphPin* A, UEdGraphPin* B) const override;
 
 	virtual bool TryCreateConnection(UEdGraphPin* A, UEdGraphPin* B) const;

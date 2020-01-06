@@ -3,6 +3,7 @@
 #include "ScenarioGraph.h"
 #include "ScenarioPin.h"
 #include "ScenarioEditor.h"
+#include "ConditionConversionNodeBase.h"
 #include "Runtime/Slate/Public/Widgets/Text/SInlineEditableTextBlock.h"
 
 const int32 UScenarioNodeNormal::INPUT_PIN_INDEX = 0;
@@ -320,7 +321,22 @@ TArray<UEdGraphNode*> UScenarioNodeNormal::GetAllOutNodeLinked()
 			{
 				if (UEdGraphPin* CurPin = *iter)
 				{
-					OutNode.Add(CurPin->GetOwningNode());
+					//还要判断下是否是连接节点
+					UConditionConversionNodeBase* TransNode = Cast<UConditionConversionNodeBase>(CurPin->GetOwningNode());
+					if (TransNode == nullptr)
+					{
+						if (CurPin->GetOwningNode())
+							OutNode.Add(CurPin->GetOwningNode());
+					}	
+					//如果是连接节点，取连接节点的下一个节点
+					else
+					{
+						UScenarioNodeNormal* NodeNormal = TransNode->GetTargetNode();
+						if (UEdGraphNode* NextNode = Cast<UEdGraphNode>(NodeNormal))
+						{
+							OutNode.Add(NextNode);
+						}
+					}
 				}
 			}
 		}

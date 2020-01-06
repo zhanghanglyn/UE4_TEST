@@ -32,7 +32,7 @@ public:
 	TSubclassOf < UEventComponentBase> ActiveComponent;
 
 	//因为所有的TSubclassOf都是一样的，想当于是一个模板类型，所以！！！！试下用单独的数据来存放
-	UPROPERTY(EditAnywhere, Category = "不可设置部分")
+	UPROPERTY()
 	UComponentNodeDataBase* DataBase;
 
 protected:

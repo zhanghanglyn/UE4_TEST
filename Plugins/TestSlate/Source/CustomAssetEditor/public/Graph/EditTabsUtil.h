@@ -33,6 +33,9 @@ struct FScenarioPinUtil
 	static const FName PinCategoryNotAllow;	//不允许任何连接
 	static const FName PinCategoryNormal;	//普通Pin，只允许一个链接
 	static const FName PinCategoryMulti;	//允许链接多个Pin
+
+	static const FName PinCategoryConnection;//中间链接的PIN
+
 };
 
 //控制器类型

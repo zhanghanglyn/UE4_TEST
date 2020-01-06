@@ -1,6 +1,7 @@
 ﻿#include "ScenarioConnectionDrawingPolicy.h"
 #include "DrawElements.h"
 #include "ScenarioNodeNormal.h"
+#include "ConditionConversionNodeBase.h"
 
 //其实只是设置了一下颜色以及Pin等参数并且通过ApplyHoverDeemphasis设置到成员函数中
 void FScenarioConnectionDrawingPolicy::DetermineWiringStyle(UEdGraphPin* OutputPin, UEdGraphPin* InputPin, FConnectionParams& Params)
@@ -72,9 +73,15 @@ void FScenarioConnectionDrawingPolicy::DetermineLinkGeometry(FArrangedChildren& 
 	/*out*/ FArrangedWidget*& EndWidgetGeometry
 )
 {
+
+	UScenarioNodeNormal* TestInputPin = Cast<UScenarioNodeNormal>(InputPin->GetOwningNode());
+	UScenarioNodeNormal* TestOutPin = Cast<UScenarioNodeNormal>(OutputPin->GetOwningNode());
+
 	//如果是绘制NormalNode , 因为没有Default的引脚，所以要在所有图形中去取引脚！
-	if (UScenarioNodeNormal* NormalNode = Cast<UScenarioNodeNormal>(OutputPin->GetOwningNode()))
+	//if (UScenarioNodeNormal* NormalNode = Cast<UScenarioNodeNormal>(OutputPin->GetOwningNode()))
+	if(TestOutPin != nullptr && TestInputPin != nullptr )
 	{
+		UScenarioNodeNormal* NormalNode = Cast<UScenarioNodeNormal>(OutputPin->GetOwningNode());
 		//去找所有图形中的SGraphNode并且看Node的UNodeObj
 		UScenarioNodeNormal* InputNode = CastChecked<UScenarioNodeNormal>(InputPin->GetOwningNode());
 
@@ -89,7 +96,24 @@ void FScenarioConnectionDrawingPolicy::DetermineLinkGeometry(FArrangedChildren& 
 				EndWidgetGeometry = &(ArrangedNodes[NodeIndex]);
 			}
 		}
-
+	}
+	//如果是绘制连接中间节点
+	else if (UConditionConversionNodeBase* TransNode = Cast<UConditionConversionNodeBase>(InputPin->GetOwningNode()))
+	{
+		UScenarioNodeNormal* PrevState = TransNode->GetFromNode();
+		UScenarioNodeNormal* NextState = TransNode->GetTargetNode();
+		if ((PrevState != NULL) && (NextState != NULL)) {
+			for (int32 NodeIndex = 0; NodeIndex < ArrangedNodes.Num(); ++NodeIndex) {
+				FArrangedWidget& CurWidget = ArrangedNodes[NodeIndex];
+				TSharedRef<SGraphNode> ChildNode = StaticCastSharedRef<SGraphNode>(CurWidget.Widget);
+				if (ChildNode->GetNodeObj() == PrevState) {
+					StartWidgetGeometry = &(ArrangedNodes[NodeIndex]);
+				}
+				if (ChildNode->GetNodeObj() == NextState) {
+					EndWidgetGeometry = &(ArrangedNodes[NodeIndex]);
+				}
+			}
+		}
 	}
 	else{
 		StartWidgetGeometry = PinGeometries->Find(OutputPinWidget);

@@ -18,6 +18,8 @@ const FName FScenarioPinUtil::SubPinCategoryEnd(TEXT("SubEnd"));
 const FName FScenarioPinUtil::PinCategoryNotAllow(TEXT("NotAllowPin"));
 const FName FScenarioPinUtil::PinCategoryNormal(TEXT("NormalBase"));
 const FName FScenarioPinUtil::PinCategoryMulti(TEXT("NormalMulti"));
+const FName FScenarioPinUtil::PinCategoryConnection(TEXT("PinConnection"));
+
 
 //¿ØÖÆÆ÷Ïà¹Ø
 const FName FControllerCategoryUtil::ControllerBase(TEXT("ControllerBase"));

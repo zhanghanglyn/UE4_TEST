@@ -28,6 +28,9 @@ TSharedPtr<SGraphNode> UActionNodes::CreateVisualWidget()
 */
 void UActionNodes::OnDetailUpdate(const FPropertyChangedEvent& PropertyChangedEvent)
 {
+	if (ActiveComponent == nullptr)
+		return;
+
 	FName ChangeEventComponentName = FActiveComponentMgr::GetEventComponentCategory(ActiveComponent);
 	if (PropertyChangedEvent.GetPropertyName() == UActionNodes::ComponentPropertyName && !ChangeEventComponentName.IsEqual(CurComponentName))
 	{
