@@ -68,6 +68,8 @@ public class CustomAssetEditor : ModuleRules
                 				// e.g. FPlatformApplicationMisc::ClipboardCopy
 				"ApplicationCore",
                 "PropertyEditor",
+
+                "UMG",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

@@ -93,8 +93,8 @@ void SConditionConversionNodeBase::UpdateGraphNode()
 				]
 			]
 		];*/
-
-
+	FString CurNodeName =(Cast<UConditionConversionNodeBase>( GraphNode))->NodeName;
+	
 	this->GetOrAddSlot(ENodeZone::Center)
 		.HAlign(HAlign_Center)
 		.VAlign(VAlign_Center)
@@ -103,13 +103,14 @@ void SConditionConversionNodeBase::UpdateGraphNode()
 			.BorderImage(FEditorStyle::GetBrush("Graph.StateNode.Body"))
 			.Padding(0)
 			//.BorderBackgroundColor(this, &SGraphNodeAnimState::GetBorderBackgroundColor)
-			.BorderBackgroundColor(FLinearColor::Gray)
+			.BorderBackgroundColor(FLinearColor::FromSRGBColor(FColor(130,182,201)))//FLinearColor::FromSRGBColor(FColor(78, 151, 131)
 			[
 				SNew(SOverlay)
 				//PIN AREA,并且把生成的SVerticalBox付给RightNodeBox
 				+SOverlay::Slot()
 				.HAlign(HAlign_Fill)
 				.VAlign(VAlign_Fill)
+				.Padding(1.5f)
 				[
 					SNew(SBorder)
 					.BorderImage(FEditorStyle::GetBrush("Graph.StateNode.ColorSpill"))
@@ -117,8 +118,13 @@ void SConditionConversionNodeBase::UpdateGraphNode()
 					.HAlign(HAlign_Center)
 					.VAlign(VAlign_Center)
 					[
-						SAssignNew(NodeNameBlock , STextBlock)
-						.Text(FText::FromString(L"条件"))
+						SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
+						.AutoWidth()
+						[
+							SAssignNew(NodeNameBlock , STextBlock)
+							.Text(FText::FromString(CurNodeName))
+						]
 					]
 				]
 			]
