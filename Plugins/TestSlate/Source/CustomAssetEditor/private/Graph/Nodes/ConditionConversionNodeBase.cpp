@@ -118,7 +118,7 @@ void SConditionConversionNodeBase::UpdateGraphNode()
 					.VAlign(VAlign_Center)
 					[
 						SAssignNew(NodeNameBlock , STextBlock)
-						.Text(FText::FromString(L"连接节点"))
+						.Text(FText::FromString(L"条件"))
 					]
 				]
 			]
