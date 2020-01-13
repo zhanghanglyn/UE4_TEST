@@ -17,6 +17,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "TreeAsset")
 	FString Description;
 
+	UPROPERTY(EditAnywhere, Category = "Condition")
+	TMap<FString, int32> StringCondition;
+
+	UPROPERTY(EditAnywhere, Category = "Condition")
+	TMap<FString, FString> IntCondition;
 
 	/** Info about the graphs we last edited */
 	//UPROPERTY()
