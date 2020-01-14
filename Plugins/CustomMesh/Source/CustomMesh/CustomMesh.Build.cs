@@ -28,6 +28,7 @@ public class CustomMesh : ModuleRules
 				"Core",
                 "Engine",
                 "RenderCore",
+                "ProceduralMeshComponent",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -43,6 +44,7 @@ public class CustomMesh : ModuleRules
                 "Engine",
                 "CoreUObject",
                 "RenderCore",
+                "ProceduralMeshComponent",
                 "RHI",
 				// ... add private dependencies that you statically link with here ...	
 			}

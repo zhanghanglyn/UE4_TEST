@@ -40,6 +40,10 @@ public:
 	void OnMouseClickMove();
 	void OnMouseClickEnd();
 
+protected:
+	//测试函数，点击创建墙
+	void TestCreateWall();
+
 public:
 	//相机高度
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)

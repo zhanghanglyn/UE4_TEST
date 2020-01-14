@@ -43,6 +43,7 @@ public class RTSMode : ModuleRules
                 "Engine",
                 "CoreUObject",
                 "RenderCore",
+                "CustomMesh",
                 "RHI",
 				// ... add private dependencies that you statically link with here ...	
 			}

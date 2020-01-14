@@ -1,6 +1,7 @@
 ﻿#include "RTSPlayerCameraSpectatorPawn.h"
 #include "Runtime/Engine/Classes/Components/SphereComponent.h"
 #include "Runtime/Engine/Public/Engine.h"
+#include "CustomMesh/Private/CustomWall/CustomWall.h"
 
 ARTSPlayerCameraSpectatorPawn::ARTSPlayerCameraSpectatorPawn(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -69,6 +70,9 @@ void ARTSPlayerCameraSpectatorPawn::OnMouseClickStart()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Start"));
 	BMouseLeftHold = true;
+
+	//先暂时写在这里，开始进行
+	TestCreateWall();
 }
 
 void ARTSPlayerCameraSpectatorPawn::OnMouseClickMove()
@@ -129,5 +133,36 @@ void ARTSPlayerCameraSpectatorPawn::UpdateActor()
 	NewRotation.Pitch = CameraAngle;
 	CameraComponent->SetRelativeRotation(NewRotation);
 
+}
+
+
+void ARTSPlayerCameraSpectatorPawn::TestCreateWall()
+{
+	//获取鼠标当前在屏幕的位置，并获取到对应的地面的位置
+	FVector2D mousePosition;
+	FVector2D viewportSize;
+	UGameViewportClient* gameViewport = GEngine->GameViewport;
+	//Make sure viewport exists
+	check(gameViewport);
+	gameViewport->GetViewportSize(viewportSize);
+	//获取鼠标位置后转换为世界坐标，并发射射线
+	if (gameViewport->GetMousePosition(mousePosition))
+	{
+		UWorld* world = this->GetWorld();
+		if (world)
+		{
+			APlayerController* pc = world->GetFirstPlayerController();
+			FVector WorldPos;
+			FVector Dir;
+			pc->DeprojectMousePositionToWorld(WorldPos, Dir);
+
+			//直接在这个位置，创建一个Wall
+			//ACustomWall* testWall = NewObject<ACustomWall>(world, TEXT("CustomWall"));
+			//world->SpawnActor<ACustomWall>(ACustomWall::StaticClass(), );
+			//testWall->AddToRoot();
+			//testWall->PostActorCreated();
+		}
+
+	}
 }
 #pragma optimize("",on)

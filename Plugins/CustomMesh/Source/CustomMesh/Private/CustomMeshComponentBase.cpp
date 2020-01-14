@@ -147,6 +147,19 @@ public:
 	virtual void GetDynamicMeshElements(const TArray<const FSceneView *>& Views, const FSceneViewFamily& ViewFamily,
 		uint32 VisibilityMap, class FMeshElementCollector& Collector) const override
 	{
+
+		FBox TestDynamicBox = FBox(FVector(-100.0f + TargetPoint.X), FVector(100.0f + TargetPoint.Y));
+		DrawWireBox(
+			Collector.GetPDI(0),
+			GetLocalToWorld(),
+			TestDynamicBox,
+			FLinearColor::Yellow,
+			ESceneDepthPriorityGroup::SDPG_Foreground,
+			2
+		);
+
+		return;
+
 		QUICK_SCOPE_CYCLE_COUNTER(STAT_FCustomMeshSceneProxy_GetDynamicMeshElements);
 
 		//是否允许调试视图模式（线框）
@@ -359,6 +372,8 @@ public:
 		FMemory::Memcpy(IndexBufferData, &Indices[0], Indices.Num() * sizeof(int32));
 		RHIUnlockIndexBuffer(CustomIndexBuffer.IndexBufferRHI);
 
+		//TEST
+		TargetPoint = DynamicData->Positions[0];
 	}
 
 	virtual FPrimitiveViewRelevance GetViewRelevance(const FSceneView* View) const override
@@ -411,6 +426,9 @@ protected:
 	FStaticMeshVertexBuffers VertexBuffers;
 
 	FMaterialRelevance MaterialRelevance;
+
+	//测试用保存点
+	FVector TargetPoint = FVector(50,50,50);
 };
 
 
