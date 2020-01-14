@@ -13,11 +13,16 @@
 	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"Installed": false,
-	"Modules": [
-		{
-			"Name": "CustomMesh",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		}
-	]
+  "Modules": [
+    {
+      "Name": "CustomMesh",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    },
+    {
+      "Name": "RTSMode",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ]
 }

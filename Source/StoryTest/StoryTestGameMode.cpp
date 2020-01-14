@@ -4,18 +4,16 @@
 #include "StoryTestHUD.h"
 #include "StoryTestCharacter.h"
 #include "StoryTest/Script/StoryPlayerPawn.h"
+#include "RTSMode/Private/RTSControl/RTSPlayerCameraSpectatorPawn.h"
+#include "RTSMode/Private/RTSControl/RTSPlayerController.h"
 #include "UObject/ConstructorHelpers.h"
 
 AStoryTestGameMode::AStoryTestGameMode()
 	: Super()
 {
-	// set default pawn class to our Blueprinted character
-	//static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/FirstPersonCPP/Blueprints/FirstPersonCharacter"));
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/StoryTest/BluePrint/MyStoryPlayerPawn"));
-	//直接用类的话，就会没有蓝图的各种设置
-	DefaultPawnClass = PlayerPawnClassFinder.Class;
 
-	PlayerControllerClass;
+	PlayerControllerClass = ARTSPlayerController::StaticClass();
+	DefaultPawnClass = ARTSPlayerCameraSpectatorPawn::StaticClass();
 
 	// use our custom HUD class
 	HUDClass = AStoryTestHUD::StaticClass();

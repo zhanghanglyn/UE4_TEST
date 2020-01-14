@@ -3,7 +3,7 @@
 #include "Runtime/Engine/Public/PrimitiveSceneProxy.h"
 #include "Runtime/Engine/Classes/Materials/Material.h"
 #include "Runtime/Engine/Public/SceneView.h"
-#include "Runtime//Engine/Public/Engine.h"
+#include "Runtime/Engine/Public/Engine.h"
 
 /************************************************************************/
 /*	               需要在此定义缓冲区数据                               */
@@ -66,29 +66,6 @@ public:
 		//如果不在渲染线程，用指令压进渲染线程
 		else
 		{
-			/*ENQUEUE_UNIQUE_RENDER_COMMAND_TWOPARAMETER(
-				InitCableVertexFactory,
-				FCustomMeshVertexFactory*,VertexFactory ,this,  const FCustomMeshVertexBuffer*, VertexBuffer,VertexBuffer,
-				{
-					FDataType MeshData;
-					//添加Position数据
-					MeshData.PositionComponent = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(
-						VertexBuffer,FDynamicMeshVertex, Position, VET_Float3
-					);
-					//添加UV数据
-					MeshData.TextureCoordinates.Add(
-						FVertexStreamComponent(VertexBuffer, STRUCT_OFFSET(FDynamicMeshVertex, TextureCoordinate),sizeof(FDynamicMeshVertex),EVertexElementType::VET_Float2)
-					);
-					MeshData.TangentBasisComponents[0] = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(
-						VertexBuffer , FDynamicMeshVertex, TangentX , VET_PackedNormal
-					);
-					MeshData.TangentBasisComponents[1] = STRUCTMEMBER_VERTEXSTREAMCOMPONENT(
-						VertexBuffer, FDynamicMeshVertex, TangentZ, VET_PackedNormal
-					);
-
-					VertexFactory->SetData(MeshData);
-				}
-			);*/
 			FCustomMeshVertexFactory* VerFactory = this;
 			ENQUEUE_RENDER_COMMAND(InitCableVertexFactory)(
 				[VerFactory, VertexBuffer](FRHICommandListImmediate& RHICmdList)
@@ -133,17 +110,17 @@ class FCustomMeshSceneProxy : public FPrimitiveSceneProxy
 public:
 	FCustomMeshSceneProxy(UCustomMeshComponentBase* InComponent) : FPrimitiveSceneProxy(InComponent)
 		, MaterialRelevance( InComponent->GetMaterialRelevance(GetScene().GetFeatureLevel()) )
-		, CustomVertexFactory(GetScene().GetFeatureLevel(), "FCustomMeshSceneProxy")
+		, VertexFactory(GetScene().GetFeatureLevel(), "FCustomMeshSceneProxy")
 	{
 		//这里先准备一次资源，之后根据线程的每次调用来准备资源
-		//SetVerTex();
-		CustomVertexBuffer.NumVerts = GetRequiredVertexCount();
+		//CustomVertexBuffer.NumVerts = GetRequiredVertexCount();
+		VertexBuffers.InitWithDummyData(&VertexFactory, GetRequiredVertexCount());
 		CustomIndexBuffer.NumIndices = GetRequiredIndicesCount();
 
-		CustomVertexFactory.Init(&CustomVertexBuffer);
+		//CustomVertexFactory.Init(&CustomVertexBuffer);
 
 		BeginInitResource(&CustomIndexBuffer);
-		BeginInitResource(&CustomVertexBuffer);
+		//BeginInitResource(&CustomVertexBuffer);
 		//BeginInitResource(&CustomVertexFactory);
 
 		Material = InComponent->GetMaterial(0);
@@ -155,27 +132,16 @@ public:
 
 	virtual ~FCustomMeshSceneProxy()
 	{
-		CustomVertexBuffer.ReleaseResource();
+		//CustomVertexBuffer.ReleaseResource();
 		CustomIndexBuffer.ReleaseResource();
-		CustomVertexFactory.ReleaseResource();
+		//CustomVertexFactory.ReleaseResource();
+		VertexBuffers.PositionVertexBuffer.ReleaseResource();
+		VertexBuffers.StaticMeshVertexBuffer.ReleaseResource();
+		VertexBuffers.ColorVertexBuffer.ReleaseResource();
+		VertexFactory.ReleaseResource();
 
 		FPrimitiveSceneProxy::~FPrimitiveSceneProxy();
 	}
-
-	//设置绘制资源等,这里来做构造函数做的事情
-	void SetVerTex()
-	{
-		CustomVertexBuffer.NumVerts = GetRequiredVertexCount();
-		CustomIndexBuffer.NumIndices = GetRequiredIndicesCount();
-
-		CustomVertexFactory.Init(&CustomVertexBuffer);
-
-		// Enqueue initialization of render resource
-		BeginInitResource(&CustomVertexBuffer);
-		BeginInitResource(&CustomIndexBuffer);
-		BeginInitResource(&CustomVertexFactory);
-
-	};
 
 	//获取绘制元素
 	virtual void GetDynamicMeshElements(const TArray<const FSceneView *>& Views, const FSceneViewFamily& ViewFamily,
@@ -208,12 +174,22 @@ public:
 				FMeshBatchElement& BatchElement = Mesh.Elements[0];
 				BatchElement.IndexBuffer = &CustomIndexBuffer;
 				Mesh.bWireframe = bWireframe;
-				Mesh.VertexFactory = &CustomVertexFactory;
+				Mesh.VertexFactory = &VertexFactory;
 				//之前已经将其设置为线框或是默认的或是Component上的了
 				Mesh.MaterialRenderProxy = MaterialProxy;
-				BatchElement.PrimitiveUniformBuffer = CreatePrimitiveUniformBufferImmediate(
-					GetLocalToWorld(),GetBounds(),GetLocalBounds(), GetLocalBounds() ,true, true
-				);
+				//BatchElement.PrimitiveUniformBuffer = CreatePrimitiveUniformBufferImmediate(
+				//	GetLocalToWorld(),GetBounds(),GetLocalBounds(), GetLocalBounds() ,true, true
+				//);
+				bool bHasPrecomputedVolumetricLightmap;
+				FMatrix PreviousLocalToWorld;
+				int32 SingleCaptureIndex;
+				bool bOutputVelocity;
+				GetScene().GetPrimitiveUniformShaderParameters_RenderThread(GetPrimitiveSceneInfo(), bHasPrecomputedVolumetricLightmap, PreviousLocalToWorld, SingleCaptureIndex, bOutputVelocity);
+
+				FDynamicPrimitiveUniformBuffer& DynamicPrimitiveUniformBuffer = Collector.AllocateOneFrameResource<FDynamicPrimitiveUniformBuffer>();
+				DynamicPrimitiveUniformBuffer.Set(GetLocalToWorld(), PreviousLocalToWorld, GetBounds(), GetLocalBounds(), true, bHasPrecomputedVolumetricLightmap, DrawsVelocity(), bOutputVelocity);
+				BatchElement.PrimitiveUniformBufferResource = &DynamicPrimitiveUniformBuffer.UniformBuffer;
+
 				BatchElement.FirstIndex = 0;
 				BatchElement.NumPrimitives = GetRequiredIndicesCount() / 3;  //3个组成一个三角形
 				BatchElement.MinVertexIndex = 0;
@@ -245,7 +221,7 @@ public:
 		//把顶点放入vertices中，再在Indices中把三角形组合关系弄好
 		for (int32 count = 0; count < DynamicData->Positions.Num(); ++count)
 		{
-			FDynamicMeshVertex newvert0;
+			/*FDynamicMeshVertex newvert0;
 			newvert0.Position = DynamicData->Positions[count] + FVector(-100, 100, 0);
 			FDynamicMeshVertex newvert1;
 			newvert1.Position = DynamicData->Positions[count] + FVector(100, 100, 0);
@@ -262,16 +238,125 @@ public:
 			Indices.Add(count* 4 + 0);
 			Indices.Add(count * 4 + 1);
 			Indices.Add(count * 4 + 2);
+			Indices.Add(count * 4 + 3);*/
+			FDynamicMeshVertex newvert0;
+			newvert0.Position = DynamicData->Positions[count] + FVector(-100, 100, 50);
+			FDynamicMeshVertex newvert1;
+			newvert1.Position = DynamicData->Positions[count] + FVector(100, 100, 50);
+			FDynamicMeshVertex newvert2;
+			newvert2.Position = DynamicData->Positions[count] + FVector(-100, -100, 50);
+			FDynamicMeshVertex newvert3;
+			newvert3.Position = DynamicData->Positions[count] + FVector(100, -100, 50);
+			FDynamicMeshVertex newvert4;
+			newvert4.Position = DynamicData->Positions[count] + FVector(-100, 100, -50);
+			FDynamicMeshVertex newvert5;
+			newvert5.Position = DynamicData->Positions[count] + FVector(100, 100, -50);
+			FDynamicMeshVertex newvert6;
+			newvert6.Position = DynamicData->Positions[count] + FVector(-100, -100, -50);
+			FDynamicMeshVertex newvert7;
+			newvert7.Position = DynamicData->Positions[count] + FVector(100, -100, -50);
+
+			Vertices.Add(newvert0);
+			Vertices.Add(newvert1);
+			Vertices.Add(newvert2);
+			Vertices.Add(newvert3);
+			Vertices.Add(newvert4);
+			Vertices.Add(newvert5);
+			Vertices.Add(newvert6);
+			Vertices.Add(newvert7);
+
+			//上面
+			Indices.Add(count * 4 + 0);
+			Indices.Add(count * 4 + 1);
+			Indices.Add(count * 4 + 2);
+			//Indices.Add(count * 4 + 2);
+			//Indices.Add(count *  4 + 3);
+			//Indices.Add(count * 4 + 0);
+			//右面
+			Indices.Add(count * 4 + 0);
+			Indices.Add(count * 4 + 1);
+			Indices.Add(count * 4 + 5);
+			/*Indices.Add(count * 4 + 1);
+			Indices.Add(count * 4 + 4);
+			Indices.Add(count * 4 + 5);
+			//后面
+			Indices.Add(count * 4 + 0);
+			Indices.Add(count * 4 + 7);
+			Indices.Add(count * 4 + 4);
+			Indices.Add(count * 4 + 0);
 			Indices.Add(count * 4 + 3);
+			Indices.Add(count * 4 + 7);
+			//前面
+			Indices.Add(count * 4 + 1);
+			Indices.Add(count * 4 + 2);
+			Indices.Add(count * 4 + 6);
+			Indices.Add(count * 4 + 1);
+			Indices.Add(count * 4 + 6);
+			Indices.Add(count * 4 + 5);
+			//左面
+			Indices.Add(count * 4 + 2);
+			Indices.Add(count * 4 + 3);
+			Indices.Add(count * 4 + 7);
+			Indices.Add(count * 4 + 2);
+			Indices.Add(count * 4 + 6);
+			Indices.Add(count * 4 + 7);
+			//下面
+			Indices.Add(count * 4 + 4);
+			Indices.Add(count * 4 + 7);
+			Indices.Add(count * 4 + 5);
+			Indices.Add(count * 4 + 6);
+			Indices.Add(count * 4 + 7);
+			Indices.Add(count * 4 + 5);*/
+
+		}
+		for (int i = 0; i < Vertices.Num(); i++)
+		{
+			const FDynamicMeshVertex& Vertex = Vertices[i];
+
+			VertexBuffers.PositionVertexBuffer.VertexPosition(i) = Vertex.Position;
+			VertexBuffers.StaticMeshVertexBuffer.SetVertexTangents(i, Vertex.TangentX.ToFVector(), Vertex.GetTangentY(), Vertex.TangentZ.ToFVector());
+			VertexBuffers.StaticMeshVertexBuffer.SetVertexUV(i, 0, Vertex.TextureCoordinate[0]);
+			VertexBuffers.ColorVertexBuffer.VertexColor(i) = FColor(133,202,183);// Vertex.Color;
 		}
 
 		//当设置好了顶点和Indices后，把数据拷贝到VertexBuffer和IndexBuffer中  GetData():就是获取第一个数组的指针，也可以使用&Vertices[0]
-		void* Buffer = RHILockVertexBuffer(CustomVertexBuffer.VertexBufferRHI, 0, Vertices.Num() * sizeof(FDynamicMeshVertex), RLM_WriteOnly);
+		/*void* Buffer = RHILockVertexBuffer(CustomVertexBuffer.VertexBufferRHI, 0, Vertices.Num() * sizeof(FDynamicMeshVertex), RLM_WriteOnly);
 		FMemory::Memcmp(Buffer, Vertices.GetData(), Vertices.Num() * sizeof(FDynamicMeshVertex));
 		RHIUnlockVertexBuffer(CustomVertexBuffer.VertexBufferRHI);
 
 		void* IndexBufferData = RHILockIndexBuffer(CustomIndexBuffer.IndexBufferRHI, 0, Indices.Num() * sizeof(int32), RLM_WriteOnly);
 		FMemory::Memcmp(IndexBufferData, &Indices[0], Indices.Num() * sizeof(int32));
+		RHIUnlockIndexBuffer(CustomIndexBuffer.IndexBufferRHI);*/
+		{
+			auto& VertexBuffer = VertexBuffers.PositionVertexBuffer;
+			void* VertexBufferData = RHILockVertexBuffer(VertexBuffer.VertexBufferRHI, 0, VertexBuffer.GetNumVertices() * VertexBuffer.GetStride(), RLM_WriteOnly);
+			FMemory::Memcpy(VertexBufferData, VertexBuffer.GetVertexData(), VertexBuffer.GetNumVertices() * VertexBuffer.GetStride());
+			RHIUnlockVertexBuffer(VertexBuffer.VertexBufferRHI);
+		}
+
+		{
+			auto& VertexBuffer = VertexBuffers.ColorVertexBuffer;
+			void* VertexBufferData = RHILockVertexBuffer(VertexBuffer.VertexBufferRHI, 0, VertexBuffer.GetNumVertices() * VertexBuffer.GetStride(), RLM_WriteOnly);
+			FMemory::Memcpy(VertexBufferData, VertexBuffer.GetVertexData(), VertexBuffer.GetNumVertices() * VertexBuffer.GetStride());
+			RHIUnlockVertexBuffer(VertexBuffer.VertexBufferRHI);
+		}
+
+		{
+			auto& VertexBuffer = VertexBuffers.StaticMeshVertexBuffer;
+			void* VertexBufferData = RHILockVertexBuffer(VertexBuffer.TangentsVertexBuffer.VertexBufferRHI, 0, VertexBuffer.GetTangentSize(), RLM_WriteOnly);
+			FMemory::Memcpy(VertexBufferData, VertexBuffer.GetTangentData(), VertexBuffer.GetTangentSize());
+			RHIUnlockVertexBuffer(VertexBuffer.TangentsVertexBuffer.VertexBufferRHI);
+		}
+
+		{
+			auto& VertexBuffer = VertexBuffers.StaticMeshVertexBuffer;
+			void* VertexBufferData = RHILockVertexBuffer(VertexBuffer.TexCoordVertexBuffer.VertexBufferRHI, 0, VertexBuffer.GetTexCoordSize(), RLM_WriteOnly);
+			FMemory::Memcpy(VertexBufferData, VertexBuffer.GetTexCoordData(), VertexBuffer.GetTexCoordSize());
+			RHIUnlockVertexBuffer(VertexBuffer.TexCoordVertexBuffer.VertexBufferRHI);
+		}
+
+		void* IndexBufferData = RHILockIndexBuffer(CustomIndexBuffer.IndexBufferRHI, 0, Indices.Num() * sizeof(int32), RLM_WriteOnly);
+		FMemory::Memcpy(IndexBufferData, &Indices[0], Indices.Num() * sizeof(int32));
 		RHIUnlockIndexBuffer(CustomIndexBuffer.IndexBufferRHI);
 
 	}
@@ -319,9 +404,11 @@ public:
 protected:
 	UMaterialInterface* Material;
 
-	FCustomMeshVertexBuffer CustomVertexBuffer;
+	//FCustomMeshVertexBuffer CustomVertexBuffer;
 	FCustomMeshIndexBuffer CustomIndexBuffer;
-	FCustomMeshVertexFactory CustomVertexFactory;
+	//FCustomMeshVertexFactory CustomVertexFactory;
+	FLocalVertexFactory VertexFactory;
+	FStaticMeshVertexBuffers VertexBuffers;
 
 	FMaterialRelevance MaterialRelevance;
 };
