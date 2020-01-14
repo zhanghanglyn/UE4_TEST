@@ -156,11 +156,42 @@ void ARTSPlayerCameraSpectatorPawn::TestCreateWall()
 			FVector Dir;
 			pc->DeprojectMousePositionToWorld(WorldPos, Dir);
 
-			//直接在这个位置，创建一个Wall
-			//ACustomWall* testWall = NewObject<ACustomWall>(world, TEXT("CustomWall"));
-			//world->SpawnActor<ACustomWall>(ACustomWall::StaticClass(), );
-			//testWall->AddToRoot();
-			//testWall->PostActorCreated();
+			//直接在这个位置，创建一个Wall 再根据当前方向发射射线，与地面接触的地方生成墙
+			FVector StartPos = WorldPos;
+			FVector ForwardVector = CameraComponent->GetForwardVector();
+			StartPos.Z = GetActorLocation().Z;
+			FVector EndPos = WorldPos + ForwardVector * 115000;
+			TArray<FHitResult> temp_HitResult;
+
+			FVector startPos = GetActorLocation();
+			FVector forward = CameraComponent->GetForwardVector();
+			FVector endPos = startPos + forward * 100000;
+
+			FCollisionQueryParams CollisionParam(FName(TEXT("Combattrace")), true, NULL);
+			CollisionParam.bTraceComplex = true;
+			//CollisionParam.bReturnPhysicalMaterial = false;
+			//CollisionParam.AddIgnoredActor(this);
+
+			world->LineTraceMultiByObjectType(temp_HitResult, StartPos, EndPos, FCollisionObjectQueryParams::AllStaticObjects , CollisionParam);
+			DrawDebugLine(this->GetWorld(), StartPos, EndPos, FColor::Red, true, 115000);
+
+			if (temp_HitResult.Num() > 0)
+			{
+				for (int i = 0; i < temp_HitResult.Num(); i++)
+				{
+					AActor* HitActor = temp_HitResult[i].GetActor();
+					FString hitName = HitActor->GetName();
+					//只在编辑器模式有用
+					FString LableName = HitActor->GetActorLabel();
+					if (hitName == "Floor" || LableName == "Floor")
+					{
+						FVector CraetePos = temp_HitResult[i].Location;
+						ACustomWall* testWall = world->SpawnActor<ACustomWall>(ACustomWall::StaticClass(), CraetePos, FRotator(0, 0, 0));
+					}
+				}
+			}
+
+			//ACustomWall* testWall = world->SpawnActor<ACustomWall>(ACustomWall::StaticClass(), WorldPos, FRotator(0, 0, 0));
 		}
 
 	}
