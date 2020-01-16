@@ -1,7 +1,7 @@
 ﻿#include "RTSPlayerCameraSpectatorPawn.h"
 #include "Runtime/Engine/Classes/Components/SphereComponent.h"
 #include "Runtime/Engine/Public/Engine.h"
-#include "RTSMode/Private/ObjectBase/ActorBase.h"
+#include "ActorBase.h"
 #include "CustomMesh/Private/CustomWall/CustomWall.h"
 
 ARTSPlayerCameraSpectatorPawn::ARTSPlayerCameraSpectatorPawn(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -74,20 +74,22 @@ void ARTSPlayerCameraSpectatorPawn::OnMouseClickStart()
 
 	//先暂时写在这里，开始进行
 	//TestCreateWall();
-	AActorBase* TouchActor = GetCurTouchObj();
+	FVector HitLocation;
+	AActorBase* TouchActor = GetCurTouchObj(HitLocation);
 	if (TouchActor)
 	{
-		TouchActor->StartTouch();
+		TouchActor->StartTouch(HitLocation);
 	}
 }
 
 void ARTSPlayerCameraSpectatorPawn::OnMouseClickMove()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Holding"));
-	AActorBase* TouchActor = GetCurTouchObj();
+	FVector HitLocation;
+	AActorBase* TouchActor = GetCurTouchObj(HitLocation);
 	if (TouchActor)
 	{
-		TouchActor->TouchHold();
+		TouchActor->TouchHold(HitLocation);
 	}
 
 }
@@ -97,10 +99,11 @@ void ARTSPlayerCameraSpectatorPawn::OnMouseClickEnd()
 	UE_LOG(LogTemp, Warning, TEXT("ClickOver"));
 	BMouseLeftHold = false;
 
-	AActorBase* TouchActor = GetCurTouchObj();
+	FVector HitLocation;
+	AActorBase* TouchActor = GetCurTouchObj(HitLocation);
 	if (TouchActor)
 	{
-		TouchActor->TouchEnd();
+		TouchActor->TouchEnd(HitLocation);
 	}
 }
 
@@ -153,7 +156,7 @@ void ARTSPlayerCameraSpectatorPawn::UpdateActor()
 
 }
 
-AActorBase* ARTSPlayerCameraSpectatorPawn::GetCurTouchObj()
+AActorBase* ARTSPlayerCameraSpectatorPawn::GetCurTouchObj(FVector &HitLocation)
 {
 	UWorld* world = this->GetWorld();
 	if (world)
@@ -165,6 +168,7 @@ AActorBase* ARTSPlayerCameraSpectatorPawn::GetCurTouchObj()
 			AActor* HitActor = HitResult.GetActor();
 			if (AActorBase* HitActorBase = Cast<AActorBase>(HitActor))
 			{
+				HitLocation = HitResult.Location;
 				return HitActorBase;
 			}
 		}

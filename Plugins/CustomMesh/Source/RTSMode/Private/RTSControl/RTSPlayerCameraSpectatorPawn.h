@@ -8,9 +8,9 @@
 #include "RTSPlayerCameraSpectatorPawn.generated.h"
 
 /*
-RTS视角操作方式APawn
+RTS视角操作方式APawn,上面会绑上组件作为一个玩家主逻辑的控件
 */
-UCLASS()
+UCLASS(BlueprintType, Blueprintable, meta = (ShortTooltip = "RTS视角操作方式APawn"))
 class RTSMODE_API ARTSPlayerCameraSpectatorPawn : public ASpectatorPawn
 {
 	GENERATED_BODY()
@@ -43,7 +43,7 @@ public:
 
 protected:
 	/* 获取当前点击到的物体 */
-	class AActorBase* GetCurTouchObj();
+	class AActorBase* GetCurTouchObj(FVector &HitLocation);
 
 	//测试函数，点击创建墙
 	void TestCreateWall();
