@@ -23,4 +23,11 @@ public:
 	virtual void TouchEnd(FVector TouchLocation) override;
 public:
 
+
+protected:
+	UPROPERTY(EditAnywhere, meta = (Category = "Ground Config"))
+	float GroundWidth;
+
+	UPROPERTY(EditAnywhere, meta = (Category = "Ground Config"))
+	float GroundHeight;
 };
