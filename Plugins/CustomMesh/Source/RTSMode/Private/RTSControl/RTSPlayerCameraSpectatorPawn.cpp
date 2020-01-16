@@ -1,6 +1,7 @@
 ﻿#include "RTSPlayerCameraSpectatorPawn.h"
 #include "Runtime/Engine/Classes/Components/SphereComponent.h"
 #include "Runtime/Engine/Public/Engine.h"
+#include "RTSMode/Private/ObjectBase/ActorBase.h"
 #include "CustomMesh/Private/CustomWall/CustomWall.h"
 
 ARTSPlayerCameraSpectatorPawn::ARTSPlayerCameraSpectatorPawn(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -72,18 +73,35 @@ void ARTSPlayerCameraSpectatorPawn::OnMouseClickStart()
 	BMouseLeftHold = true;
 
 	//先暂时写在这里，开始进行
-	TestCreateWall();
+	//TestCreateWall();
+	AActorBase* TouchActor = GetCurTouchObj();
+	if (TouchActor)
+	{
+		TouchActor->StartTouch();
+	}
 }
 
 void ARTSPlayerCameraSpectatorPawn::OnMouseClickMove()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Holding"));
+	AActorBase* TouchActor = GetCurTouchObj();
+	if (TouchActor)
+	{
+		TouchActor->TouchHold();
+	}
+
 }
 
 void ARTSPlayerCameraSpectatorPawn::OnMouseClickEnd()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ClickOver"));
 	BMouseLeftHold = false;
+
+	AActorBase* TouchActor = GetCurTouchObj();
+	if (TouchActor)
+	{
+		TouchActor->TouchEnd();
+	}
 }
 
 
@@ -135,6 +153,30 @@ void ARTSPlayerCameraSpectatorPawn::UpdateActor()
 
 }
 
+AActorBase* ARTSPlayerCameraSpectatorPawn::GetCurTouchObj()
+{
+	UWorld* world = this->GetWorld();
+	if (world)
+	{
+		APlayerController* pc = world->GetFirstPlayerController();
+		FHitResult HitResult;
+		if (pc->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, HitResult))
+		{
+			AActor* HitActor = HitResult.GetActor();
+			if (AActorBase* HitActorBase = Cast<AActorBase>(HitActor))
+			{
+				return HitActorBase;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+#pragma optimize("",on)
+/************************************************************************/
+/*                          以下为测试代码                              */
+/************************************************************************/
 
 void ARTSPlayerCameraSpectatorPawn::TestCreateWall()
 {
@@ -172,7 +214,7 @@ void ARTSPlayerCameraSpectatorPawn::TestCreateWall()
 			//CollisionParam.bReturnPhysicalMaterial = false;
 			//CollisionParam.AddIgnoredActor(this);
 
-			world->LineTraceMultiByObjectType(temp_HitResult, StartPos, EndPos, FCollisionObjectQueryParams::AllStaticObjects , CollisionParam);
+			world->LineTraceMultiByObjectType(temp_HitResult, StartPos, EndPos, FCollisionObjectQueryParams::AllObjects , CollisionParam);
 			DrawDebugLine(this->GetWorld(), StartPos, EndPos, FColor::Red, true, 115000);
 
 			if (temp_HitResult.Num() > 0)
@@ -196,4 +238,3 @@ void ARTSPlayerCameraSpectatorPawn::TestCreateWall()
 
 	}
 }
-#pragma optimize("",on)

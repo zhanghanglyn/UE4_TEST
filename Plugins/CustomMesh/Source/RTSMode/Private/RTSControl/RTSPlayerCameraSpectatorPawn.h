@@ -40,7 +40,11 @@ public:
 	void OnMouseClickMove();
 	void OnMouseClickEnd();
 
+
 protected:
+	/* 获取当前点击到的物体 */
+	class AActorBase* GetCurTouchObj();
+
 	//测试函数，点击创建墙
 	void TestCreateWall();
 
