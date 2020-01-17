@@ -15,7 +15,11 @@ public:
 	AGroundObj( FString InActorName );
 
 	/** Constructor for AActor that takes an ObjectInitializer for backward compatibility */
-	AGroundObj(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {};
+	AGroundObj(const FObjectInitializer& ObjectInitializer);
+
+	/* virtual */
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+
 
 	/* 开始被点击 */
 	virtual void StartTouch(FVector TouchLocation) override;
@@ -25,9 +29,16 @@ public:
 
 
 protected:
-	UPROPERTY(EditAnywhere, meta = (Category = "Ground Config"))
-	float GroundWidth;
+	UPROPERTY(VisibleAnywhere , meta = (Category = "Ground Mesh"))
+	class UStaticMeshComponent* GroundMeshComponent;
+	//模型路径 暂时这么标
+	UPROPERTY(EditAnywhere, meta = (Category = "Ground Mesh"))
+	FString GroundMeshPath = "/Game/StarterContent/Shapes/Shape_Plane";
 
 	UPROPERTY(EditAnywhere, meta = (Category = "Ground Config"))
-	float GroundHeight;
+	FVector2D GroundWidthHeight = FVector2D(100,100);
+
+	//UPROPERTY(EditAnywhere, meta = (Category = "Ground Config"))
+	//float GroundHeight;
+
 };

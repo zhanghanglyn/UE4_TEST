@@ -1,4 +1,5 @@
 ﻿#include "CustomWall.h"
+#include "KismetProceduralMeshLibrary.h"
 
 ACustomWall::ACustomWall(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -11,12 +12,12 @@ ACustomWall::ACustomWall(const FObjectInitializer& ObjectInitializer) : Super(Ob
 void ACustomWall::PostActorCreated()
 {
 	Super::PostActorCreated();
-	CreateWall();
+	//CreateWall();
 }
 
-void ACustomWall::CreateWall()
+void ACustomWall::CreateWall( FVector BoxRadius )
 {
-	TArray<FVector> vertices;
+	/*TArray<FVector> vertices;
 	vertices.Add(FVector(0, 0, 0));
 	vertices.Add(FVector(0, 100, 0));
 	vertices.Add(FVector(0, 0, 100));
@@ -45,9 +46,23 @@ void ACustomWall::CreateWall()
 	TArray<FLinearColor> vertexColors;
 	vertexColors.Add(FLinearColor(0.75, 0.75, 0.75, 1.0));
 	vertexColors.Add(FLinearColor(0.75, 0.75, 0.75, 1.0));
-	vertexColors.Add(FLinearColor(0.75, 0.75, 0.75, 1.0));
+	vertexColors.Add(FLinearColor(0.75, 0.75, 0.75, 1.0));*/
 
-	WallMesh->CreateMeshSection_LinearColor(0, vertices, Indices, normals, UV0, vertexColors, Tangents, true);
+	TArray<FVector> Vertices;
+	TArray<int32> Triangles;
+	TArray<FVector> Normals;
+	TArray<FVector2D> UV0;
+	TArray<FProcMeshTangent> Tangents;
+
+	UKismetProceduralMeshLibrary::GenerateBoxMesh(BoxRadius,Vertices,Triangles , Normals, UV0, Tangents);
+
+	TArray<FLinearColor> vertexColors;
+	for (int32 verticesCount = 0; verticesCount < Vertices.Num(); ++verticesCount)
+	{
+		vertexColors.Add(FLinearColor(0.25, 0.15, 0.45, 1.0));
+	}
+
+	WallMesh->CreateMeshSection_LinearColor(0, Vertices, Triangles, Normals, UV0, vertexColors, Tangents, true);
 
 	//检查有没有冲突数据，不处理了
 	WallMesh->ContainsPhysicsTriMeshData(true);
