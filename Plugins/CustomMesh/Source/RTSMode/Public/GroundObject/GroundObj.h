@@ -6,6 +6,7 @@
 
 /*
 	包含格子信息的地面
+	暂时先默认一个底面对应一个GridMgr
 */
 UCLASS(BlueprintType, Blueprintable)
 class RTSMODE_API AGroundObj : public AActorBase
@@ -19,7 +20,7 @@ public:
 
 	/* virtual */
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-
+	virtual void OnConstruction(const FTransform& Transform) override;
 
 	/* 开始被点击 */
 	virtual void StartTouch(FVector TouchLocation) override;
@@ -27,6 +28,8 @@ public:
 	virtual void TouchEnd(FVector TouchLocation) override;
 public:
 
+	//设置右下角的起点位置（用来计算相对位置）,会根据当前尺寸等自动计算 
+	FVector GetRelativeStart();
 
 protected:
 	UPROPERTY(VisibleAnywhere , meta = (Category = "Ground Mesh"))
@@ -38,7 +41,6 @@ protected:
 	UPROPERTY(EditAnywhere, meta = (Category = "Ground Config"))
 	FVector2D GroundWidthHeight = FVector2D(100,100);
 
-	//UPROPERTY(EditAnywhere, meta = (Category = "Ground Config"))
-	//float GroundHeight;
-
+	UPROPERTY()
+	class UGroundGridMgrComponent* GridMgr;
 };

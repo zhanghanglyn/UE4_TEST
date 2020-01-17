@@ -2,6 +2,7 @@
 #include "CustomMesh/Private/CustomWall/CustomWall.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
+#include "GroundGridMgrComponent.h"
 
 AGroundObj::AGroundObj(FString InActorName) : Super(InActorName)
 {
@@ -27,24 +28,56 @@ AGroundObj::AGroundObj(const FObjectInitializer& ObjectInitializer) : Super(Obje
 			FVector Scale = FVector(GroundWidthHeight.X / MeshBox.GetSize().X , GroundWidthHeight.Y / MeshBox.GetSize().Y , 1);
 			GroundMeshComponent->SetWorldScale3D(Scale);
 		}
-			
+	}
+
+	//创建一个格子数据,之后应该改成读取配置
+	/*if (GridMgr == nullptr)
+	{
+		GridMgr = NewObject<UGroundGridMgrComponent>(this, TEXT("GrigMgr"));
+		GridMgr->RegisterComponent();
+		//GridMgr->(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+		GridMgr->InitGridData(GroundWidthHeight);
+		GridMgr->InitGridStartLocation(GetActorLocation());
+	}*/
+}
+
+void AGroundObj::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	if (GridMgr == nullptr)
+	{
+		GridMgr = NewObject<UGroundGridMgrComponent>(this, TEXT("GrigMgr"));
+		GridMgr->RegisterComponent();
+		//GridMgr->(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+		GridMgr->InitGridData(GroundWidthHeight);
+		GridMgr->InitGridStartLocation(GetActorLocation());
 	}
 }
 
+#pragma optimize("",off)
 void AGroundObj::StartTouch(FVector TouchLocation)
 {
 	//开始创建一个墙
 	UWorld* World = this->GetWorld();
 	if (World)
 	{
-		FVector CreatePos = FVector(TouchLocation.X, TouchLocation.Y, TouchLocation.Z + 50);
-		ACustomWall* testWall = World->SpawnActor<ACustomWall>(ACustomWall::StaticClass(), CreatePos, FRotator(0, 0, 0));
+		//FVector CreatePos = FVector(TouchLocation.X, TouchLocation.Y, TouchLocation.Z + 50);
+		//ACustomWall* testWall = World->SpawnActor<ACustomWall>(ACustomWall::StaticClass(), CreatePos, FRotator(0, 0, 0));
 		//测试计算一个立方体
-		testWall->CreateWall(FVector(50, 50, 50));
-	}
-		
+		//testWall->CreateWall(FVector(50, 50, 50));
 
+
+
+		//测试，获取点击的格子
+		//取Actor的左上角
+		FVector RelativeLocation = FVector(TouchLocation.X - GetRelativeStart().X, TouchLocation.Y - GetRelativeStart().Y, GetRelativeStart().Z);
+		FGridData ttt;
+		GridMgr->GetTouchGrid(RelativeLocation.GetAbs() , ttt);
+		ttt.BeOccupy = true;
+	}
 }
+#pragma optimize("",on)
 
 void AGroundObj::TouchHold(FVector TouchLocation)
 {
@@ -91,6 +124,18 @@ void AGroundObj::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEv
 				GroundMeshComponent->SetWorldScale3D(Scale);
 			}
 		}
+		if (GridMgr)
+		{
+			GridMgr->InitGridData(GroundWidthHeight);
+		}
+
 	}
 }
+
+FVector AGroundObj::GetRelativeStart()
+{
+	FVector Location = GetActorLocation();
+	return FVector(Location.X - GroundWidthHeight.X/2 , Location.Y - GroundWidthHeight.Y/2, Location.Z);
+}
+
 #pragma optimize("",on)
