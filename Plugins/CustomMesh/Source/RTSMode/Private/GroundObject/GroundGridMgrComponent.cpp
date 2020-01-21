@@ -27,6 +27,12 @@ void UGroundGridMgrComponent::InitGridData(FVector2D InWidthHeight)
 			NewGridData.SetGridId();
 
 			GridDataList.Add(NewGridData);
+			if (GridDataListNested.Num() <= Row)
+			{
+				FNestedArray tempArray;
+				GridDataListNested.Add(tempArray);
+			}
+			GridDataListNested[Row].Array.Add( NewGridData);
 		}
 	}
 }
@@ -42,6 +48,9 @@ void UGroundGridMgrComponent::GetTouchGrid(FVector TouchLocation , FGridData& Gr
 	if (GridDataList.Num() >= GridIndex)
 	{
 		GridData = GridDataList[GridIndex];
+
+		GridData = GridDataListNested[CurGridRow - 1].Array[CurGridColumn - 1];
+		UE_LOG(LogTemp, Warning , TEXT("aaaaaa"));
 	}
 
 }

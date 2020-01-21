@@ -4,6 +4,7 @@
 #include "GroundUtil.h"
 #include "Components/ActorComponent.h"
 #include "GridMgr.h"
+#include "NestedArray.h"
 #include "GroundGridMgrComponent.generated.h"
 
 /* 
@@ -43,4 +44,8 @@ protected:
 
 	UPROPERTY()
 	TArray<FGridData> GridDataList;	//格子list
+
+	//测试用NestArray
+	UPROPERTY()
+	TArray< FNestedArray > GridDataListNested;
 };

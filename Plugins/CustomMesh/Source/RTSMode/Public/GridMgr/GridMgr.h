@@ -36,3 +36,37 @@ public:
 	static FString GridName;// = "Grid_";
 	
 };
+
+//感觉测试失败了
+USTRUCT()
+struct FNestedArray
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	FNestedArray()
+	{
+	}
+
+	//typedef FGridData ElementType;
+	UPROPERTY()
+	TArray<FGridData> Array;
+
+	void Add(FGridData& item)
+	{
+		Array.Add(item);
+	}
+
+	void RemoveAt(int32 Index)
+	{
+		Array.RemoveAt(Index);
+		
+	}
+
+	FGridData& operator[](int32 Index)
+	{
+		check(Array.Num() > Index);
+
+		return Array[Index];
+	}
+};
