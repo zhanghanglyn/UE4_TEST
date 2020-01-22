@@ -10,12 +10,17 @@ class UActionNodeController : public UNodeControllerBase
 
 public:
 
-	UActionNodeController(const FObjectInitializer& ObjectInitializer) : UNodeControllerBase(ObjectInitializer) {};
+	UActionNodeController(const FObjectInitializer& ObjectInitializer) : UNodeControllerBase(ObjectInitializer) {
+		ControllerCategory = FControllerCategoryUtil::ControllerAction;
+	};
 
-	virtual void Init() override;
+	virtual void Init(UObject* DynamicParam) override;
 
 	virtual void Clear() override;
-protected:
 
+	virtual void ClearNextPage() override;
+protected:
+	UPROPERTY()
+	UEventComponentBase* FreshObject;
 
 };

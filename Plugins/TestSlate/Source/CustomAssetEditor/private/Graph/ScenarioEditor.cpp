@@ -1,5 +1,7 @@
 ﻿#include "ScenarioEditor.h"
 #include "ActionNodes.h"
+#include "AssembleNodes.h"
+#include "FunctionNode.h"
 #include "CustomAssetEditor/EventTreeSystem/ActiveComponent/Data/NodeDataShowUI.h"
 #include "Runtime/Slate/Public/Framework/Commands/GenericCommands.h"
 #include "ConditionConversionNodeBase.h"
@@ -522,7 +524,21 @@ void FScenarioEditor::UpdateParamDetailWhenNodeFocus( UEdGraphNode* FocusNode)
 		if (Node->NodeCategory == FScenarioNodeUtil::NodeCategoryAction)
 		{
 			UActionNodes* ActionNode = Cast<UActionNodes>(Node);
-			ParamDetailsView->SetObject(ActionNode->DataBase);
+			//ParamDetailsView->SetObject(ActionNode->DataBase);
+			ParamDetailsView->SetObject(ActionNode->SaveDataComponnet);
+		}
+		//如果是Asseble节点，则设置为Component的参数
+		else if (Node->NodeCategory == FScenarioNodeUtil::NodeCategoryAssembly)
+		{
+			UAssembleNodes* AssembleNode = Cast<UAssembleNodes>(Node);
+			//ParamDetailsView->SetObject(ActionNode->DataBase);
+			ParamDetailsView->SetObject(AssembleNode->SaveDataComponnet);
+		}
+		//如果是函数节点，
+		else if (Node->NodeCategory == FScenarioNodeUtil::NodeCategoryFunction)
+		{
+			UFunctionNode* FunctionNode = Cast<UFunctionNode>(Node);
+			ParamDetailsView->SetObject(FunctionNode->SaveData);
 		}
 		else
 		{

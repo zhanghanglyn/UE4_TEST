@@ -4,8 +4,8 @@
 #include "CustomAssetEditor/EventTreeSystem/ActiveComponent/ShowUIComponentBase.h"
 
 #pragma optimize("",off)
-/* 自动根据类型创建，其实是失败了的，并不能创建出能转换的子类 */
-void UActionNodeController::Init()
+/* 自动根据类型创建 */
+void UActionNodeController::Init(UObject* DynamicParam)
 {
 	check(CurNode);
 
@@ -32,18 +32,20 @@ void UActionNodeController::Init()
 			}*/
 
 			//如果身上没有，重新创建
-			UEventComponentBase* FreshObject = NewObject<UEventComponentBase>(CurActionNode->ActiveOjb.Get() , CurActionNode->ActiveComponent.Get());
+			FreshObject = NewObject<UEventComponentBase>(CurActionNode->ActiveOjb.Get() , CurActionNode->ActiveComponent.Get());
 			FreshObject->OverDelegate.BindUObject(this, &UNodeControllerBase::ComponentsFinishCallBack);
 
 			//注册组件
 			FreshObject->RegisterComponent();
-			FreshObject->AttachToComponent(CurActionNode->ActiveOjb->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+			FreshObject->AttachToComponent(CurActionNode->ActiveOjb.Get()->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 
 			//根据Node上面的数据，设置Component
 			FreshObject->SetActive(true);
-			FreshObject->SetData(CurActionNode->DataBase);
+			//FreshObject->SetData(CurActionNode->DataBase);
+			FreshObject->SetData(CurActionNode->SaveDataComponnet);
 
 			ComponentNodeActor = CurActionNode->ActiveOjb.Get();
+
 		}
 	}
 }
@@ -58,12 +60,38 @@ void UActionNodeController::Clear()
 		for (TArray<USceneComponent*>::TConstIterator iter = ComponentList.CreateConstIterator(); iter; ++iter)
 		{
 			UEventComponentBase* CurComponent = Cast<UEventComponentBase>(*iter);
-			if (CurComponent)
+			if (CurComponent && CurComponent == FreshObject)
 			{
+				FreshObject = nullptr;
+				CurComponent->Clear();
 				CurComponent->RemoveFromRoot();
 				CurComponent->DestroyComponent();
 			}
 		}
 	}
+
+	Super::Clear();
 }
+
+void UActionNodeController::ClearNextPage()
+{
+	if (ComponentNodeActor != nullptr)
+	{
+		TArray<USceneComponent*> ComponentList = ComponentNodeActor->GetRootComponent()->GetAttachChildren();
+		for (TArray<USceneComponent*>::TConstIterator iter = ComponentList.CreateConstIterator(); iter; ++iter)
+		{
+			UEventComponentBase* CurComponent = Cast<UEventComponentBase>(*iter);
+			if (CurComponent && CurComponent == FreshObject)
+			{
+				FreshObject = nullptr;
+				CurComponent->Clear();
+				CurComponent->RemoveFromRoot();
+				CurComponent->DestroyComponent();
+			}
+		}
+	}
+
+	Super::Clear();
+}
+
 #pragma optimize("",on)

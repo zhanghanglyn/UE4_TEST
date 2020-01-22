@@ -21,10 +21,10 @@ public:
 		BControlOver = false;
 	};
 
-	//根据节点参数进行组件的装配
-	virtual void InitController(UScenarioNodeNormal* InNode) {
+	//根据节点参数进行组件的装配 20.1.22 新添加DynamicParam 根据需求自己处理，会传入EventTreeMgr
+	virtual void InitController(UScenarioNodeNormal* InNode , UObject* DynamicParam) {
 		CurNode = InNode;
-		Init();
+		Init(DynamicParam);
 	};
 
 	//接受到Component的已经完成的回调
@@ -34,9 +34,11 @@ public:
 	virtual void ControllerFinish();
 
 	//根据数据进行控制器的初始化
-	virtual void Init();
+	virtual void Init(UObject* DynamicParam) {};
 	//清理自身
 	virtual void Clear();
+	//在下一页的时候清理自身
+	virtual void ClearNextPage();
 protected:
 
 

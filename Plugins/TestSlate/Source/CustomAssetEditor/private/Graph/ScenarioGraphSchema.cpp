@@ -9,6 +9,8 @@
 #include "EditTabsUtil.h"
 #include "End_SchemaAction.h"
 #include "Action_SchemaAction.h"
+#include "Assemble_SchemaAction.h"
+#include "Function_SchemaAction.h"
 #include "ConditionConversionNodeBase.h"
 #if WITH_EDITOR
 #include "Misc/ConfigCacheIni.h"
@@ -63,8 +65,17 @@ void UScenarioGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 	TSharedPtr<FActionSchemaAction> ActionSchemaAction = TSharedPtr<FActionSchemaAction>(
 		new FActionSchemaAction(LOCTEXT("CustomStoryCategory", "事件节点"), LOCTEXT("ActionNodes", "行为组件节点"), FText::GetEmpty(), 0, nullptr, FScenarioNodeUtil::NodeCategoryAction)
 		);
+	TSharedPtr<FAssembleSchemaAction> AssembleSchemaAction = TSharedPtr<FAssembleSchemaAction>(
+		new FAssembleSchemaAction(LOCTEXT("CustomStoryCategory", "事件节点"), LOCTEXT("AssembleNodes", "装配组件节点"), FText::GetEmpty(), 0, nullptr, FScenarioNodeUtil::NodeCategoryAssembly)
+		);
+	TSharedPtr<FFunctionSchemaAction> FunctionSchemaAction = TSharedPtr<FFunctionSchemaAction>(
+		new FFunctionSchemaAction(LOCTEXT("CustomStoryCategory", "事件节点"), LOCTEXT("FunctionNodes", "函数组件节点"), FText::GetEmpty(), 0, nullptr, FScenarioNodeUtil::NodeCategoryFunction)
+		);
 
 	ContextMenuBuilder.AddAction(ActionSchemaAction);
+	ContextMenuBuilder.AddAction(AssembleSchemaAction);
+	ContextMenuBuilder.AddAction(FunctionSchemaAction);
+
 }
 
 //添加右键菜单的操作列表，意思是可以添加像：如果右点击到Pin上打开的菜单， 如果右点击到Node上打开的菜单等
@@ -109,6 +120,9 @@ const FPinConnectionResponse UScenarioGraphSchema::CanCreateConnection(const UEd
 	else if (A->PinType.PinCategory == FScenarioPinUtil::PinCategoryMulti && B->PinType.PinCategory == FScenarioPinUtil::PinCategoryMulti)
 		//return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_MAKE, TEXT(""));
 		return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_MAKE_WITH_CONVERSION_NODE, TEXT("创建带有条件的连接"));
+	//如果A是随意PIN，B是需要断开所有A的引脚
+	//else if(B->PinType.PinCategory == FScenarioPinUtil::PinInputBreakSourceOutput)
+		//return FPinConnectionResponse(ECanCreateConnectionResponse::CONNECT_RESPONSE_BREAK_OTHERS_A, TEXT("不允许在装配节点上进行分支"));
 
 	//如果不允许连接
 	else if (A->PinType.PinCategory == FScenarioPinUtil::PinCategoryNotAllow || B->PinType.PinCategory == FScenarioPinUtil::PinCategoryNotAllow)

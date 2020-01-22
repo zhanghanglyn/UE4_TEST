@@ -11,24 +11,19 @@ class UShowUIComponentBase : public UEventComponentBase
 	GENERATED_BODY()
 
 public:
-	UShowUIComponentBase() : Super() {};
+	UShowUIComponentBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {};
 
-	virtual void StartAction() override;
+	virtual void StartAction(UObject* OuterController) override;
 
-	virtual void SetData(UComponentNodeDataBase* Data) override;
+	//Action为外部调用函数
+	virtual void Hover(UObject* OuterController) override { };
 
-	virtual void Clear();
+	//Action为外部调用函数
+	virtual void TouchLeave(UObject* OuterController) override { };
 
-	UFUNCTION()
-	void TimerOver();
+
+	virtual void SetData(UEventComponentBase* Data) override;
 public:
 	UPROPERTY(EditAnywhere, Category = "测试测试")
 	FString ShowName = "Test!!!!";
-
-protected:
-	UPROPERTY()
-	UUserWidget* m_SelectUI;
-
-	//计时器timer
-	FTimerHandle UITimer;
 };

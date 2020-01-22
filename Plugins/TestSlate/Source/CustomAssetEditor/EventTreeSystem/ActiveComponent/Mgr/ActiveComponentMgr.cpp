@@ -1,5 +1,7 @@
 ﻿#include "ActiveComponentMgr.h"
 #include "CustomAssetEditor/EventTreeSystem/ActiveComponent/ShowUIComponentBase.h"
+//#include "ProjectN_Demo/EventTree/Component/PickUpComponent.h"
+//#include "ProjectN_Demo/EventTree/Component/HightLightComponentBase.h"
 #include "CustomAssetEditor/EventTreeSystem/ActiveComponent/Data/NodeDataShowUI.h"
 
 #pragma optimize("",off)
@@ -9,7 +11,7 @@ bool FActiveComponentMgr::RunAction(UEventComponentBase* RunComponent)
 
 	if (UShowUIComponentBase* CastShowUIComponent = Cast<UShowUIComponentBase>(RunComponent))
 	{
-		CastShowUIComponent->StartAction();
+		//CastShowUIComponent->StartAction();
 		return true;
 	}
 

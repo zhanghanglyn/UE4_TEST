@@ -23,8 +23,8 @@ public:
 	{
 		if (TreeMgr == nullptr)
 			TreeMgr = NewObject<UEventTreeMgr>();
-		if (TreeMgr->GetTreeAsset(AssetPath))
-			TreeMgr->StartRun();
+		//if (TreeMgr->GetTreeAsset(AssetPath))
+			//TreeMgr->StartRun();
 	};
 
 	UPROPERTY()

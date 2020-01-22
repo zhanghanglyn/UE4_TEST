@@ -22,6 +22,7 @@ struct FScenarioNodeUtil
 	/* 具体节点相关 */
 	static const FName NodeCategoryAction;	   //最普通的事件节点
 	static const FName NodeCategoryAssembly;   //装配节点
+	static const FName NodeCategoryFunction;   //函数节点
 };
 
 struct FScenarioPinUtil
@@ -34,6 +35,8 @@ struct FScenarioPinUtil
 	static const FName PinCategoryNormal;	//普通Pin，只允许一个链接
 	static const FName PinCategoryMulti;	//允许链接多个Pin
 
+	static const FName PinInputBreakSourceOutput;	//只在被链接时，会断开链接来源的所有OutPut链角
+
 	static const FName PinCategoryConnection;//中间链接的PIN
 
 };
@@ -43,6 +46,7 @@ struct FControllerCategoryUtil
 {
 	static const FName ControllerBase;		//基础控制器
 	static const FName ControllerAction;	//Action动作控制器
+	static const FName ControllerAssemble;	//装配节点控制器
 };
 
 //互动组件类型

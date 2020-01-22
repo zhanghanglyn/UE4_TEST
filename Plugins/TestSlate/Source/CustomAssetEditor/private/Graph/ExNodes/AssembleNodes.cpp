@@ -1,13 +1,13 @@
-﻿#include "ActionNodes.h"
+﻿#include "AssembleNodes.h"
 
 
-const FName UActionNodes::ComponentPropertyName = "ActiveComponent";
+const FName UAssembleNodes::ComponentPropertyName = "ActiveComponent";
 
-UActionNodes::UActionNodes()
+UAssembleNodes::UAssembleNodes()
 {
-	NodeName = "Action";
+	NodeName = "Assemble";
 	bOpenGraph = false;
-	NodeCategory = FScenarioNodeUtil::NodeCategoryAction;
+	NodeCategory = FScenarioNodeUtil::NodeCategoryAssembly;
 
 	//if (DataBase == nullptr)
 	//	DataBase = NewObject<UComponentNodeDataBase>();
@@ -15,10 +15,16 @@ UActionNodes::UActionNodes()
 		CurComponentName = ActiveComponent->GetFName();//FActiveComponentMgr::GetEventComponentCategory(ActiveComponent);
 }
 
-TSharedPtr<SGraphNode> UActionNodes::CreateVisualWidget()
+//void UAssembleNodes::AllocateDefaultPins()
+//{
+//	CreatePin(EEdGraphPinDirection::EGPD_Input, FScenarioPinUtil::PinInputBreakSourceOutput, TEXT("In"));
+//	CreatePin(EEdGraphPinDirection::EGPD_Output, FScenarioPinUtil::PinCategoryMulti, TEXT("Out"));
+//}
+
+TSharedPtr<SGraphNode> UAssembleNodes::CreateVisualWidget()
 {
-	SAssignNew(SNodeWidgetShared, SScenarioNodeNormal, this).NodeBgColor(FLinearColor::FromSRGBColor(FColor(78, 151, 131)))
-		.CategoryTEXT(FText::FromString(L"互动节点"));
+	SAssignNew(SNodeWidgetShared, SScenarioNodeNormal, this).NodeBgColor(FLinearColor::FromSRGBColor(FColor(160, 151, 197)))
+		.CategoryTEXT(FText::FromString(L"装配节点"));
 
 	return SNodeWidgetShared;
 }
@@ -26,7 +32,7 @@ TSharedPtr<SGraphNode> UActionNodes::CreateVisualWidget()
 /*
 	如果更新的是选择的组件，则会重新生成DataBase数据,确保类型对应！
 */
-void UActionNodes::OnDetailUpdate(const FPropertyChangedEvent& PropertyChangedEvent)
+void UAssembleNodes::OnDetailUpdate(const FPropertyChangedEvent& PropertyChangedEvent)
 {
 	if (ActiveComponent == nullptr)
 	{
@@ -40,16 +46,10 @@ void UActionNodes::OnDetailUpdate(const FPropertyChangedEvent& PropertyChangedEv
 	}
 
 	//FName ChangeEventComponentName = FActiveComponentMgr::GetEventComponentCategory(ActiveComponent);
-	//if (PropertyChangedEvent.GetPropertyName() == UActionNodes::ComponentPropertyName && !ChangeEventComponentName.IsEqual(CurComponentName))
+	//if (PropertyChangedEvent.GetPropertyName() == UAssembleNodes::ComponentPropertyName && !ChangeEventComponentName.IsEqual(CurComponentName))
 	FName ChangeEventComponentName = ActiveComponent->GetFName();
-	if (PropertyChangedEvent.GetPropertyName() == UActionNodes::ComponentPropertyName && !ChangeEventComponentName.IsEqual(CurComponentName))
+	if(PropertyChangedEvent.GetPropertyName() == UAssembleNodes::ComponentPropertyName && !ChangeEventComponentName.IsEqual(CurComponentName))
 	{
-		//如果是ShowUI类型，则对应生成  
-		//if (FActiveComponentMgr::GetEventComponentCategory(ActiveComponent) == FEventComponentCategoryUtil::ComponentShowUI)
-		//{
-			//DataBase = nullptr;
-			//DataBase = FActiveComponentMgr::CreateComponentNodeData(ActiveComponent , this);
-		//}
 		//20.1.19 修改为ActiveComponent创建实例用来保存
 		if (SaveDataComponnet != nullptr)
 		{

@@ -6,13 +6,14 @@
 #include "ScenarioNodeNormal.h"
 
 //这个类用来做公用方法库
+//20.1.20 暂时把该方法废纸，不需要使用了
 class CUSTOMASSETEDITOR_API FActiveComponentMgr
 {
 
 public:
 	FActiveComponentMgr(){};
 
-	/* 外部调用，去Run一个Componnet的Action，自动将其转化为对应的子类 */
+	/* 外部调用，去Run一个Componnet的Action，自动将其转化为对应的子类 1.19 已废除*/
 	static bool RunAction( UEventComponentBase* RunComponent );
 
 	/* 外部调用，判断一个Component是什么类型的 */
